@@ -1,5 +1,6 @@
 package com.carhut.controllers;
 
+import com.carhut.enums.RequestStatusEntity;
 import com.carhut.jwt.utils.JwtUtil;
 import com.carhut.models.User;
 import com.carhut.models.security.AuthenticationRequest;
@@ -44,13 +45,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/resetPasswordSendEmail")
-    public void resetPasswordSendEmail(@RequestBody String email) {
-        authenticationService.resetPasswordSendEmail(email, userCredentialsService);
+    public ResponseEntity<String> resetPasswordSendEmail(@RequestBody String email) {
+        return authenticationService.resetPasswordSendEmail(email, userCredentialsService) == RequestStatusEntity.SUCCESS
+                ? ResponseEntity.ok("Email with password reset token was successfully sent.")
+                : ResponseEntity.internalServerError().body("There was internal error while trying to send password reset token. Email: " + email);
     }
 
     @PostMapping("/resetPasswordInitiate")
     public ResponseEntity<String> resetPasswordInitiate(@RequestBody PasswordResetRequestBody passwordResetRequestBody) {
-        return authenticationService.resetPasswordInitiate(passwordResetRequestBody)
+        return authenticationService.resetPasswordInitiate(passwordResetRequestBody) == RequestStatusEntity.SUCCESS
                 ? ResponseEntity.ok("Successfully changed password.")
                 : ResponseEntity.internalServerError().body("Token expired.");
     }

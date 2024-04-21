@@ -2,10 +2,12 @@ package com.carhut.services;
 
 import com.carhut.database.repository.ResetPasswordTokenRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
+import com.carhut.enums.RequestStatusEntity;
 import com.carhut.mail.service.EmailService;
 import com.carhut.models.User;
 import com.carhut.models.security.PasswordResetRequestBody;
 import com.carhut.models.security.PasswordResetToken;
+import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,16 +28,18 @@ public class AuthenticationService {
     @Autowired
     private UserCredentialsRepository userCredentialsRepository;
 
-    public void resetPasswordSendEmail(String email, UserCredentialsService userCredentialsService) {
+    public RequestStatusEntity resetPasswordSendEmail(String email, UserCredentialsService userCredentialsService) {
         User user = userCredentialsService.getUserByEmail(email);
 
         if (user == null) {
             System.out.println("User was not found");
+            return RequestStatusEntity.ERROR;
         }
 
         String token = UUID.randomUUID().toString();
         createPasswordResetToken(user, token);
         emailService.sendEmailMessage(email, "Reset password request", token);
+        return RequestStatusEntity.SUCCESS;
     }
 
     private void createPasswordResetToken(User user, String token) {
@@ -66,14 +70,14 @@ public class AuthenticationService {
     /**
      * @return Returns whether password reset went through or not.
      * **/
-    public boolean resetPasswordInitiate(PasswordResetRequestBody passwordResetRequestBody) {
+    public RequestStatusEntity resetPasswordInitiate(PasswordResetRequestBody passwordResetRequestBody) {
 
         if (!passwordResetRequestBody.getNewPassword().equals(passwordResetRequestBody.getRepeatedNewPassword())) {
-            return false;
+            return RequestStatusEntity.ERROR;
         }
 
         if (isPasswordResetTokenExpired(passwordResetRequestBody.getPasswordResetToken())) {
-            return false;
+            return RequestStatusEntity.ERROR;
         }
 
         PasswordResetToken passwordResetToken = resetPasswordTokenRepository.getPasswordResetTokenByToken(passwordResetRequestBody.getPasswordResetToken());
@@ -82,6 +86,6 @@ public class AuthenticationService {
                 new BCryptPasswordEncoder(5).encode(passwordResetRequestBody.getNewPassword()),
                         passwordResetRequestBody.getEmail());
 
-        return true;
+        return RequestStatusEntity.SUCCESS;
     }
 }

@@ -21,16 +21,4 @@ public interface TempCarRepository extends JpaRepository<TempCarModel, String> {
     @Query(value = "SELECT * FROM tmp_car_list WHERE id = :carId", nativeQuery = true)
     TempCarModel getTempCarWithId(@Param("carId") String carId);
 
-//    @Query(value = "SELECT * FROM tmp_car_list ORDER BY "
-//            + "CASE "
-//            + "WHEN :sortBy = 'PFL' THEN price "
-//            + "WHEN :sortBy = 'PFH' THEN price "
-//            + "WHEN :sortBy = 'RFL' THEN registration "
-//            + "WHEN :sortBy = 'RFH' THEN registration "
-//            + "WHEN :sortBy = 'MFL' THEN mileage "
-//            + "WHEN :sortBy = 'MFH' THEN mileage "
-//            + "ELSE id END, "
-//            + "CASE "
-//            + "WHEN :sortOrder = 'ASC' THEN 'ASC' ELSE 'DESC' END", nativeQuery = true)
-//    List<TempCarModel> getAllTempCarsSorted(@Param("sortBy") String sortBy, @Param("sortOrder") String sortOrder);
 }
