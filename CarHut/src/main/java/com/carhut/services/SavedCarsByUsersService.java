@@ -36,13 +36,16 @@ public class SavedCarsByUsersService {
         return cars;
     }
 
-    private int getSizeOfSavedCars() {
-        return savedCarsByUsersRepository.getSizeOfSavedCars();
-    }
-
     public RequestStatusEntity addSavedCarByUser(SavedCarByUser savedCarByUser) {
         User user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
-        savedCarsByUsersRepository.save(new SavedCarByUser(getSizeOfSavedCars() + 1, user.getId(), savedCarByUser.getCarId()));
+        savedCarsByUsersRepository.save(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getCarId()), user.getId(), savedCarByUser.getCarId()));
+        return RequestStatusEntity.SUCCESS;
+    }
+
+
+    public RequestStatusEntity removeSavedCarByUsername(SavedCarByUser savedCarByUser) {
+        User user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
+        savedCarsByUsersRepository.delete(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getCarId()), user.getId(), savedCarByUser.getCarId()));
         return RequestStatusEntity.SUCCESS;
     }
 }

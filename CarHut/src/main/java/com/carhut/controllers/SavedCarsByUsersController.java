@@ -4,14 +4,12 @@ import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.SavedCarByUser;
 import com.carhut.services.SavedCarsByUsersService;
 import com.carhut.temputils.models.TempCarModel;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -32,5 +30,12 @@ public class SavedCarsByUsersController {
         return savedCarsByUsersService.addSavedCarByUser(savedCarByUser) == RequestStatusEntity.SUCCESS
                 ? ResponseEntity.ok("Car was saved to wishlist.")
                 : ResponseEntity.internalServerError().body("Something went wrong when saving car to wishlist.");
+    }
+
+    @PostMapping("/removeSavedCarByUsername")
+    public ResponseEntity<String> removeSavedCarByUsername(@RequestBody SavedCarByUser savedCarByUser) {
+        return savedCarsByUsersService.removeSavedCarByUsername(savedCarByUser) == RequestStatusEntity.SUCCESS
+                ? ResponseEntity.ok("Car was removed from wishlist.")
+                : ResponseEntity.internalServerError().body("Something went wrong while removing car from wishlist.");
     }
 }
