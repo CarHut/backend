@@ -1,4 +1,4 @@
-package com.carhut.temputils.models;
+package com.carhut.models;
 
 import jakarta.persistence.Entity;
 

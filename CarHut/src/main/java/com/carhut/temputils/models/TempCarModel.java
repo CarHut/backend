@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+@Deprecated
 @Entity
 @Table(name = "tmp_car_list")
 public class TempCarModel {

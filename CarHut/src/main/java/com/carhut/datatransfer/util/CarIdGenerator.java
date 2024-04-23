@@ -8,8 +8,10 @@ import org.springframework.stereotype.Component;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+@Deprecated
 public class CarIdGenerator {
 
+    @Deprecated
     public static String generateId(AutobazarEUCarObject carObject) {
         String dataToHash = carObject.getHeader() +
                 carObject.getPrice() +

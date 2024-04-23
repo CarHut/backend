@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * Transfers data from predefined Excel form to specified endpoint.
 **/
+@Deprecated
 @Service
 public class ExcelDataTransfer implements DataTransfer {
 

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+@Deprecated
 public interface TempCarRepository extends JpaRepository<TempCarModel, String> {
 
     @Query(value = "SELECT * FROM tmp_car_list", nativeQuery = true)

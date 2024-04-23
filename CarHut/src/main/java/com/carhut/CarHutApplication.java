@@ -21,19 +21,21 @@ public class CarHutApplication {
 		SpringApplication.run(CarHutApplication.class, args);
 	}
 
+	@Deprecated
 	@Bean
 	public DataTransferService dataTransferService(AutobazarEUCarRepository repository, TempCarRepository tempCarRepository) {
 		return new DataTransferService(repository, tempCarRepository);
 	}
 
+	@Deprecated
 	@Bean
 	public ExcelDataTransfer excelDataTransfer(DataTransferService dataTransferService) {
 		return new ExcelDataTransfer(dataTransferService);
 	}
 
 	@Bean
-	public CarHutAPIService carHutAPIService(AutobazarEUCarRepository repository, BrandRepository brandRepository, ModelRepository modelRepository, TempCarRepository tempCarRepository) {
-		return new CarHutAPIService(repository, brandRepository, modelRepository, tempCarRepository);
+	public CarHutAPIService carHutAPIService(BrandRepository brandRepository, ModelRepository modelRepository) {
+		return new CarHutAPIService(brandRepository, modelRepository);
 	}
 
 	@Bean

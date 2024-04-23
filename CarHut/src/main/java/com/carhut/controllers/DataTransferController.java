@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
+@Deprecated
 @Controller
 @RequestMapping(path = "/database")
 public class DataTransferController {

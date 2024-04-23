@@ -6,6 +6,7 @@ import com.carhut.models.AutobazarEUCarObject;
 
 import java.util.List;
 
+@Deprecated
 public interface DataTransfer {
 
     void transferData(DataTransferEnum endpoint);
