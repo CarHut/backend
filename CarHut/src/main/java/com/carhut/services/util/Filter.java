@@ -1,10 +1,8 @@
 package com.carhut.services.util;
 
-import com.carhut.models.CarHutCar;
+import com.carhut.models.carhut.CarHutCar;
 import com.carhut.temputils.models.TempCarModel;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Filter {

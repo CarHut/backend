@@ -2,7 +2,7 @@ package com.carhut.controllers;
 
 import com.carhut.datatransfer.ExcelDataTransfer;
 import com.carhut.enums.DataTransferEnum;
-import com.carhut.models.AutobazarEUCarObject;
+import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.services.DataTransferService;
 import com.carhut.util.loggers.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

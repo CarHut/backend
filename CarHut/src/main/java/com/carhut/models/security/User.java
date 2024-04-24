@@ -1,5 +1,6 @@
-package com.carhut.models;
+package com.carhut.models.security;
 
+import com.carhut.models.security.Authority;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -2,17 +2,15 @@ package com.carhut.controllers;
 
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.jwt.utils.JwtUtil;
-import com.carhut.models.User;
+import com.carhut.models.security.User;
 import com.carhut.models.security.AuthenticationRequest;
 import com.carhut.models.security.PasswordResetRequestBody;
 import com.carhut.services.AuthenticationService;
 import com.carhut.services.UserCredentialsService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 

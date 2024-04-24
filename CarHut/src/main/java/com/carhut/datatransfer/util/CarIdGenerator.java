@@ -1,9 +1,6 @@
 package com.carhut.datatransfer.util;
 
-import com.carhut.models.AutobazarEUCarObject;
-import com.carhut.util.loggers.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.carhut.models.deprecated.AutobazarEUCarObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

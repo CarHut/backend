@@ -2,7 +2,7 @@ package com.carhut.datatransfer;
 
 import com.carhut.datatransfer.util.CarIdGenerator;
 import com.carhut.enums.DataTransferEnum;
-import com.carhut.models.AutobazarEUCarObject;
+import com.carhut.models.deprecated.AutobazarEUCarObject;
 
 import java.util.List;
 

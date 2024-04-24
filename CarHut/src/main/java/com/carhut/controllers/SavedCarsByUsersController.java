@@ -1,7 +1,8 @@
 package com.carhut.controllers;
 
 import com.carhut.enums.RequestStatusEntity;
-import com.carhut.models.SavedCarByUser;
+import com.carhut.models.carhut.CarHutCar;
+import com.carhut.models.carhut.SavedCarByUser;
 import com.carhut.services.SavedCarsByUsersService;
 import com.carhut.temputils.models.TempCarModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,15 @@ public class SavedCarsByUsersController {
     @Autowired
     private SavedCarsByUsersService savedCarsByUsersService;
 
+    @Deprecated
+    @PostMapping("/getSavedTempCarsByUsername")
+    public ResponseEntity<List<TempCarModel>> getSavedTempCarsByUsername(@RequestBody String username) {
+        return ResponseEntity.ok(savedCarsByUsersService.getSavedTempCarsByUserUsername(username));
+    }
+
     @PostMapping("/getSavedCarsByUsername")
-    public ResponseEntity<List<TempCarModel>> getSavedCarsByUsername(@RequestBody String username) {
-        return ResponseEntity.ok(savedCarsByUsersService.getSavedCarsByUserUsername(username));
+    public ResponseEntity<List<CarHutCar>> getSavedCarsByUsername(@RequestBody String username) {
+        return ResponseEntity.ok(savedCarsByUsersService.getSavedCarsByUsername(username));
     }
 
     @PostMapping("/addSavedCarByUsername")

@@ -1,10 +1,11 @@
-package com.carhut.models;
+package com.carhut.models.deprecated;
 
 import com.carhut.datatransfer.util.CarIdGenerator;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+@Deprecated
 @Entity
 @Table(name = "autobazar_eu")
 public class AutobazarEUCarObject {

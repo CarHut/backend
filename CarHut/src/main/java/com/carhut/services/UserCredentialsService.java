@@ -1,7 +1,7 @@
 package com.carhut.services;
 
 import com.carhut.database.repository.UserCredentialsRepository;
-import com.carhut.models.User;
+import com.carhut.models.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

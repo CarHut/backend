@@ -4,15 +4,13 @@ import com.carhut.database.repository.ResetPasswordTokenRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.mail.service.EmailService;
-import com.carhut.models.User;
+import com.carhut.models.security.User;
 import com.carhut.models.security.PasswordResetRequestBody;
 import com.carhut.models.security.PasswordResetToken;
-import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;

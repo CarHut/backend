@@ -1,4 +1,4 @@
-package com.carhut.models;
+package com.carhut.models.security;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

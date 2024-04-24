@@ -1,14 +1,15 @@
 package com.carhut.services;
 
+import com.carhut.database.repository.CarHutCarRepository;
 import com.carhut.database.repository.SavedCarsByUsersRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.enums.RequestStatusEntity;
-import com.carhut.models.SavedCarByUser;
-import com.carhut.models.User;
+import com.carhut.models.carhut.CarHutCar;
+import com.carhut.models.carhut.SavedCarByUser;
+import com.carhut.models.security.User;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.temputils.repo.TempCarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,14 +24,29 @@ public class SavedCarsByUsersService {
     private TempCarRepository tempCarRepository;
     @Autowired
     private UserCredentialsRepository userCredentialsRepository;
+    @Autowired
+    private CarHutCarRepository carHutCarRepository;
 
-    public List<TempCarModel> getSavedCarsByUserUsername(String username) {
+    @Deprecated
+    public List<TempCarModel> getSavedTempCarsByUserUsername(String username) {
         User user = userCredentialsRepository.findUserByUsername(username);
         List<SavedCarByUser> savedCars = savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
         List<TempCarModel> cars = new ArrayList<>();
 
         for (SavedCarByUser savedCarByUser : savedCars) {
             cars.add(tempCarRepository.getTempCarWithId(savedCarByUser.getCarId()));
+        }
+
+        return cars;
+    }
+
+    public List<CarHutCar> getSavedCarsByUsername(String username) {
+        User user = userCredentialsRepository.findUserByUsername(username);
+        List<SavedCarByUser> savedCars = savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
+        List<CarHutCar> cars = new ArrayList<>();
+
+        for (SavedCarByUser savedCarByUser : savedCars) {
+            cars.add(carHutCarRepository.getCarWithId(savedCarByUser.getCarId()));
         }
 
         return cars;

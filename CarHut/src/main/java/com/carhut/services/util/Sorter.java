@@ -1,6 +1,6 @@
 package com.carhut.services.util;
 
-import com.carhut.models.CarHutCar;
+import com.carhut.models.carhut.CarHutCar;
 import com.carhut.temputils.models.TempCarModel;
 
 import java.util.Comparator;

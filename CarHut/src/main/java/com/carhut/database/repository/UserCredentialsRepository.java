@@ -1,6 +1,6 @@
 package com.carhut.database.repository;
 
-import com.carhut.models.User;
+import com.carhut.models.security.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -1,9 +1,11 @@
-package com.carhut.models;
+package com.carhut.models.carhut;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+
+import java.sql.Date;
 
 @Entity
 @Table(name = "carhut_users")
@@ -12,7 +14,7 @@ public class CarHutCar {
     @Id
     private String id;
     @JoinColumn(table = "users", name = "id")
-    private String userId;
+    private String sellerId;
     private String sellerAddress;
     @JoinColumn(table = "brand", name = "id")
     private int brandId;
@@ -34,16 +36,35 @@ public class CarHutCar {
     private String powertrain;
     private String description;
     private String baseImgPath;
+    private String previousOwners;
+    private String energyEffClass;
+    private String seats;
+    private String doors;
+    private String emissionClass;
+    @JoinColumn(name = "id", table = "color")
+    private String exteriorColorId;
+    @JoinColumn(name = "id", table = "color")
+    private String interiorColorId;
+    private String damageStatus;
+    private boolean parkingSensors;
+    private boolean parkingCameras;
+    private String countryOfOrigin;
+    private Date technicalInspectionDate;
+    private Date emissionInspectionDate;
+    private int[] features;
 
     public CarHutCar() {}
 
-    public CarHutCar(String id, String userId, String sellerAddress, int brandId, int modelId, String header,
+    public CarHutCar(String id, String sellerId, String sellerAddress, int brandId, int modelId, String header,
                      String price, String mileage, String registration, String enginePower, String engineDisplacement,
                      String fuel, String fuelConsumptionAvg, String fuelConsumptionCity, String fuelConsumptionHighway,
                      String gearbox, String gearboxGears, String bodyType, String powertrain, String description,
-                     String baseImgPath) {
+                     String baseImgPath, String previousOwners, String energyEffClass, String seats, String doors,
+                     String emissionClass, String exteriorColorId, String interiorColorId, String damageStatus,
+                     boolean parkingSensors, boolean parkingCameras, String countryOfOrigin, Date technicalInspectionDate,
+                     Date emissionInspectionDate, int[] features) {
         this.id = id;
-        this.userId = userId;
+        this.sellerId = sellerId;
         this.sellerAddress = sellerAddress;
         this.brandId = brandId;
         this.modelId = modelId;
@@ -63,6 +84,20 @@ public class CarHutCar {
         this.powertrain = powertrain;
         this.description = description;
         this.baseImgPath = baseImgPath;
+        this.previousOwners = previousOwners;
+        this.energyEffClass = energyEffClass;
+        this.seats = seats;
+        this.doors = doors;
+        this.emissionClass = emissionClass;
+        this.exteriorColorId = exteriorColorId;
+        this.interiorColorId = interiorColorId;
+        this.damageStatus = damageStatus;
+        this.parkingSensors = parkingSensors;
+        this.parkingCameras = parkingCameras;
+        this.countryOfOrigin = countryOfOrigin;
+        this.technicalInspectionDate = technicalInspectionDate;
+        this.emissionInspectionDate = emissionInspectionDate;
+        this.features = features;
     }
 
     public String getId() {
@@ -73,12 +108,12 @@ public class CarHutCar {
         this.id = id;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getSellerId() {
+        return sellerId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
     }
 
     public String getSellerAddress() {
@@ -231,5 +266,117 @@ public class CarHutCar {
 
     public void setBaseImgPath(String baseImgPath) {
         this.baseImgPath = baseImgPath;
+    }
+
+    public String getPreviousOwners() {
+        return previousOwners;
+    }
+
+    public void setPreviousOwners(String previousOwners) {
+        this.previousOwners = previousOwners;
+    }
+
+    public String getEnergyEffClass() {
+        return energyEffClass;
+    }
+
+    public void setEnergyEffClass(String energyEffClass) {
+        this.energyEffClass = energyEffClass;
+    }
+
+    public String getSeats() {
+        return seats;
+    }
+
+    public void setSeats(String seats) {
+        this.seats = seats;
+    }
+
+    public String getDoors() {
+        return doors;
+    }
+
+    public void setDoors(String doors) {
+        this.doors = doors;
+    }
+
+    public String getEmissionClass() {
+        return emissionClass;
+    }
+
+    public void setEmissionClass(String emissionClass) {
+        this.emissionClass = emissionClass;
+    }
+
+    public String getExteriorColorId() {
+        return exteriorColorId;
+    }
+
+    public void setExteriorColorId(String exteriorColorId) {
+        this.exteriorColorId = exteriorColorId;
+    }
+
+    public String getInteriorColorId() {
+        return interiorColorId;
+    }
+
+    public void setInteriorColorId(String interiorColorId) {
+        this.interiorColorId = interiorColorId;
+    }
+
+    public String getDamageStatus() {
+        return damageStatus;
+    }
+
+    public void setDamageStatus(String damageStatus) {
+        this.damageStatus = damageStatus;
+    }
+
+    public boolean isParkingSensors() {
+        return parkingSensors;
+    }
+
+    public void setParkingSensors(boolean parkingSensors) {
+        this.parkingSensors = parkingSensors;
+    }
+
+    public boolean isParkingCameras() {
+        return parkingCameras;
+    }
+
+    public void setParkingCameras(boolean parkingCameras) {
+        this.parkingCameras = parkingCameras;
+    }
+
+    public String getCountryOfOrigin() {
+        return countryOfOrigin;
+    }
+
+    public void setCountryOfOrigin(String countryOfOrigin) {
+        this.countryOfOrigin = countryOfOrigin;
+    }
+
+    public Date getTechnicalInspectionDate() {
+        return technicalInspectionDate;
+    }
+
+    public void setTechnicalInspectionDate(Date technicalInspectionDate) {
+        this.technicalInspectionDate = technicalInspectionDate;
+    }
+
+    public Date getEmissionInspectionDate() {
+        return emissionInspectionDate;
+    }
+
+    public void setEmissionInspectionDate(Date emissionInspectionDate) {
+        this.emissionInspectionDate = emissionInspectionDate;
+    }
+
+    public int[] getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(int[] features) {
+        this.features = features;
     }
 }

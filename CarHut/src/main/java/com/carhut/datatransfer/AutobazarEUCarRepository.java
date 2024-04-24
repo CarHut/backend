@@ -1,6 +1,6 @@
 package com.carhut.datatransfer;
 
-import com.carhut.models.AutobazarEUCarObject;
+import com.carhut.models.deprecated.AutobazarEUCarObject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

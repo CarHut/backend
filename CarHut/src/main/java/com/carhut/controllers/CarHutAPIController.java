@@ -1,6 +1,10 @@
 package com.carhut.controllers;
 
-import com.carhut.models.*;
+import com.carhut.models.carhut.Brand;
+import com.carhut.models.carhut.CarHutCar;
+import com.carhut.models.carhut.Model;
+import com.carhut.models.carhut.ModelsPostModel;
+import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.services.CarHutAPIService;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.util.loggers.Logger;

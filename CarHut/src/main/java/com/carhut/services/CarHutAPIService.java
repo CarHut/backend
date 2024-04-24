@@ -4,7 +4,11 @@ import com.carhut.database.repository.BrandRepository;
 import com.carhut.database.repository.CarHutCarRepository;
 import com.carhut.database.repository.ModelRepository;
 import com.carhut.datatransfer.AutobazarEUCarRepository;
-import com.carhut.models.*;
+import com.carhut.models.carhut.Brand;
+import com.carhut.models.carhut.CarHutCar;
+import com.carhut.models.carhut.Model;
+import com.carhut.models.carhut.ModelsPostModel;
+import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;
 import com.carhut.temputils.models.TempCarModel;
@@ -21,6 +25,7 @@ public class CarHutAPIService {
     private BrandRepository brandRepository;
     private ModelRepository modelRepository;
     private Sorter sorter;
+    @Autowired
     private CarHutCarRepository carHutCarRepository;
 
     @Deprecated

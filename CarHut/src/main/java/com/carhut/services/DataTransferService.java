@@ -1,7 +1,7 @@
 package com.carhut.services;
 
 import com.carhut.datatransfer.AutobazarEUCarRepository;
-import com.carhut.models.AutobazarEUCarObject;
+import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.temputils.repo.TempCarRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,7 @@ package com.carhut.datatransfer;
 import com.carhut.constants.FileConstants;
 import com.carhut.datatransfer.util.CarIdGenerator;
 import com.carhut.enums.DataTransferEnum;
-import com.carhut.models.AutobazarEUCarObject;
+import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.services.DataTransferService;
 import com.carhut.util.loggers.Logger;
 import com.opencsv.CSVReader;

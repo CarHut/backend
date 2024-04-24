@@ -1,6 +1,5 @@
 package com.carhut.models.security;
 
-import com.carhut.models.User;
 import jakarta.persistence.*;
 
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.carhut.models;
+package com.carhut.models.carhut;
 
 import com.carhut.temputils.models.TempCarModel;
 import jakarta.persistence.*;
@@ -16,7 +16,7 @@ public class SavedCarByUser {
     @JoinColumn(table = "users", name = "id")
     private String userId;
 
-    @JoinColumn(table = "tmp_car_list", name = "id")
+    @JoinColumn(table = "carhut_cars", name = "id")
     private String carId;
 
     public SavedCarByUser() {}
