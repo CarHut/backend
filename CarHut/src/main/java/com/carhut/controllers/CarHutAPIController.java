@@ -23,6 +23,30 @@ public class CarHutAPIController {
     @Autowired
     private Logger logger;
 
+    @RequestMapping("/getBodyTypes")
+    @ResponseBody
+    public List<String> getBodyTypes() {
+        return carHutAPIService.getBodyTypes();
+    }
+
+    @RequestMapping("/getGearboxTypes")
+    @ResponseBody
+    public List<String> getGearboxTypes() {
+        return carHutAPIService.getGearboxTypes();
+    }
+
+    @RequestMapping("/getFuelTypes")
+    @ResponseBody
+    public List<String> getFuelTypes() {
+        return carHutAPIService.getFuelTypes();
+    }
+
+    @RequestMapping("/getPowertrainTypes")
+    @ResponseBody
+    public List<String> getPowertrainTypes() {
+        return carHutAPIService.getPowertrainTypes();
+    }
+    
     @RequestMapping("/getAllBrands")
     @ResponseBody
     public List<Brand> getAllBrands() {

@@ -9,6 +9,10 @@ import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.Model;
 import com.carhut.models.carhut.ModelsPostModel;
 import com.carhut.models.deprecated.AutobazarEUCarObject;
+import com.carhut.models.enums.BodyType;
+import com.carhut.models.enums.Fuel;
+import com.carhut.models.enums.Gearbox;
+import com.carhut.models.enums.Powertrain;
 import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;
 import com.carhut.temputils.models.TempCarModel;
@@ -22,6 +26,10 @@ import java.util.*;
 @Service
 public class CarHutAPIService {
 
+    private final BodyType bodyType = new BodyType();
+    private final Gearbox gearbox = new Gearbox();
+    private final Powertrain powertrain = new Powertrain();
+    private final Fuel fuel = new Fuel();
     private BrandRepository brandRepository;
     private ModelRepository modelRepository;
     private Sorter sorter;
@@ -381,5 +389,21 @@ public class CarHutAPIService {
 
         return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList).size();
 
+    }
+
+    public List<String> getBodyTypes() {
+        return bodyType.getBodyTypes();
+    }
+
+    public List<String> getFuelTypes() {
+        return fuel.getFuelTypes();
+    }
+
+    public List<String> getPowertrainTypes() {
+        return powertrain.getPowertrainTypes();
+    }
+
+    public List<String> getGearboxTypes() {
+        return gearbox.getGearboxTypes();
     }
 }
