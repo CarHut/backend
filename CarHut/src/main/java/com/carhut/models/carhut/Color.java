@@ -13,12 +13,24 @@ public class Color {
     private String color;
     private String finish;
     private String secondaryColor;
+    private String colorHex;
 
-    public Color(String id, String color, String finish, String secondaryColor) {
+    public Color() {}
+
+    public Color(String id, String color, String finish, String secondaryColor, String colorHex) {
         this.id = id;
         this.color = color;
         this.finish = finish;
         this.secondaryColor = secondaryColor;
+        this.colorHex = colorHex;
+    }
+
+    public String getColorHex() {
+        return colorHex;
+    }
+
+    public void setColorHex(String colorHex) {
+        this.colorHex = colorHex;
     }
 
     public String getId() {

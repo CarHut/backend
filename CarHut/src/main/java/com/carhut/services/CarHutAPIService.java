@@ -2,12 +2,10 @@ package com.carhut.services;
 
 import com.carhut.database.repository.BrandRepository;
 import com.carhut.database.repository.CarHutCarRepository;
+import com.carhut.database.repository.ColorRepository;
 import com.carhut.database.repository.ModelRepository;
 import com.carhut.datatransfer.AutobazarEUCarRepository;
-import com.carhut.models.carhut.Brand;
-import com.carhut.models.carhut.CarHutCar;
-import com.carhut.models.carhut.Model;
-import com.carhut.models.carhut.ModelsPostModel;
+import com.carhut.models.carhut.*;
 import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.models.enums.BodyType;
 import com.carhut.models.enums.Fuel;
@@ -35,6 +33,8 @@ public class CarHutAPIService {
     private Sorter sorter;
     @Autowired
     private CarHutCarRepository carHutCarRepository;
+    @Autowired
+    private ColorRepository colorRepository;
 
     @Deprecated
     private TempCarRepository tempCarRepository;
@@ -405,5 +405,9 @@ public class CarHutAPIService {
 
     public List<String> getGearboxTypes() {
         return gearbox.getGearboxTypes();
+    }
+
+    public List<Color> getColors() {
+        return colorRepository.getColors();
     }
 }

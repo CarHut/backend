@@ -1,9 +1,6 @@
 package com.carhut.controllers;
 
-import com.carhut.models.carhut.Brand;
-import com.carhut.models.carhut.CarHutCar;
-import com.carhut.models.carhut.Model;
-import com.carhut.models.carhut.ModelsPostModel;
+import com.carhut.models.carhut.*;
 import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.services.CarHutAPIService;
 import com.carhut.temputils.models.TempCarModel;
@@ -22,6 +19,12 @@ public class CarHutAPIController {
     private CarHutAPIService carHutAPIService;
     @Autowired
     private Logger logger;
+
+    @RequestMapping("/getColors")
+    @ResponseBody
+    public List<Color> getColors() {
+        return carHutAPIService.getColors();
+    }
 
     @RequestMapping("/getBodyTypes")
     @ResponseBody
