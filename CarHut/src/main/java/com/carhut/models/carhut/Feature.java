@@ -9,21 +9,23 @@ import jakarta.persistence.Table;
 public class Feature {
 
     @Id
-    private String id;
+    private int id;
     private String feature;
     private String description;
 
-    public Feature(String id, String feature, String description) {
+    public Feature() {}
+
+    public Feature(int id, String feature, String description) {
         this.id = id;
         this.feature = feature;
         this.description = description;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

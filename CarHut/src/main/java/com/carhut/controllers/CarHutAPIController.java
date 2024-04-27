@@ -3,12 +3,16 @@ package com.carhut.controllers;
 import com.carhut.models.carhut.*;
 import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.services.CarHutAPIService;
+import com.carhut.services.ImageService;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.util.loggers.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 @Controller
@@ -18,7 +22,40 @@ public class CarHutAPIController {
     @Autowired
     private CarHutAPIService carHutAPIService;
     @Autowired
+    private ImageService imageService;
+    @Autowired
     private Logger logger;
+
+    @PostMapping("/uploadImage")
+    @ResponseBody
+    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image,  @RequestParam("username") String username) {
+        try {
+            imageService.uploadImage(image, username);
+
+            return ResponseEntity.ok("Image uploaded successfully!");
+        } catch (Exception e) {
+            // If there's an exception, return a failure response
+            return ResponseEntity.internalServerError().body("Failed to upload image.");
+        }
+    }
+
+    @RequestMapping("/getImageById")
+    @ResponseBody
+    public Image getImageById(@RequestParam String id) {
+        return imageService.getImageById(id);
+    }
+
+    @RequestMapping("/getImagesByCarId/{carId}")
+    @ResponseBody
+    public List<Image> getImagesByCarId(@PathVariable String carId) {
+        return imageService.getImagesByCarId(carId);
+    }
+
+    @RequestMapping("/getFeatures")
+    @ResponseBody
+    public List<Feature> getFeatures() {
+        return carHutAPIService.getFeatures();
+    }
 
     @RequestMapping("/getColors")
     @ResponseBody
