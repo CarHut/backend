@@ -30,8 +30,7 @@ public class CarHutAPIController {
     @ResponseBody
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image,  @RequestParam("username") String username) {
         try {
-            imageService.uploadImage(image, username);
-
+            imageService.uploadImageToFileSystem(image, username);
             return ResponseEntity.ok("Image uploaded successfully!");
         } catch (Exception e) {
             // If there's an exception, return a failure response

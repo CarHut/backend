@@ -36,3 +36,4 @@ build/
 /src/main/resources/logs/
 /src/main/resources/env.properties
 /src/main/resources/carhutimages/
+/src/main/java/com/carhut/secret/
