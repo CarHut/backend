@@ -389,7 +389,6 @@ public class CarHutAPIService {
         List<CarHutCar> filteredList = getAllCars();
 
         return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList).size();
-
     }
 
     public List<String> getBodyTypes() {
@@ -432,7 +431,7 @@ public class CarHutAPIService {
         carHutCarRepository.save(newCar);
     }
 
-    public int getFeatureIdByFeatureName(String feature) {
+    public Integer getFeatureIdByFeatureName(String feature) {
         return featureRepository.getFeatureIdByFeatureName(feature);
     }
 

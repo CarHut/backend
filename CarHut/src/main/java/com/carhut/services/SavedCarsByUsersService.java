@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -42,6 +43,9 @@ public class SavedCarsByUsersService {
 
     public List<CarHutCar> getSavedCarsByUsername(String username) {
         User user = userCredentialsRepository.findUserByUsername(username);
+        if (user == null) {
+            return List.of();
+        }
         List<SavedCarByUser> savedCars = savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
         List<CarHutCar> cars = new ArrayList<>();
 

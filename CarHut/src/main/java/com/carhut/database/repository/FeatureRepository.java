@@ -13,5 +13,5 @@ public interface FeatureRepository extends JpaRepository<Feature, String> {
     List<Feature> getFeaturesAsc();
 
     @Query(value = "SELECT f.id FROM feature f WHERE f.feature = :feature", nativeQuery = true)
-    int getFeatureIdByFeatureName(@Param("feature") String feature);
+    Integer getFeatureIdByFeatureName(@Param("feature") String feature);
 }

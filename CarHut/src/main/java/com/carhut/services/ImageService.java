@@ -81,15 +81,10 @@ public class ImageService {
             files.filter(Files::isRegularFile)
                     .forEach(file -> {
                         try {
-                            // Resolve the relative path of the file to copy
                             Path relativePath = formerPath.relativize(file);
-                            // Resolve the target path where the file should be copied
                             Path targetPath = path.resolve(relativePath);
-                            // Create parent directories if they don't exist
                             Files.createDirectories(targetPath.getParent());
-                            // Copy the file
                             Files.copy(file, targetPath);
-                            // Delete the original file
                             Files.delete(file);
                         } catch (IOException e) {
                             throw new RuntimeException("Error copying or deleting file: " + file, e);
