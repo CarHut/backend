@@ -1,22 +1,36 @@
 package com.carhut.services;
 
+import com.carhut.database.repository.ColorRepository;
 import com.carhut.database.repository.ImageRepository;
+import com.carhut.database.repository.UserCredentialsRepository;
+import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.Image;
 import com.carhut.secret.Paths;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
 public class ImageService {
 
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private UserCredentialsRepository userCredentialsRepository;
+    @Autowired
+    private ColorRepository colorRepository;
 
     public Image getImageById(String id) {
         return imageRepository.getImageById(id);
@@ -42,5 +56,45 @@ public class ImageService {
         File file = new File(Paths.carHutImages + username + "\\temp_" + UUID.randomUUID() + postfix);
 
         image.transferTo(file);
+    }
+
+    public void addImagesToDatabase(CarHutCar carHutCar) throws Exception {
+        CarHutCar newCar = new CarHutCar(userCredentialsRepository.findUserIdByUsername(carHutCar.getSellerId()), carHutCar.getSellerAddress(),
+                carHutCar.getBrandId(), carHutCar.getModelId(), carHutCar.getHeader(),
+                carHutCar.getPrice(), carHutCar.getMileage(), carHutCar.getRegistration(),
+                carHutCar.getEnginePower(), carHutCar.getEngineDisplacement(), carHutCar.getFuel(),
+                carHutCar.getFuelConsumptionAvg(), carHutCar.getFuelConsumptionCity(), carHutCar.getFuelConsumptionHighway(),
+                carHutCar.getGearbox(), carHutCar.getGearboxGears(), carHutCar.getBodyType(),
+                carHutCar.getPowertrain(), carHutCar.getDescription(), carHutCar.getBaseImgPath(),
+                carHutCar.getPreviousOwners(), carHutCar.getEnergyEffClass(), carHutCar.getSeats(),
+                carHutCar.getDoors(), carHutCar.getEmissionClass(), colorRepository.getColorIdByColorName(carHutCar.getExteriorColorId()),
+                colorRepository.getColorIdByColorName(carHutCar.getInteriorColorId()), carHutCar.getDamageStatus(),
+                carHutCar.isParkingSensors(), carHutCar.isParkingCameras(), carHutCar.getCountryOfOrigin(),
+                carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures());
+
+        String basePath = Paths.carHutImages + carHutCar.getSellerId() + "\\" + newCar.getId();
+
+        Path path = Files.createDirectory(Path.of(basePath));
+        Path formerPath = java.nio.file.Paths.get(Paths.carHutImages + carHutCar.getSellerId());
+
+        try (Stream<Path> files = Files.walk(formerPath)) {
+            files.filter(Files::isRegularFile)
+                    .forEach(file -> {
+                        try {
+                            // Resolve the relative path of the file to copy
+                            Path relativePath = formerPath.relativize(file);
+                            // Resolve the target path where the file should be copied
+                            Path targetPath = path.resolve(relativePath);
+                            // Create parent directories if they don't exist
+                            Files.createDirectories(targetPath.getParent());
+                            // Copy the file
+                            Files.copy(file, targetPath);
+                            // Delete the original file
+                            Files.delete(file);
+                        } catch (IOException e) {
+                            throw new RuntimeException("Error copying or deleting file: " + file, e);
+                        }
+                    });
+        }
     }
 }

@@ -10,6 +10,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface UserCredentialsRepository extends JpaRepository<User, String> {
 
+
+    @Query(value = "SELECT u.id FROM users u WHERE u.username = :username", nativeQuery = true)
+    String findUserIdByUsername(@Param("username") String username);
+
     @Query(value = "SELECT * FROM users WHERE username = :username", nativeQuery = true)
     User findUserByUsername(String username);
 

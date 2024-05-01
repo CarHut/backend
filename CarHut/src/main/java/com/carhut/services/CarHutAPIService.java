@@ -34,6 +34,8 @@ public class CarHutAPIService {
     private ColorRepository colorRepository;
     @Autowired
     private FeatureRepository featureRepository;
+    @Autowired
+    private UserCredentialsRepository userCredentialsRepository;
 
     @Deprecated
     private TempCarRepository tempCarRepository;
@@ -413,4 +415,25 @@ public class CarHutAPIService {
     public List<Feature> getFeatures() {
         return featureRepository.getFeaturesAsc();
     }
+
+    public void addCarToDatabase(CarHutCar carHutCar) {
+        CarHutCar newCar = new CarHutCar(userCredentialsRepository.findUserIdByUsername(carHutCar.getSellerId()), carHutCar.getSellerAddress(),
+                carHutCar.getBrandId(), carHutCar.getModelId(), carHutCar.getHeader(),
+                carHutCar.getPrice(), carHutCar.getMileage(), carHutCar.getRegistration(),
+                carHutCar.getEnginePower(), carHutCar.getEngineDisplacement(), carHutCar.getFuel(),
+                carHutCar.getFuelConsumptionAvg(), carHutCar.getFuelConsumptionCity(), carHutCar.getFuelConsumptionHighway(),
+                carHutCar.getGearbox(), carHutCar.getGearboxGears(), carHutCar.getBodyType(),
+                carHutCar.getPowertrain(), carHutCar.getDescription(), carHutCar.getBaseImgPath(),
+                carHutCar.getPreviousOwners(), carHutCar.getEnergyEffClass(), carHutCar.getSeats(),
+                carHutCar.getDoors(), carHutCar.getEmissionClass(), colorRepository.getColorIdByColorName(carHutCar.getExteriorColorId()),
+                colorRepository.getColorIdByColorName(carHutCar.getInteriorColorId()), carHutCar.getDamageStatus(),
+                carHutCar.isParkingSensors(), carHutCar.isParkingCameras(), carHutCar.getCountryOfOrigin(),
+                carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures());
+        carHutCarRepository.save(newCar);
+    }
+
+    public int getFeatureIdByFeatureName(String feature) {
+        return featureRepository.getFeatureIdByFeatureName(feature);
+    }
+
 }

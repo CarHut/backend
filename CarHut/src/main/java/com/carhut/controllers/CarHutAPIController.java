@@ -26,6 +26,25 @@ public class CarHutAPIController {
     @Autowired
     private Logger logger;
 
+
+    @RequestMapping("/getFeatureIdByFeatureName")
+    @ResponseBody
+    public int getFeatureIdByFeatureName(@RequestParam String feature) {
+        return carHutAPIService.getFeatureIdByFeatureName(feature);
+    }
+
+    @PostMapping("/addCarToDatabase")
+    @ResponseBody
+    public ResponseEntity<String> addCarToDatabase(@RequestBody CarHutCar carHutCar) {
+        try {
+            carHutAPIService.addCarToDatabase(carHutCar);
+            imageService.addImagesToDatabase(carHutCar);
+            return ResponseEntity.ok("Car was successfully added to database.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Something went wrong while trying to add car to database.");
+        }
+    }
+
     @PostMapping("/uploadImage")
     @ResponseBody
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image,  @RequestParam("username") String username) {
@@ -92,6 +111,22 @@ public class CarHutAPIController {
         List<Brand> brands = carHutAPIService.getAllBrands();
         logger.saveLogToFile("[LOG][CarHutAPIController]: API call /api/getAllBrands executed successfully.");
         return brands;
+    }
+
+    @GetMapping("/getBrandIdFromBrandName")
+    @ResponseBody
+    public int getBrandIdFromModelName(@RequestParam String brand) {
+        int brandId = carHutAPIService.getBrandIdFromBrandName(brand);
+        logger.saveLogToFile("[LOG][CarHutAPIController]: API call /api/getModelsByBrand executed successfully.");
+        return brandId;
+    }
+
+    @RequestMapping("/getModelIdFromModelName")
+    @ResponseBody
+    public int getModelIdFromModelName(@RequestParam String model, @RequestParam int brandId) {
+        int modelId = carHutAPIService.getModelIdFromModelName(model, brandId);
+        logger.saveLogToFile("[LOG][CarHutAPIController]: API call /api/getModelsByBrand executed successfully.");
+        return modelId;
     }
 
     @GetMapping("/getModelsByBrand/{brand}")
