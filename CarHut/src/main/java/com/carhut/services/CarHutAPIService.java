@@ -277,18 +277,16 @@ public class CarHutAPIService {
     }
 
     public List<CarHutCar> getCarsWithFilter(String brand, String model, String carType, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String registration, String seatingConfig, String doors, String location, String postalCode, String fuelType, String powerFrom, String powerTo, String displacement, String gearbox, String powertrain, String sortBy, String sortOrder, List<ModelsPostModel> models) {
-        List<CarHutCar> filteredList = getAllCars();
-
         if (models != null && !models.isEmpty()) {
             List<CarHutCar> resultList = new ArrayList<>();
             for (ModelsPostModel car : models) {
+                List<CarHutCar> filteredList = getAllCars();
                 resultList.addAll(filterCarModels(car.getBrand(), car.getModel(), priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList));
             }
-
             return sortCars(sortBy, sortOrder, resultList);
         }
 
-        return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList);
+        return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, getAllCars());
     }
 
     private List<CarHutCar> filterCarModels(String brand, String model, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String fuelType, String gearbox, String powertrain, String powerFrom, String powerTo, List<CarHutCar> filteredList) {
