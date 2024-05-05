@@ -7,12 +7,18 @@ import com.carhut.services.ImageService;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.util.loggers.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.print.attribute.standard.Media;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -25,6 +31,40 @@ public class CarHutAPIController {
     private ImageService imageService;
     @Autowired
     private Logger logger;
+
+    @PostMapping("/getMultipleFeaturesByIds")
+    @ResponseBody
+    public ResponseEntity<List<String>> getMultipleFeaturesByIds(@RequestBody List<Integer> featureIds) {
+        List<String> resultListOfFeatures = carHutAPIService.getMultipleFeaturesByIds(featureIds);
+        return resultListOfFeatures != null ? ResponseEntity.ok(resultListOfFeatures) : ResponseEntity.internalServerError().body(null);
+    }
+
+    @GetMapping("/getFeatureNameByFeatureId")
+    @ResponseBody
+    public ResponseEntity<String> getFeatureNameByFeatureId(@RequestParam Integer featureId) {
+        String feature = carHutAPIService.getFeatureNameByFeatureId(featureId);
+        return feature != null ? ResponseEntity.ok(feature) : ResponseEntity.internalServerError().body(null);
+    }
+
+    @GetMapping("/getColorStringNameFromColorId")
+    @ResponseBody
+    public ResponseEntity<String> getColorStringNameFromColorId(@RequestParam String colorId) {
+        String color = carHutAPIService.getColorStringNameFromColorId(colorId);
+        return color != null ? ResponseEntity.ok(color) : ResponseEntity.internalServerError().body(null);
+    }
+
+    @GetMapping(value = "/getImages")
+    @ResponseBody
+    public ResponseEntity<List<byte[]>> getImages(@RequestParam String carId) {
+        List<byte[]> images = null;
+        try {
+            images = imageService.getImagesWithCarId(carId);
+        } catch (Exception e) {
+            System.out.println("Something went wrong when getting images for carId: " + carId);
+            System.out.println(e.getMessage());
+        }
+        return images != null ? ResponseEntity.status(HttpStatus.OK).body(images) : ResponseEntity.internalServerError().body(null);
+    }
 
 
     @RequestMapping("/getFeatureIdByFeatureName")

@@ -6,20 +6,17 @@ import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.Image;
 import com.carhut.secret.Paths;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Service
@@ -91,5 +88,34 @@ public class ImageService {
                         }
                     });
         }
+    }
+
+
+    public List<byte[]> getImagesWithCarId(String carId) throws IOException {
+        List<byte[]> resources = new ArrayList<>();
+        String sellerId = userCredentialsRepository.findUserUsernameByCarId(carId);
+
+        String basePath = System.getProperty("user.dir");
+
+        Path formerPath = java.nio.file.Paths.get( basePath + Paths.carHutImages + sellerId + "/" + carId);
+        File directory = new File(String.valueOf(formerPath));
+        File[] files = directory.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    byte[] imageResource = convertToResource(file);
+                    if (imageResource != null) {
+                        resources.add(imageResource);
+                    }
+                }
+            }
+        }
+
+        return resources;
+    }
+
+    public byte[] convertToResource(File file) throws IOException {
+        return Files.readAllBytes(file.toPath());
     }
 }

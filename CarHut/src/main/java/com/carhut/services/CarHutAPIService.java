@@ -435,4 +435,19 @@ public class CarHutAPIService {
         return featureRepository.getFeatureIdByFeatureName(feature);
     }
 
+    public String getColorStringNameFromColorId(String colorId) {
+        return colorRepository.getColorStringNameFromColorId(colorId);
+    }
+
+    public String getFeatureNameByFeatureId(Integer featureId) {
+        return featureRepository.getFeatureNameByFeatureId(featureId);
+    }
+
+    public List<String> getMultipleFeaturesByIds(List<Integer> featureIds) {
+        List<String> featureNames = new ArrayList<>();
+        for (Integer id : featureIds) {
+            featureNames.add(getFeatureNameByFeatureId(id));
+        }
+        return featureNames;
+    }
 }

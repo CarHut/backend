@@ -14,4 +14,7 @@ public interface ColorRepository extends JpaRepository<Color, String> {
 
     @Query(value = "SELECT c.id FROM color c WHERE c.color = :color", nativeQuery = true)
     String getColorIdByColorName(@Param("color") String color);
+
+    @Query(value = "SELECT c.color FROM color c WHERE c.id = :colorId", nativeQuery = true)
+    String getColorStringNameFromColorId(@Param("colorId") String colorId);
 }
