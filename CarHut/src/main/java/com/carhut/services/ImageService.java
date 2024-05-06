@@ -5,15 +5,14 @@ import com.carhut.database.repository.ImageRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.Image;
-import com.carhut.secret.Paths;
+import com.carhut.paths.Paths;
+import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -118,4 +117,5 @@ public class ImageService {
     public byte[] convertToResource(File file) throws IOException {
         return Files.readAllBytes(file.toPath());
     }
+
 }
