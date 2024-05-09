@@ -2,7 +2,9 @@ package com.carhut.services;
 
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.models.security.User;
+import com.carhut.util.exceptions.usercredentials.UserCredentialsNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,15 +22,30 @@ public class UserCredentialsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userCredentialsRepository.findUserByUsername(username);
+        try {
+            return userCredentialsRepository.findUserByUsername(username);
+        }
+        catch (Exception e) {
+            throw new UsernameNotFoundException("Username not found in user credentials database.");
+        }
     }
 
-    public User getUserDetailsInfo(String username) {
-        return userCredentialsRepository.findUserByUsername(username);
+    public User getUserDetailsInfo(String username) throws UserCredentialsNotFoundException {
+        try {
+            return userCredentialsRepository.findUserByUsername(username);
+        }
+        catch (Exception e) {
+            throw new UserCredentialsNotFoundException("Internal error while getting user from database. Message: " + e.getMessage());
+        }
     }
 
-    public User getUserByEmail(String email) {
-        return userCredentialsRepository.findUserByEmail(email);
+    public User getUserByEmail(String email) throws UserCredentialsNotFoundException {
+        try {
+            return userCredentialsRepository.findUserByEmail(email);
+        }
+        catch (Exception e) {
+            throw new UserCredentialsNotFoundException("Internal error while getting user from database. Message: " + e.getMessage());
+        }
     }
 
 }

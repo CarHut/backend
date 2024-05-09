@@ -7,7 +7,6 @@ import com.carhut.datatransfer.ExcelDataTransfer;
 import com.carhut.services.CarHutAPIService;
 import com.carhut.services.DataTransferService;
 import com.carhut.temputils.repo.TempCarRepository;
-import com.carhut.util.loggers.Logger;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -36,12 +35,6 @@ public class CarHutApplication {
 	@Bean
 	public CarHutAPIService carHutAPIService(BrandRepository brandRepository, ModelRepository modelRepository) {
 		return new CarHutAPIService(brandRepository, modelRepository);
-	}
-
-	@Bean
-	@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-	public Logger logger() {
-		return new Logger();
 	}
 
 }

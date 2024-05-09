@@ -1,5 +1,6 @@
 package com.carhut.services;
 
+import ch.qos.logback.core.encoder.EchoEncoder;
 import com.carhut.database.repository.*;
 import com.carhut.datatransfer.AutobazarEUCarRepository;
 import com.carhut.models.carhut.*;
@@ -12,6 +13,7 @@ import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.temputils.repo.TempCarRepository;
+import com.carhut.util.exceptions.carhutapi.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,40 +46,66 @@ public class CarHutAPIService {
 
     @Autowired
     public CarHutAPIService(BrandRepository brandRepository, ModelRepository modelRepository) {
-        this.autobazarEUCarRepository = autobazarEUCarRepository;
         this.brandRepository = brandRepository;
         this.modelRepository = modelRepository;
-        this.tempCarRepository = tempCarRepository;
         this.sorter = new Sorter();
     }
 
-    public List<Brand> getAllBrands() {
-        return brandRepository.getAllBrands();
+    public List<Brand> getAllBrands() throws CarHutAPIBrandsNotFoundException {
+        try {
+            return brandRepository.getAllBrands();
+        }
+        catch (Exception e) {
+            throw new CarHutAPIBrandsNotFoundException("Error occurred while getting brands from database. Message: " + e.getMessage());
+        }
+
     }
 
-    public List<Model> getModelsByBrand(String brand) {
-        return modelRepository.getModelByBrandId(brand);
+    public List<Model> getModelsByBrand(String brand) throws CarHutAPIModelsNotFoundException {
+        try {
+            return modelRepository.getModelByBrandId(brand);
+        }
+        catch (Exception e) {
+            throw new CarHutAPIModelsNotFoundException("Error occurred while getting models from database. Message: " + e.getMessage());
+        }
     }
 
-    public List<Model> getModelsByBrandName(String brandName) {
-        return modelRepository.getModelByBrandName(brandName);
+    public List<Model> getModelsByBrandName(String brandName) throws CarHutAPIModelsNotFoundException {
+        try {
+            return modelRepository.getModelByBrandName(brandName);
+        }
+        catch (Exception e) {
+            throw new CarHutAPIModelsNotFoundException("Error occurred while getting models from database. Message: " + e.getMessage());
+        }
     }
 
-    public Integer getBrandIdFromBrandName(String brandName) {
-        Integer result = brandRepository.getBrandIdFromBrandName(brandName);
-        return result == null ? 136 : result;
+    public Integer getBrandIdFromBrandName(String brandName) throws CarHutAPIBrandNotFoundException {
+        try {
+            Integer result = brandRepository.getBrandIdFromBrandName(brandName);
+            return result == null ? 136 : result;
+        }
+        catch (Exception e) {
+            throw new CarHutAPIBrandNotFoundException("Error occurred while getting brand id from database. Message: " + e.getMessage());
+        }
     }
 
-    public Integer getModelIdFromModelName(String modelName, int brandId) {
-        Integer result = modelRepository.getModelIdByModelName(modelName, brandId);
-        return result == null ? 2264 : result;
+    public Integer getModelIdFromModelName(String modelName, int brandId) throws CarHutAPIModelNotFoundException {
+        try {
+            Integer result = modelRepository.getModelIdByModelName(modelName, brandId);
+            return result == null ? 2264 : result;
+        }
+        catch (Exception e) {
+            throw new CarHutAPIModelNotFoundException("Error occurred while getting model id from database. Message: " + e.getMessage());
+        }
     }
 
-    public void updateBrand(String brand, String id) {
+    @Deprecated
+    public void updateBrand(String brand, String id) throws CarHutAPIBrandNotFoundException {
         tempCarRepository.updateBrand(getBrandIdFromBrandName(brand), id);
     }
 
-    public void updateModel(String model, String id) {
+    @Deprecated
+    public void updateModel(String model, String id) throws CarHutAPIModelNotFoundException {
         tempCarRepository.updateModel(getModelIdFromModelName(model, 6999999), id);
     }
 
@@ -92,7 +120,7 @@ public class CarHutAPIService {
                                                     String registration, String seatingConfig, String doors,
                                                     String location, String postalCode, String fuelType, String powerFrom,
                                                     String powerTo, String displacement, String gearbox, String powertrain,
-                                                    String sortBy, String sortOrder, List<ModelsPostModel> models) {
+                                                    String sortBy, String sortOrder, List<ModelsPostModel> models) throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
 
         List<TempCarModel> filteredList = getAllTempCars();
 
@@ -112,7 +140,7 @@ public class CarHutAPIService {
     }
 
     @Deprecated
-    private List<TempCarModel> filterTempCarModels(String brand, String model, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String fuelType, String gearbox, String powertrain, String powerFrom, String powerTo, List<TempCarModel> filteredList) {
+    private List<TempCarModel> filterTempCarModels(String brand, String model, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String fuelType, String gearbox, String powertrain, String powerFrom, String powerTo, List<TempCarModel> filteredList) throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         Filter filter = new Filter();
 
         if (brand != null) {
@@ -212,8 +240,7 @@ public class CarHutAPIService {
                                            String priceFrom, String priceTo, String mileageFrom, String mileageTo,
                                            String registration, String seatingConfig, String doors,
                                            String location, String postalCode, String fuelType, String powerFrom,
-                                           String powerTo, String displacement, String gearbox, String powertrain)
-    {
+                                           String powerTo, String displacement, String gearbox, String powertrain) throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
 
         List<TempCarModel> filteredList = getAllTempCars();
 
@@ -250,33 +277,37 @@ public class CarHutAPIService {
         return autobazarEUCarRepository.getAllCars();
     }
 
-    public CarHutCar getCarWithId(String carId) {
-        return carHutCarRepository.getCarWithId(carId);
+    public CarHutCar getCarWithId(String carId) throws CarHutAPICarNotFoundException {
+        try {
+            return carHutCarRepository.getCarWithId(carId);
+        }
+        catch (Exception e) {
+            throw new CarHutAPICarNotFoundException("Error occurred while getting car from database. Message: " + e.getMessage());
+        }
     }
 
-    public List<CarHutCar> getAllCars() {
-        return carHutCarRepository.getAllCars();
+    public List<CarHutCar> getAllCars() throws CarHutAPICanNotGetCarsException {
+        try {
+            return carHutCarRepository.getAllCars();
+        }
+        catch (Exception e) {
+            throw new CarHutAPICanNotGetCarsException("Error occurred while getting cars from database. Message: " + e.getMessage());
+        }
     }
 
-    public List<CarHutCar> getAllCarsSorted(String sortBy, String sortOrder) {
+    public List<CarHutCar> getAllCarsSorted(String sortBy, String sortOrder) throws CarHutAPICanNotGetCarsException {
         List<CarHutCar> cars = getAllCars();
 
-        switch (sortBy) {
-            case "PFL":
-            case "PFH":
-                return sorter.sortCarsByPrice(cars, sortOrder);
-            case "MFL":
-            case "MFH":
-                return sorter.sortCarsByMileage(cars, sortOrder);
-            case "SFL":
-            case "SFH":
-                return sorter.sortCarsByPower(cars, sortOrder);
-        }
+        return switch (sortBy) {
+            case "PFL", "PFH" -> sorter.sortCarsByPrice(cars, sortOrder);
+            case "MFL", "MFH" -> sorter.sortCarsByMileage(cars, sortOrder);
+            case "SFL", "SFH" -> sorter.sortCarsByPower(cars, sortOrder);
+            default -> cars;
+        };
 
-        return cars;
     }
 
-    public List<CarHutCar> getCarsWithFilter(String brand, String model, String carType, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String registration, String seatingConfig, String doors, String location, String postalCode, String fuelType, String powerFrom, String powerTo, String displacement, String gearbox, String powertrain, String sortBy, String sortOrder, List<ModelsPostModel> models) {
+    public List<CarHutCar> getCarsWithFilter(String brand, String model, String carType, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String registration, String seatingConfig, String doors, String location, String postalCode, String fuelType, String powerFrom, String powerTo, String displacement, String gearbox, String powertrain, String sortBy, String sortOrder, List<ModelsPostModel> models) throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         if (models != null && !models.isEmpty()) {
             List<CarHutCar> resultList = new ArrayList<>();
             for (ModelsPostModel car : models) {
@@ -289,7 +320,7 @@ public class CarHutAPIService {
         return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, getAllCars());
     }
 
-    private List<CarHutCar> filterCarModels(String brand, String model, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String fuelType, String gearbox, String powertrain, String powerFrom, String powerTo, List<CarHutCar> filteredList) {
+    private List<CarHutCar> filterCarModels(String brand, String model, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String fuelType, String gearbox, String powertrain, String powerFrom, String powerTo, List<CarHutCar> filteredList) throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         Filter filter = new Filter();
 
         if (brand != null) {
@@ -383,7 +414,7 @@ public class CarHutAPIService {
         return sortedList;
     }
 
-    public int getNumberOfFilteredCars(String brand, String model, String carType, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String registration, String seatingConfig, String doors, String location, String postalCode, String fuelType, String powerFrom, String powerTo, String displacement, String gearbox, String powertrain) {
+    public int getNumberOfFilteredCars(String brand, String model, String carType, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String registration, String seatingConfig, String doors, String location, String postalCode, String fuelType, String powerFrom, String powerTo, String displacement, String gearbox, String powertrain) throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         List<CarHutCar> filteredList = getAllCars();
 
         return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList).size();
@@ -405,15 +436,25 @@ public class CarHutAPIService {
         return gearbox.getGearboxTypes();
     }
 
-    public List<Color> getColors() {
-        return colorRepository.getColors();
+    public List<Color> getColors() throws CarHutAPICanNotGetColorsException {
+        try {
+            return colorRepository.getColors();
+        }
+        catch (Exception e) {
+            throw new CarHutAPICanNotGetColorsException("Error occurred while getting colors from database. Message: " + e.getMessage());
+        }
     }
 
-    public List<Feature> getFeatures() {
-        return featureRepository.getFeaturesAsc();
+    public List<Feature> getFeatures() throws CarHutAPICanNotGetFeaturesException {
+        try {
+            return featureRepository.getFeaturesAsc();
+        }
+        catch (Exception e) {
+            throw new CarHutAPICanNotGetFeaturesException("Error occurred while getting features from database. Message: " + e.getMessage());
+        }
     }
 
-    public void addCarToDatabase(CarHutCar carHutCar) {
+    public void addCarToDatabase(CarHutCar carHutCar) throws CarHutAPICarCanNotBeSavedException {
         CarHutCar newCar = new CarHutCar(userCredentialsRepository.findUserIdByUsername(carHutCar.getSellerId()), carHutCar.getSellerAddress(),
                 carHutCar.getBrandId(), carHutCar.getModelId(), carHutCar.getHeader(),
                 carHutCar.getPrice(), carHutCar.getMileage(), carHutCar.getRegistration(),
@@ -426,22 +467,43 @@ public class CarHutAPIService {
                 colorRepository.getColorIdByColorName(carHutCar.getInteriorColorId()), carHutCar.getDamageStatus(),
                 carHutCar.isParkingSensors(), carHutCar.isParkingCameras(), carHutCar.getCountryOfOrigin(),
                 carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures());
-        carHutCarRepository.save(newCar);
+
+        try {
+            carHutCarRepository.save(newCar);
+        }
+        catch (Exception e) {
+            throw new CarHutAPICarCanNotBeSavedException("Error occurred while saving the car. Message: " + e.getMessage());
+        }
     }
 
-    public Integer getFeatureIdByFeatureName(String feature) {
-        return featureRepository.getFeatureIdByFeatureName(feature);
+    public Integer getFeatureIdByFeatureName(String feature) throws CarHutAPICanNotGetFeaturesException {
+        try {
+            return featureRepository.getFeatureIdByFeatureName(feature);
+        }
+        catch (Exception e) {
+            throw new CarHutAPICanNotGetFeaturesException("Error occurred while getting features from database. Message: " + e.getMessage());
+        }
     }
 
-    public String getColorStringNameFromColorId(String colorId) {
-        return colorRepository.getColorStringNameFromColorId(colorId);
+    public String getColorStringNameFromColorId(String colorId) throws CarHutAPICanNotGetColorsException {
+        try {
+            return colorRepository.getColorStringNameFromColorId(colorId);
+        }
+        catch (Exception e) {
+            throw new CarHutAPICanNotGetColorsException("Error occurred while getting color name from database. Message: " + e.getMessage());
+        }
     }
 
-    public String getFeatureNameByFeatureId(Integer featureId) {
-        return featureRepository.getFeatureNameByFeatureId(featureId);
+    public String getFeatureNameByFeatureId(Integer featureId) throws CarHutAPICanNotGetFeaturesException {
+        try {
+            return featureRepository.getFeatureNameByFeatureId(featureId);
+        }
+        catch (Exception e) {
+            throw new CarHutAPICanNotGetFeaturesException("Error occurred while getting features from database. Message: " + e.getMessage());
+        }
     }
 
-    public List<String> getMultipleFeaturesByIds(List<Integer> featureIds) {
+    public List<String> getMultipleFeaturesByIds(List<Integer> featureIds) throws CarHutAPICanNotGetFeaturesException {
         List<String> featureNames = new ArrayList<>();
         for (Integer id : featureIds) {
             featureNames.add(getFeatureNameByFeatureId(id));

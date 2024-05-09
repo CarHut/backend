@@ -28,10 +28,12 @@ public class ImageService {
     @Autowired
     private ColorRepository colorRepository;
 
+    @Deprecated
     public Image getImageById(String id) {
         return imageRepository.getImageById(id);
     }
 
+    @Deprecated
     public List<Image> getImagesByCarId(String carId) {
         return imageRepository.getImagesByCarId(carId);
     }

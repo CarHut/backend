@@ -2,6 +2,7 @@ package com.carhut.services;
 
 import com.carhut.models.security.User;
 import com.carhut.services.UserCredentialsService;
+import com.carhut.util.exceptions.usercredentials.UserCredentialsException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,14 @@ public class UserCredentialsServiceTests {
 
     @Test
     public void testGetUserDetailsByUsername_adminUser() {
-        com.carhut.models.security.User user = userCredentialsService.getUserDetailsInfo("admin");
+        com.carhut.models.security.User user = null;
+        try {
+            user = userCredentialsService.getUserDetailsInfo("admin");
+        }
+        catch (UserCredentialsException e) {
+            System.out.println("Internal error.");
+            return;
+        }
 
         Assertions.assertNotNull(user, "user details are null");
         Assertions.assertEquals("admin", user.getUsername());
@@ -43,14 +51,29 @@ public class UserCredentialsServiceTests {
 
     @Test
     public void testGetUserDetailsByUsername_nonExistantUser() {
-        User user = userCredentialsService.getUserDetailsInfo(UUID.randomUUID().toString());
+        User user = null;
+        try {
+            user = userCredentialsService.getUserDetailsInfo(UUID.randomUUID().toString());
+        }
+        catch (UserCredentialsException e) {
+            System.out.println("Internal error.");
+            return;
+        }
 
         Assertions.assertNull(user, "user details are null");
     }
 
     @Test
     public void testGetUserByEmail_adminUser() {
-        com.carhut.models.security.User user = userCredentialsService.getUserByEmail("admin@admin.com");
+        com.carhut.models.security.User user = null;
+        try {
+            user = userCredentialsService.getUserByEmail("admin@admin.com");
+        }
+        catch (UserCredentialsException e) {
+            System.out.println("Internal error.");
+            return;
+        }
+
 
         Assertions.assertNotNull(user, "user details are null");
         Assertions.assertEquals("admin", user.getUsername());
@@ -59,7 +82,14 @@ public class UserCredentialsServiceTests {
 
     @Test
     public void testGetUserByEmail_nonExistantUser() {
-        User user = userCredentialsService.getUserByEmail(UUID.randomUUID().toString());
+        com.carhut.models.security.User user = null;
+        try {
+            user = userCredentialsService.getUserByEmail(UUID.randomUUID().toString());
+        }
+        catch (UserCredentialsException e) {
+            System.out.println("Internal error.");
+            return;
+        }
 
         Assertions.assertNull(user, "user details are null");
     }

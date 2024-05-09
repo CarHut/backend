@@ -9,11 +9,15 @@ import com.carhut.models.carhut.SavedCarByUser;
 import com.carhut.models.security.User;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.temputils.repo.TempCarRepository;
+import com.carhut.util.exceptions.carhutapi.CarHutAPICarNotFoundException;
+import com.carhut.util.exceptions.savedcars.SavedCarsCanNotBeDeletedException;
+import com.carhut.util.exceptions.savedcars.SavedCarsCanNotBeSavedException;
+import com.carhut.util.exceptions.savedcars.SavedCarsNotFoundException;
+import com.carhut.util.exceptions.usercredentials.UserCredentialsNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -31,7 +35,9 @@ public class SavedCarsByUsersService {
     @Deprecated
     public List<TempCarModel> getSavedTempCarsByUserUsername(String username) {
         User user = userCredentialsRepository.findUserByUsername(username);
-        List<SavedCarByUser> savedCars = savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
+
+        List<SavedCarByUser> savedCars =savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
+
         List<TempCarModel> cars = new ArrayList<>();
 
         for (SavedCarByUser savedCarByUser : savedCars) {
@@ -41,31 +47,77 @@ public class SavedCarsByUsersService {
         return cars;
     }
 
-    public List<CarHutCar> getSavedCarsByUsername(String username) {
-        User user = userCredentialsRepository.findUserByUsername(username);
+    public List<CarHutCar> getSavedCarsByUsername(String username) throws UserCredentialsNotFoundException, SavedCarsNotFoundException, CarHutAPICarNotFoundException {
+        User user;
+        try {
+            user = userCredentialsRepository.findUserByUsername(username);
+        }
+        catch (Exception e) {
+            throw new UserCredentialsNotFoundException("Error occurred while getting user credentials. Message: " + e.getMessage());
+        }
+
         if (user == null) {
             return List.of();
         }
-        List<SavedCarByUser> savedCars = savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
+
+        List<SavedCarByUser> savedCars;
+        try {
+            savedCars = savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
+        }
+        catch (Exception e) {
+            throw new SavedCarsNotFoundException("Error occurred while getting saved cars. Message: " + e.getMessage());
+        }
+
         List<CarHutCar> cars = new ArrayList<>();
 
         for (SavedCarByUser savedCarByUser : savedCars) {
-            cars.add(carHutCarRepository.getCarWithId(savedCarByUser.getCarId()));
+            try {
+                cars.add(carHutCarRepository.getCarWithId(savedCarByUser.getCarId()));
+            }
+            catch (Exception e) {
+                throw new CarHutAPICarNotFoundException("Error occurred while getting car from database. Message: " + e.getMessage());
+            }
         }
 
         return cars;
     }
 
-    public RequestStatusEntity addSavedCarByUser(SavedCarByUser savedCarByUser) {
-        User user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
-        savedCarsByUsersRepository.save(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getCarId()), user.getId(), savedCarByUser.getCarId()));
+    public RequestStatusEntity addSavedCarByUser(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeSavedException {
+        User user;
+        try {
+            user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
+        }
+        catch (Exception e) {
+            throw new UserCredentialsNotFoundException("Error occurred while getting user credentials. Message: " + e.getMessage());
+        }
+
+        try {
+            savedCarsByUsersRepository.save(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getCarId()), user.getId(), savedCarByUser.getCarId()));
+        }
+        catch (Exception e) {
+            throw new SavedCarsCanNotBeSavedException("Error occurred while saving car to database. Message: " + e.getMessage());
+        }
+
         return RequestStatusEntity.SUCCESS;
     }
 
 
-    public RequestStatusEntity removeSavedCarByUsername(SavedCarByUser savedCarByUser) {
-        User user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
-        savedCarsByUsersRepository.delete(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getCarId()), user.getId(), savedCarByUser.getCarId()));
+    public RequestStatusEntity removeSavedCarByUsername(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeDeletedException {
+        User user;
+        try {
+            user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
+        }
+        catch (Exception e) {
+            throw new UserCredentialsNotFoundException("Error occurred while getting user credentials. Message: " + e.getMessage());
+        }
+
+        try {
+            savedCarsByUsersRepository.delete(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getCarId()), user.getId(), savedCarByUser.getCarId()));
+        }
+        catch (Exception e) {
+            throw new SavedCarsCanNotBeDeletedException("Error occurred while deleting saved car from database. Message: " + e.getMessage());
+        }
+
         return RequestStatusEntity.SUCCESS;
     }
 }

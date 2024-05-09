@@ -1,7 +1,6 @@
 package com.carhut.util.loggers;
 
 import com.carhut.constants.FileConstants;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,19 +9,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Component
-public class Logger {
+public class ControllerLogger {
 
-    private String directoryPath;
-    private String currentTime;
+    private static ControllerLogger controllerLogger = null;
+    private final String logsPath = FileConstants.pathToControllerLogDirectory;
 
-    public Logger() {
-        this.currentTime = LocalDate.now().toString();
-        this.directoryPath = FileConstants.pathToLogDirectory;
+    public static synchronized ControllerLogger getLogger() {
+        if (controllerLogger == null) {
+            controllerLogger = new ControllerLogger();
+        }
+        return controllerLogger;
     }
 
-    public synchronized void saveLogToFile(String log) {
-        String filePath = directoryPath + "\\daily-log-" + currentTime;
+    public synchronized void saveToFile(String log) {
+        LocalDate localDateTime = LocalDate.now();
+        String filePath = logsPath + "/daily-log-" + localDateTime;
 
         LocalDateTime currentTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -35,6 +36,5 @@ public class Logger {
             e.printStackTrace();
         }
     }
-
 
 }

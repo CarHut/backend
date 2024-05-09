@@ -5,7 +5,6 @@ import com.carhut.datatransfer.util.CarIdGenerator;
 import com.carhut.enums.DataTransferEnum;
 import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.services.DataTransferService;
-import com.carhut.util.loggers.Logger;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,6 @@ import java.util.List;
 @Service
 public class ExcelDataTransfer implements DataTransfer {
 
-    @Autowired
-    private Logger logger;
-
     private DataTransferService dataTransferService;
 
     @Autowired
@@ -38,11 +34,8 @@ public class ExcelDataTransfer implements DataTransfer {
         List<AutobazarEUCarObject> cars = prepareData();
 
         for (AutobazarEUCarObject car : cars) {
-            dataTransferService.saveCar(car);
-            logger.saveLogToFile("[LOG][ExcelDataTransfer]: transferring car data of " + car.getHeader() + ".");
-        }
+            dataTransferService.saveCar(car);}
 
-        logger.saveLogToFile("[LOG][ExcelDataTransfer]: all car data was transferred successfully.");
     }
 
     @Override
