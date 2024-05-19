@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/carhut/**").permitAll()
                 .requestMatchers("/api/auth/authenticate").permitAll()
                 .requestMatchers("/api/logout/**").permitAll()
+                .requestMatchers("/api/register/**").permitAll()
                 .requestMatchers("/api/auth/resetPasswordInitiate").permitAll()
                 .requestMatchers("/api/auth/resetPasswordSendEmail").permitAll()
                 .requestMatchers("/api/auth/getUserDetailsInfo").hasRole("USER")
@@ -55,7 +56,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        final DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        final DaoAuthenticationProvider daoAuthenticationProvider = new CarHutAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userCredentialsService());
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;

@@ -9,6 +9,7 @@ import com.carhut.util.exceptions.CarHutException;
 import com.carhut.util.exceptions.carhutapi.*;
 import com.carhut.util.loggers.ControllerLogger;
 import org.apache.coyote.Response;
+import org.hibernate.id.IntegralDataTypeHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -408,10 +409,12 @@ public class CarHutAPIController {
             @RequestParam(required = false) String powertrain,
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String sortOrder,
-            @RequestBody(required = false) List<ModelsPostModel> models
+            @RequestBody(required = false) List<ModelsPostModel> models,
+            @RequestParam(required = false) Integer offersPerPage,
+            @RequestParam(required = false) Integer currentPage
     ) {
         try {
-            List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(brand, model, carType, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig, doors, location, postalCode, fuelType, powerFrom, powerTo, displacement, gearbox, powertrain, sortBy, sortOrder, models);
+            List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(brand, model, carType, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig, doors, location, postalCode, fuelType, powerFrom, powerTo, displacement, gearbox, powertrain, sortBy, sortOrder, models, offersPerPage, currentPage);
 
             if (cars != null) {
                 controllerLogger.saveToFile("[CarHutAPIController][OK]: /getCarsWithFilters - Successfully retrieved data.");

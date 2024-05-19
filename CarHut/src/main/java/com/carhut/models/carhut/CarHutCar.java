@@ -54,6 +54,7 @@ public class CarHutCar {
     private Date technicalInspectionDate;
     private Date emissionInspectionDate;
     private int[] features;
+    private Date dateAdded;
 
     public CarHutCar() {}
 
@@ -64,7 +65,7 @@ public class CarHutCar {
                      String baseImgPath, String previousOwners, String energyEffClass, String seats, String doors,
                      String emissionClass, String exteriorColorId, String interiorColorId, String damageStatus,
                      boolean parkingSensors, boolean parkingCameras, String countryOfOrigin, Date technicalInspectionDate,
-                     Date emissionInspectionDate, int[] features) {
+                     Date emissionInspectionDate, int[] features, Date dateAdded) {
         this.id = generateId(sellerId, sellerAddress, brandId, modelId, header, previousOwners, mileage, registration, enginePower,
                 engineDisplacement, fuel, fuelConsumptionAvg, fuelConsumptionCity, fuelConsumptionHighway, gearbox,
                 gearboxGears, bodyType, powertrain, description, baseImgPath, previousOwners, energyEffClass, seats,
@@ -104,6 +105,7 @@ public class CarHutCar {
         this.technicalInspectionDate = technicalInspectionDate;
         this.emissionInspectionDate = emissionInspectionDate;
         this.features = features;
+        this.dateAdded = dateAdded;
     }
 
     public CarHutCar(String id, String sellerId, String sellerAddress, int brandId, int modelId, String header,
@@ -113,7 +115,7 @@ public class CarHutCar {
                      String baseImgPath, String previousOwners, String energyEffClass, String seats, String doors,
                      String emissionClass, String exteriorColorId, String interiorColorId, String damageStatus,
                      boolean parkingSensors, boolean parkingCameras, String countryOfOrigin, Date technicalInspectionDate,
-                     Date emissionInspectionDate, int[] features) {
+                     Date emissionInspectionDate, int[] features, Date dateAdded) {
         this.id = id;
         this.sellerId = sellerId;
         this.sellerAddress = sellerAddress;
@@ -149,6 +151,15 @@ public class CarHutCar {
         this.technicalInspectionDate = technicalInspectionDate;
         this.emissionInspectionDate = emissionInspectionDate;
         this.features = features;
+        this.dateAdded = dateAdded;
+    }
+
+    public Date getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(Date dateAdded) {
+        this.dateAdded = dateAdded;
     }
 
     public String getId() {

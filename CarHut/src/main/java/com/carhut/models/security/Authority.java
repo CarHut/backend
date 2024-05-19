@@ -23,6 +23,11 @@ public class Authority implements GrantedAuthority {
         this.authority = authority;
     }
 
+    public Authority(int id, String authority) {
+        this.id = id;
+        this.authority = authority;
+    }
+
     // Getters and setters
 
     public int getId() {

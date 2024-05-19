@@ -39,7 +39,8 @@ public class ImageService {
     }
 
     public void uploadImageToFileSystem(MultipartFile image, String username) throws IOException {
-        File uploadDir = new File(Paths.carHutImages + username);
+        String basePath = System.getProperty("user.dir");
+        File uploadDir = new File(basePath + Paths.carHutImages + username);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
@@ -51,7 +52,7 @@ public class ImageService {
             default -> ".png";
         };
 
-        File file = new File(Paths.carHutImages + username + "\\temp_" + UUID.randomUUID() + postfix);
+        File file = new File(basePath + Paths.carHutImages + username + "/temp_" + UUID.randomUUID() + postfix);
 
         image.transferTo(file);
     }
@@ -68,12 +69,13 @@ public class ImageService {
                 carHutCar.getDoors(), carHutCar.getEmissionClass(), colorRepository.getColorIdByColorName(carHutCar.getExteriorColorId()),
                 colorRepository.getColorIdByColorName(carHutCar.getInteriorColorId()), carHutCar.getDamageStatus(),
                 carHutCar.isParkingSensors(), carHutCar.isParkingCameras(), carHutCar.getCountryOfOrigin(),
-                carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures());
+                carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures(), null);
 
-        String basePath = Paths.carHutImages + carHutCar.getSellerId() + "\\" + newCar.getId();
+        String basePath = System.getProperty("user.dir");
+        String locationPath = Paths.carHutImages + carHutCar.getSellerId() + "/" + newCar.getId();
 
-        Path path = Files.createDirectory(Path.of(basePath));
-        Path formerPath = java.nio.file.Paths.get(Paths.carHutImages + carHutCar.getSellerId());
+        Path path = Files.createDirectory(Path.of(basePath + locationPath));
+        Path formerPath = java.nio.file.Paths.get( basePath + Paths.carHutImages + carHutCar.getSellerId());
 
         try (Stream<Path> files = Files.walk(formerPath)) {
             files.filter(Files::isRegularFile)

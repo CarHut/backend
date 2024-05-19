@@ -2,6 +2,7 @@ package com.carhut.controllers;
 
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.jwt.utils.JwtUtil;
+import com.carhut.models.security.RegisterUserBody;
 import com.carhut.models.security.User;
 import com.carhut.models.security.AuthenticationRequest;
 import com.carhut.models.security.PasswordResetRequestBody;
@@ -33,6 +34,8 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
+        // TO-DO CHECK IF USER HAS ACTIVATED ACCOUNT
+
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
         return userCredentialsService.loadUserByUsername(request.getUsername()) != null
@@ -92,4 +95,5 @@ public class AuthenticationController {
             return ResponseEntity.internalServerError().body("There was internal error while trying initiate password reset.");
         }
     }
+
 }

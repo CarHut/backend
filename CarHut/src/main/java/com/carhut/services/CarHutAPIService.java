@@ -17,6 +17,7 @@ import com.carhut.util.exceptions.carhutapi.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.*;
 
 
@@ -307,20 +308,30 @@ public class CarHutAPIService {
 
     }
 
-    public List<CarHutCar> getCarsWithFilter(String brand, String model, String carType, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String registration, String seatingConfig, String doors, String location, String postalCode, String fuelType, String powerFrom, String powerTo, String displacement, String gearbox, String powertrain, String sortBy, String sortOrder, List<ModelsPostModel> models) throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
+    public List<CarHutCar> getCarsWithFilter(String brand, String model, String carType, String priceFrom, String priceTo,
+                                             String mileageFrom, String mileageTo, String registration, String seatingConfig,
+                                             String doors, String location, String postalCode, String fuelType,
+                                             String powerFrom, String powerTo, String displacement, String gearbox,
+                                             String powertrain, String sortBy, String sortOrder, List<ModelsPostModel> models,
+                                             Integer offersPerPage, Integer currentPage)
+                                            throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         if (models != null && !models.isEmpty()) {
             List<CarHutCar> resultList = new ArrayList<>();
             for (ModelsPostModel car : models) {
                 List<CarHutCar> filteredList = getAllCars();
-                resultList.addAll(filterCarModels(car.getBrand(), car.getModel(), priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList));
+                resultList.addAll(filterCarModels(car.getBrand(), car.getModel(), priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList, offersPerPage, currentPage));
             }
             return sortCars(sortBy, sortOrder, resultList);
         }
 
-        return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, getAllCars());
+        return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, getAllCars(), offersPerPage, currentPage);
     }
 
-    private List<CarHutCar> filterCarModels(String brand, String model, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String fuelType, String gearbox, String powertrain, String powerFrom, String powerTo, List<CarHutCar> filteredList) throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
+    private List<CarHutCar> filterCarModels(String brand, String model, String priceFrom, String priceTo, String mileageFrom,
+                                            String mileageTo, String fuelType, String gearbox, String powertrain,
+                                            String powerFrom, String powerTo, List<CarHutCar> filteredList,
+                                            Integer offersPerPage, Integer currentPage)
+            throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         Filter filter = new Filter();
 
         if (brand != null) {
@@ -393,7 +404,14 @@ public class CarHutAPIService {
             }
         }
 
-        return filteredList;
+        if (offersPerPage == 0 || currentPage == 0) {
+            return filteredList;
+        }
+
+        int startIndex = (currentPage - 1) * offersPerPage;
+        int endIndex = Math.min(startIndex + offersPerPage, filteredList.size() - 1) ;
+
+        return filteredList.subList(startIndex, endIndex);
     }
 
     private List<CarHutCar> sortCars(String sortBy, String sortOrder, List<CarHutCar> filteredList) {
@@ -417,7 +435,7 @@ public class CarHutAPIService {
     public int getNumberOfFilteredCars(String brand, String model, String carType, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String registration, String seatingConfig, String doors, String location, String postalCode, String fuelType, String powerFrom, String powerTo, String displacement, String gearbox, String powertrain) throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         List<CarHutCar> filteredList = getAllCars();
 
-        return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList).size();
+        return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList, 0, 0).size();
     }
 
     public List<String> getBodyTypes() {
@@ -466,7 +484,7 @@ public class CarHutAPIService {
                 carHutCar.getDoors(), carHutCar.getEmissionClass(), colorRepository.getColorIdByColorName(carHutCar.getExteriorColorId()),
                 colorRepository.getColorIdByColorName(carHutCar.getInteriorColorId()), carHutCar.getDamageStatus(),
                 carHutCar.isParkingSensors(), carHutCar.isParkingCameras(), carHutCar.getCountryOfOrigin(),
-                carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures());
+                carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures(), new Date(System.currentTimeMillis()));
 
         try {
             carHutCarRepository.save(newCar);
