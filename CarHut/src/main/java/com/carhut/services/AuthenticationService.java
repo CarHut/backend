@@ -7,6 +7,7 @@ import com.carhut.mail.service.EmailService;
 import com.carhut.models.security.User;
 import com.carhut.models.security.PasswordResetRequestBody;
 import com.carhut.models.security.PasswordResetToken;
+import com.carhut.paths.NetworkPaths;
 import com.carhut.util.exceptions.authentication.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,7 +44,14 @@ public class AuthenticationService {
 
         String token = UUID.randomUUID().toString();
         createPasswordResetToken(user, token);
-        emailService.sendEmailMessage(email, "Reset password request", token);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Hello, please click on the following link to finish the password reset procedure.\n");
+        stringBuilder.append(NetworkPaths.publicIPAddress + "api/auth/passwordReset?resetPasswordToken=").append(token);
+        stringBuilder.append("\n\n");
+        stringBuilder.append("CarHut");
+
+        emailService.sendEmailMessage(email, NetworkPaths.emailSender, "Reset password request", stringBuilder.toString());
         return RequestStatusEntity.SUCCESS;
     }
 

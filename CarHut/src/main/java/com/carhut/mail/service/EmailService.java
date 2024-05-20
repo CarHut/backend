@@ -14,21 +14,15 @@ public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendEmailMessage(String to, String subject, String text) {
+    public void sendEmailMessage(String to, String from, String subject, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
 
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Hello, please click on the following link to finish the password reset procedure.\n");
-        stringBuilder.append("http://localhost:3000/passwordReset?resetPasswordToken=").append(text);
-        stringBuilder.append("\n\n");
-        stringBuilder.append("CarHut");
-
         try {
-            helper.setFrom("carhutsenderbot@gmail.com");
+            helper.setFrom(from);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(stringBuilder.toString());
+            helper.setText(text);
         }
         catch (MessagingException e) {
             throw new RuntimeException(e);

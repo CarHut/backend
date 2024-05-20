@@ -1,10 +1,14 @@
 package com.carhut.services;
 
+import com.carhut.database.repository.RegistrationTokenRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.enums.RegistrationStatus;
+import com.carhut.mail.service.EmailService;
 import com.carhut.models.security.Authority;
 import com.carhut.models.security.RegisterUserBody;
+import com.carhut.models.security.RegistrationToken;
 import com.carhut.models.security.User;
+import com.carhut.paths.NetworkPaths;
 import com.carhut.util.exceptions.registration.RegistrationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,8 +23,16 @@ public class RegistrationService {
 
     @Autowired
     private UserCredentialsRepository userCredentialsRepository;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private RegistrationTokenRepository registrationTokenRepository;
 
     public RegistrationStatus registerInitiate(RegisterUserBody registerUserBody) throws RegistrationException {
+
+        if (wasRegistrationVerificationAlreadySentToEmail(registerUserBody.getEmail())) {
+            return RegistrationStatus.REGISTRATION_TOKEN_ALREADY_SENT;
+        }
 
         RegistrationStatus validationStatusOfRegistration = validateRegistrationBody(registerUserBody);
 
@@ -30,8 +42,62 @@ public class RegistrationService {
 
         saveInformationOfUserToDatabase(registerUserBody);
 
+        RegistrationToken registrationToken = generateRegistrationToken(registerUserBody);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Hello " + registerUserBody.getUsername() + ",\n");
+        stringBuilder.append("We are very excited that we can welcome you onboard.\n");
+        stringBuilder.append("Click on the following link to finish verification process.\n\n");
+        stringBuilder.append(NetworkPaths.successfulRegistrationVerificationAddress + "?token=" + registrationToken.getToken() + "\n\n");
+        stringBuilder.append("CarHut");
+
+        emailService.sendEmailMessage(registerUserBody.getEmail(), NetworkPaths.emailSender, "CarHut account verification", stringBuilder.toString());
+
         return RegistrationStatus.SUCCESS;
     }
+
+    // Check if token exists and user is in inactive state
+    private boolean wasRegistrationVerificationAlreadySentToEmail(String email) {
+        User user = userCredentialsRepository.findUserByEmail(email);
+
+        if (user == null) {
+            return false;
+        }
+
+        if (!user.isActive()) {
+            RegistrationToken registrationToken = registrationTokenRepository.findRegistrationTokenByUserId(user.getId());
+
+            if (registrationToken != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private RegistrationToken generateRegistrationToken(RegisterUserBody registerUserBody) throws RegistrationException {
+        String userId;
+        try {
+            userId = userCredentialsRepository.findUserIdByUsername(registerUserBody.getUsername());
+        }
+        catch (Exception e) {
+            throw new RegistrationException("User was not found while generating new token.");
+        }
+
+        if (userId == null) {
+            throw new RegistrationException("User was not found while generating new token.");
+        }
+
+        RegistrationToken registrationToken = new RegistrationToken(userId);
+        try {
+            registrationTokenRepository.save(registrationToken);
+        }
+        catch (Exception e) {
+            throw new RegistrationException("Error occurred while saving token to database.");
+        }
+
+        return registrationToken;
+    }
+
 
     private void saveInformationOfUserToDatabase(RegisterUserBody registerUserBody) throws RegistrationException {
 
@@ -196,5 +262,36 @@ public class RegistrationService {
         Matcher matcher = pattern.matcher(firstName);
 
         return matcher.matches();
+    }
+
+    public RegistrationStatus verifyAccount(String token) throws RegistrationException {
+        RegistrationToken registrationToken;
+
+        try {
+            registrationToken = registrationTokenRepository.findRegistrationTokenByToken(token);
+        }
+        catch (Exception e) {
+            throw new RegistrationException("Could not find registration token in database. Message: " + e.getMessage());
+        }
+
+        if (registrationToken != null) {
+            try {
+                userCredentialsRepository.setIsActiveToUserByUserId(registrationToken.getUserId());
+            }
+            catch (Exception e) {
+                throw new RegistrationException("Could not set user active. Message: " + e.getMessage());
+            }
+
+            try {
+                registrationTokenRepository.delete(registrationToken);
+            }
+            catch (Exception e) {
+                throw new RegistrationException("Could not delete registration token from database. Message: " + e.getMessage());
+            }
+
+            return RegistrationStatus.SUCCESS;
+        }
+
+        return RegistrationStatus.INVALID_REGISTRATION_TOKEN;
     }
 }
