@@ -18,4 +18,6 @@ public interface CarHutCarRepository extends JpaRepository<CarHutCar, String> {
     @Query(value = "SELECT c.seller_id FROM carhut_cars c WHERE id = :carId", nativeQuery = true)
     String getSellerIdByCarId(@Param("carId") String carId);
 
+    @Query(value = "SELECT * FROM carhut_cars WHERE seller_id = :sellerId", nativeQuery = true)
+    List<CarHutCar> getMyListings(@Param("sellerId") String sellerId);
 }

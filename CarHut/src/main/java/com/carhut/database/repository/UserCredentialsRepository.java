@@ -39,4 +39,21 @@ public interface UserCredentialsRepository extends JpaRepository<User, String> {
     @Transactional
     @Query(value = "UPDATE users SET is_active = true WHERE id = :userId", nativeQuery = true)
     void setIsActiveToUserByUserId(@Param("userId") String userId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE users SET num_of_offered_cars = num_of_offered_cars+1 WHERE id = :userId", nativeQuery = true)
+    void updateCountOfAddedOffers(@Param("userId") String userId);
+
+    @Query(value = "SELECT username FROM users WHERE id = :userId", nativeQuery = true)
+    String getUsernameByUserId(String userId);
+
+    @Query(value = "SELECT u.first_name || ' ' ||u.surname FROM users u WHERE u.id = :userId", nativeQuery = true)
+    String getFirstNameAndSurnameByUserId(@Param("userId") String userId);
+
+    @Query(value = "SELECT u.num_of_offered_cars FROM users u WHERE u.id = :userId", nativeQuery = true)
+    Integer getOffersNumByUserId(@Param("userId") String userId);
+
+    @Query(value = "SELECT u.email FROM users u WHERE u.id = :userId", nativeQuery = true)
+    String getEmailByUserId(@Param("userId") String userId);
 }

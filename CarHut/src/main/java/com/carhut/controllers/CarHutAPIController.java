@@ -1,5 +1,6 @@
 package com.carhut.controllers;
 
+import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.*;
 import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.services.CarHutAPIService;
@@ -28,6 +29,122 @@ public class CarHutAPIController {
     @Autowired
     private ImageService imageService;
     private ControllerLogger controllerLogger = ControllerLogger.getLogger();
+
+    @PostMapping("/removeOffer")
+    @ResponseBody
+    public ResponseEntity<String> removeOffer(@RequestParam String carId) {
+        try {
+            RequestStatusEntity status = carHutAPIService.removeOffer(carId);
+
+            if (status == RequestStatusEntity.SUCCESS) {
+                controllerLogger.saveToFile("[CarHutAPIController][OK]: /removeOffer - Successfully removed car offer.");
+                return ResponseEntity.internalServerError().body("Successfully removed car offer.");
+            } else {
+                controllerLogger.saveToFile("[CarHutAPIController][WARN]: /removeOffer - Something went wrong when removing offer.");
+                return ResponseEntity.internalServerError().body("Something went wrong when removing offer.");
+            }
+        }
+        catch (CarHutException e) {
+            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /removeOffer - Internal error. Message: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    @PostMapping("/getMyListings")
+    @ResponseBody
+    public ResponseEntity<List<CarHutCar>> getMyListings(@RequestParam String username) {
+        try {
+            List<CarHutCar> cars = carHutAPIService.getMyListings(username);
+
+            if (cars != null) {
+                controllerLogger.saveToFile("[CarHutAPIController][OK]: /getMyListings - Successfully retrieved listings for username: " + username);
+                return ResponseEntity.internalServerError().body(cars);
+            } else {
+                controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getMyListings - Something went wrong when retrieving listings for username: " + username);
+                return ResponseEntity.internalServerError().body(null);
+            }
+        }
+        catch (CarHutException e) {
+            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getMyListings - Internal error. Message: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    @GetMapping("/getEmailByUserId")
+    @ResponseBody
+    public ResponseEntity<String> getEmailByUserId(@RequestParam String userId) {
+        try {
+            String email = carHutAPIService.getEmailByUserId(userId);
+            if (email != null) {
+                controllerLogger.saveToFile("[CarHutAPIController][OK]: /getEmailByUserId - Successfully retrieved email.");
+                return ResponseEntity.ok(email);
+            } else {
+                controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getEmailByUserId - Couldn't retrieve email.");
+                return ResponseEntity.status(404).body(null);
+            }
+        }
+        catch (Exception e) {
+            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getEmailByUserId - Internal error. Message: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    @GetMapping("/getOffersNumByUserId")
+    @ResponseBody
+    public ResponseEntity<Integer> getOffersNumByUserId(@RequestParam String userId) {
+        try {
+            Integer offersNumByUserId = carHutAPIService.getOffersNumByUserId(userId);
+            if (offersNumByUserId != null) {
+                controllerLogger.saveToFile("[CarHutAPIController][OK]: /getOffersNumByUserId - Successfully retrieved offers num.");
+                return ResponseEntity.ok(offersNumByUserId);
+            } else {
+                controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getOffersNumByUserId - Couldn't retrieve offers num.");
+                return ResponseEntity.status(404).body(null);
+            }
+        }
+        catch (Exception e) {
+            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getOffersNumByUserId - Internal error. Message: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    @GetMapping("/getFirstNameAndSurnameByUserId")
+    @ResponseBody
+    public ResponseEntity<String> getFirstNameAndSurnameByUserId(@RequestParam String userId) {
+        try {
+            String usernameAndSurname = carHutAPIService.getFirstNameAndSurnameByUserId(userId);
+            if (usernameAndSurname != null) {
+                controllerLogger.saveToFile("[CarHutAPIController][OK]: /getFirstNameAndSurnameByUserId - Successfully retrieved username.");
+                return ResponseEntity.ok(usernameAndSurname);
+            } else {
+                controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getFirstNameAndSurnameByUserId - Couldn't retrieve username.");
+                return ResponseEntity.status(404).body(null);
+            }
+        }
+        catch (Exception e) {
+            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getFirstNameAndSurnameByUserId - Internal error. Message: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    @GetMapping("/getUsernameByUserId")
+    @ResponseBody
+    public ResponseEntity<String> getUsernameByUserId(@RequestParam String userId) {
+        try {
+            String username = carHutAPIService.getUsernameByUserId(userId);
+            if (username != null) {
+                controllerLogger.saveToFile("[CarHutAPIController][OK]: /getUsernameByUserId - Successfully retrieved username.");
+                return ResponseEntity.ok(username);
+            } else {
+                controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getUsernameByUserId - Couldn't retrieve username.");
+                return ResponseEntity.status(404).body(null);
+            }
+        }
+        catch (Exception e) {
+            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getUsernameByUserId - Internal error. Message: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
 
     @PostMapping("/getMultipleFeaturesByIds")
     @ResponseBody
@@ -544,5 +661,7 @@ public class CarHutAPIController {
     ) throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         return carHutAPIService.getNumberOfTempFilteredCars(brand, model, carType, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig, doors, location, postalCode, fuelType, powerFrom, powerTo, displacement, gearbox, powertrain);
     }
+
+
 
 }

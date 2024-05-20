@@ -3,16 +3,19 @@ package com.carhut.services;
 import ch.qos.logback.core.encoder.EchoEncoder;
 import com.carhut.database.repository.*;
 import com.carhut.datatransfer.AutobazarEUCarRepository;
+import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.*;
 import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.models.enums.BodyType;
 import com.carhut.models.enums.Fuel;
 import com.carhut.models.enums.Gearbox;
 import com.carhut.models.enums.Powertrain;
+import com.carhut.models.security.User;
 import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.temputils.repo.TempCarRepository;
+import com.carhut.util.exceptions.CarHutException;
 import com.carhut.util.exceptions.carhutapi.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -424,6 +427,7 @@ public class CarHutAPIService {
                     case "MFL", "MFH" -> sorter.sortCarsByMileage(filteredList, sortOrder);
                     case "AFL", "AFH" -> sorter.sortCarsByAlphabet(filteredList, sortOrder);
                     case "SFL", "SFH" -> sorter.sortCarsByPower(filteredList, sortOrder);
+                    case "DAO", "DAN" -> sorter.sortCarsByDateAdded(filteredList, sortOrder);
                     default -> sortedList;
                 };
             }
@@ -488,6 +492,7 @@ public class CarHutAPIService {
 
         try {
             carHutCarRepository.save(newCar);
+            userCredentialsRepository.updateCountOfAddedOffers(newCar.getSellerId());
         }
         catch (Exception e) {
             throw new CarHutAPICarCanNotBeSavedException("Error occurred while saving the car. Message: " + e.getMessage());
@@ -527,5 +532,45 @@ public class CarHutAPIService {
             featureNames.add(getFeatureNameByFeatureId(id));
         }
         return featureNames;
+    }
+
+    public String getUsernameByUserId(String userId) {
+        return userCredentialsRepository.getUsernameByUserId(userId);
+    }
+
+    public String getFirstNameAndSurnameByUserId(String userId) {
+        return userCredentialsRepository.getFirstNameAndSurnameByUserId(userId);
+    }
+
+    public Integer getOffersNumByUserId(String userId) {
+        return userCredentialsRepository.getOffersNumByUserId(userId);
+    }
+
+    public String getEmailByUserId(String userId) {
+        return userCredentialsRepository.getEmailByUserId(userId);
+    }
+
+    public List<CarHutCar> getMyListings(String username) throws CarHutAPIException {
+        try {
+            User user = userCredentialsRepository.findUserByUsername(username);
+            return carHutCarRepository.getMyListings(user.getId());
+        }
+        catch (Exception e) {
+            throw new CarHutAPIException("Couldn't retrieve data from database.");
+        }
+    }
+
+    public RequestStatusEntity removeOffer(String carId) throws CarHutAPIException {
+        try {
+            CarHutCar car = carHutCarRepository.getCarWithId(carId);
+            if (car == null) {
+                return RequestStatusEntity.ERROR;
+            }
+            carHutCarRepository.delete(car);
+            return RequestStatusEntity.SUCCESS;
+        }
+        catch (Exception e) {
+            throw new CarHutAPIException("Something went wrong when deleting car from database.");
+        }
     }
 }

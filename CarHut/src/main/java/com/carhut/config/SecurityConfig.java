@@ -41,6 +41,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/getUserDetailsInfo").hasRole("USER")
                 .requestMatchers("/api/auth/resetPassword").hasRole("USER")
                 .requestMatchers("/api/carhut/savedCars/**").hasRole("USER")
+                .requestMatchers("/api/carhut/getMyListings").hasRole("USER")
+                .requestMatchers("/api/carhut/removeOffer").hasRole("USER")
                 .anyRequest()
                 .authenticated()
                 .and()

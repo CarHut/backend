@@ -15,7 +15,6 @@ public class CarHutCar {
 
     @Id
     private String id;
-    @JoinColumn(table = "users", name = "id")
     private String sellerId;
     private String sellerAddress;
     @JoinColumn(table = "brand", name = "id")

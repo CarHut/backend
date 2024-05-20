@@ -4,6 +4,7 @@ import com.carhut.models.carhut.CarHutCar;
 import com.carhut.temputils.models.TempCarModel;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class Sorter {
@@ -165,6 +166,17 @@ public class Sorter {
             String header2 = car2.getHeader();
 
             return sortOrder.equals("ASC") ? header1.compareTo(header2) : header2.compareTo(header1);
+        });
+
+        return cars;
+    }
+
+    public List<CarHutCar> sortCarsByDateAdded(List<CarHutCar> cars, String sortOrder) {
+        cars.sort((car1, car2) -> {
+            Date date1 = car1.getDateAdded();
+            Date date2 = car2.getDateAdded();
+
+            return sortOrder.equals("ASC") ? date1.compareTo(date2) : date2.compareTo(date1);
         });
 
         return cars;
