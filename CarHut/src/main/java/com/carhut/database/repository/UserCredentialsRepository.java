@@ -56,4 +56,7 @@ public interface UserCredentialsRepository extends JpaRepository<User, String> {
 
     @Query(value = "SELECT u.email FROM users u WHERE u.id = :userId", nativeQuery = true)
     String getEmailByUserId(@Param("userId") String userId);
+
+    @Query(value = "SELECT id FROM users WHERE username = :username", nativeQuery = true)
+    String getUserIdByUsername(@Param("username") String username);
 }

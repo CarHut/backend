@@ -412,7 +412,7 @@ public class CarHutAPIService {
         }
 
         int startIndex = (currentPage - 1) * offersPerPage;
-        int endIndex = Math.min(startIndex + offersPerPage, filteredList.size() - 1) ;
+        int endIndex = Math.min(startIndex + offersPerPage, filteredList.isEmpty() ? 0 : filteredList.size() - 1) ;
 
         return filteredList.subList(startIndex, endIndex);
     }
@@ -436,10 +436,17 @@ public class CarHutAPIService {
         return sortedList;
     }
 
-    public int getNumberOfFilteredCars(String brand, String model, String carType, String priceFrom, String priceTo, String mileageFrom, String mileageTo, String registration, String seatingConfig, String doors, String location, String postalCode, String fuelType, String powerFrom, String powerTo, String displacement, String gearbox, String powertrain) throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
+    public int getNumberOfFilteredCars(String brand, String model, String carType, String priceFrom, String priceTo,
+                                       String mileageFrom, String mileageTo, String registration, String seatingConfig,
+                                       String doors, String location, String postalCode, String fuelType,
+                                       String powerFrom, String powerTo, String displacement, String gearbox,
+                                       String powertrain, List<ModelsPostModel> modelsPostModel)
+            throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         List<CarHutCar> filteredList = getAllCars();
 
-        return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList, 0, 0).size();
+        return getCarsWithFilter(brand, model,null, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig,
+                 doors, location, fuelType, postalCode, powerFrom, powerTo, displacement, gearbox, powertrain,
+                null, null, modelsPostModel, 999999999, 0).size();
     }
 
     public List<String> getBodyTypes() {
@@ -571,6 +578,15 @@ public class CarHutAPIService {
         }
         catch (Exception e) {
             throw new CarHutAPIException("Something went wrong when deleting car from database.");
+        }
+    }
+
+    public String getUserIdByUsername(String username) throws CarHutAPIException {
+        try {
+            return userCredentialsRepository.getUserIdByUsername(username);
+        }
+        catch (Exception e) {
+            throw new CarHutAPIException("Couldn't retrieve user id.");
         }
     }
 }
