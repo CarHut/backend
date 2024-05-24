@@ -11,4 +11,7 @@ public interface SavedSearchesRepository extends JpaRepository<SavedSearch, Stri
 
     @Query(value = "SELECT * FROM saved_searches WHERE user_id = :userId", nativeQuery = true)
     List<SavedSearch> getSavedSearchesByUserId(@Param("userId") String userId);
+
+    @Query(value = "SELECT * FROM saved_searches WHERE id = :id", nativeQuery = true)
+    SavedSearch getSavedSearchesBySavedSearchId(@Param("id") String id);
 }

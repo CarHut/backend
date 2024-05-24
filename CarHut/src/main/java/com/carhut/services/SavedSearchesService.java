@@ -44,4 +44,14 @@ public class SavedSearchesService {
         }
 
     }
+
+    public void removeSavedSearch(String id) throws SavedSearchesException {
+        try {
+            SavedSearch savedSearch = savedSearchesRepository.getSavedSearchesBySavedSearchId(id);
+            savedSearchesRepository.delete(savedSearch);
+        }
+        catch (Exception e) {
+            throw new SavedSearchesException("Cannot remove saved search from database. Message: " + e.getMessage());
+        }
+    }
 }

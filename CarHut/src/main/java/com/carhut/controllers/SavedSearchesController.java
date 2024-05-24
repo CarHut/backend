@@ -60,4 +60,18 @@ public class SavedSearchesController {
         }
     }
 
+    @GetMapping("/removeSavedSearch")
+    @ResponseBody
+    public ResponseEntity<String> removeSavedSearch(@RequestParam String savedSearchId) {
+        try {
+            savedSearchesService.removeSavedSearch(savedSearchId);
+            controllerLogger.saveToFile("[SavedSearchesController][OK]: /removeSavedSearch - Successfully removed saved search.");
+            return ResponseEntity.ok().body("Successfully removed saved search.");
+        }
+        catch (SavedSearchesException e) {
+            controllerLogger.saveToFile("[SavedSearchesController][ERROR]: /removeSavedSearch - Internal error. Message: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
 }
