@@ -3,13 +3,11 @@ package com.carhutchat.controllers;
 import com.carhutchat.models.Message;
 import com.carhutchat.models.requests.MessageRequestBody;
 import com.carhutchat.services.MessageService;
+import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,5 +34,24 @@ public class MessageController {
             return ResponseEntity.internalServerError().body(null);
         }
     }
+
+    @GetMapping("/getAllMyChatsByDateDesc")
+    @ResponseBody
+    public ResponseEntity<List<Message>> getAllMyChatsByDateDesc(@RequestParam String myUsername) {
+        try {
+            List<Message> messages = messageService.getAllMyChatsByDateDesc(myUsername);
+
+            if (messages != null) {
+                return ResponseEntity.ok(messages);
+            } else {
+                return ResponseEntity.status(404).body(null);
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
 
 }

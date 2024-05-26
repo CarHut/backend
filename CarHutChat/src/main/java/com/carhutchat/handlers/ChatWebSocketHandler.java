@@ -2,6 +2,7 @@ package com.carhutchat.handlers;
 
 import com.carhutchat.models.Message;
 import com.carhutchat.services.ChatCommunicationService;
+import com.carhutchat.services.ExternalAPIService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,6 +23,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
     private ChatCommunicationService chatCommunicationService;
+    @Autowired
+    private ExternalAPIService externalAPIService;
     private Map<String, WebSocketSession> sessions = new HashMap<>();
 
     @Override
@@ -54,9 +57,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String user = getUserFromSession(session);
-        String userId = chatCommunicationService.getUserIdByName(user);
+        String userId = externalAPIService.getUserIdByName(user);
         String recipient = parseRecipientFromTextMessage(message);
-        String recipientId = chatCommunicationService.getUserIdByName(recipient);
+        String recipientId = externalAPIService.getUserIdByName(recipient);
         String content = parseMessageFromTextMessage(message);
 
         WebSocketSession recipientSession = sessions.get(recipient);
