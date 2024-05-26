@@ -35,6 +35,23 @@ public class MessageController {
         }
     }
 
+    @PostMapping("/getLastFiftyMessagesWithUser")
+    @ResponseBody
+    public ResponseEntity<List<Message>> getLastFiftyMessagesWithUser(@RequestBody MessageRequestBody messageRequestBody) {
+        try {
+            List<Message> lastMessages = messageService.getLastFiftyMessagesWithUser(messageRequestBody);
+            if (lastMessages != null) {
+                return ResponseEntity.ok(lastMessages);
+            } else {
+                return ResponseEntity.status(404).body(null);
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
     @GetMapping("/getAllMyChatsByDateDesc")
     @ResponseBody
     public ResponseEntity<List<Message>> getAllMyChatsByDateDesc(@RequestParam String myUsername) {

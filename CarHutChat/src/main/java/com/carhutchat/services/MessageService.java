@@ -3,6 +3,7 @@ package com.carhutchat.services;
 import com.carhutchat.models.Message;
 import com.carhutchat.models.requests.MessageRequestBody;
 import com.carhutchat.repositories.MessageRepository;
+import jakarta.mail.MessageAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,10 @@ public class MessageService {
 
     public List<Message> getLastTenMessagesWithUser(MessageRequestBody messageRequestBody) {
         return messageRepository.getLastTenMessagesWithUser(messageRequestBody.getSenderId(), messageRequestBody.getRecipientId());
+    }
+
+    public List<Message> getLastFiftyMessagesWithUser(MessageRequestBody messageRequestBody) {
+        return messageRepository.getLastFiftyMessagesWithUser(messageRequestBody.getSenderId(), messageRequestBody.getRecipientId());
     }
 
     public List<Message> getAllMyChatsByDateDesc(String myUsername) {

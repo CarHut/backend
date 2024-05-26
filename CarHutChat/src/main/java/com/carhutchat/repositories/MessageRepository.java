@@ -30,4 +30,9 @@ public interface MessageRepository extends JpaRepository<Message, String> {
             "CASE WHEN m2.senderId < m2.recipientId THEN m2.recipientId ELSE m2.senderId END) " +
             "ORDER BY m.date DESC")
     List<Message> findLastMessagesFromUniqueChats(@Param("myId") String myId);
+
+
+    @Query(value = "SELECT * FROM messages " +
+            "WHERE sender_id = :senderId AND recipient_id = :recipientId OR sender_id = :recipientId AND recipient_id = :senderId ORDER BY date DESC LIMIT 50", nativeQuery = true)
+    List<Message> getLastFiftyMessagesWithUser(String senderId, String recipientId);
 }
