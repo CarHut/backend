@@ -36,3 +36,6 @@ build/
 /src/main/java/com/carhutchat/secret/
 /src/main/resources/env.properties
 
+### logs ###
+/logs/
+

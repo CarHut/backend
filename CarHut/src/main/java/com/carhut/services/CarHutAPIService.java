@@ -441,11 +441,10 @@ public class CarHutAPIService {
                                        String doors, String location, String postalCode, String fuelType,
                                        String powerFrom, String powerTo, String displacement, String gearbox,
                                        String powertrain, List<ModelsPostModel> modelsPostModel)
-            throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
-        List<CarHutCar> filteredList = getAllCars();
-
+            throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException
+    {
         return getCarsWithFilter(brand, model,null, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig,
-                 doors, location, fuelType, postalCode, powerFrom, powerTo, displacement, gearbox, powertrain,
+                 doors, location, postalCode, fuelType, powerFrom, powerTo, displacement, gearbox, powertrain,
                 null, null, modelsPostModel, 999999999, 0).size();
     }
 
