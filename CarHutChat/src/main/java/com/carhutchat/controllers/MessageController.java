@@ -3,8 +3,9 @@ package com.carhutchat.controllers;
 import com.carhutchat.models.Message;
 import com.carhutchat.models.requests.MessageRequestBody;
 import com.carhutchat.services.MessageService;
+import com.carhutchat.util.exceptions.externalapiservice.ExternalAPIServiceException;
+import com.carhutchat.util.exceptions.messageservice.MessageServiceException;
 import com.carhutchat.util.loggers.ControllerLogger;
-import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,7 +35,7 @@ public class MessageController {
                 return ResponseEntity.status(404).body(null);
             }
         }
-        catch (Exception e) {
+        catch (MessageServiceException e) {
             controllerLogger.saveToFile("[MessageController][ERROR]: /getLastTenMessagesWithUser - something went wrong internally. (sender=" + messageRequestBody.getSenderId() + ", recipient=" + messageRequestBody.getRecipientId() + ") - Message: " + e.getMessage());
             return ResponseEntity.internalServerError().body(null);
         }
@@ -53,7 +54,7 @@ public class MessageController {
                 return ResponseEntity.status(404).body(null);
             }
         }
-        catch (Exception e) {
+        catch (MessageServiceException e) {
             controllerLogger.saveToFile("[MessageController][ERROR]: /getLastFiftyMessagesWithUser - something went wrong internally. (sender=" + messageRequestBody.getSenderId() + ", recipient=" + messageRequestBody.getRecipientId() + ") - Message: " + e.getMessage());
             return ResponseEntity.internalServerError().body(null);
         }
@@ -73,7 +74,7 @@ public class MessageController {
                 return ResponseEntity.status(404).body(null);
             }
         }
-        catch (Exception e) {
+        catch (MessageServiceException | ExternalAPIServiceException e) {
             controllerLogger.saveToFile("[MessageController][ERROR]: /getAllMyChatsByDateDesc - something went wrong internally. (username=" + myUsername + ") - Message: " + e.getMessage());
             return ResponseEntity.internalServerError().body(null);
         }
