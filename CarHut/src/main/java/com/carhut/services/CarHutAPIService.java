@@ -1,6 +1,5 @@
 package com.carhut.services;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
 import com.carhut.database.repository.*;
 import com.carhut.datatransfer.AutobazarEUCarRepository;
 import com.carhut.enums.RequestStatusEntity;
@@ -15,7 +14,6 @@ import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.temputils.repo.TempCarRepository;
-import com.carhut.util.exceptions.CarHutException;
 import com.carhut.util.exceptions.carhutapi.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -311,100 +309,111 @@ public class CarHutAPIService {
 
     }
 
-    public List<CarHutCar> getCarsWithFilter(String brand, String model, String carType, String priceFrom, String priceTo,
-                                             String mileageFrom, String mileageTo, String registration, String seatingConfig,
-                                             String doors, String location, String postalCode, String fuelType,
-                                             String powerFrom, String powerTo, String displacement, String gearbox,
-                                             String powertrain, String sortBy, String sortOrder, List<ModelsPostModel> models,
-                                             Integer offersPerPage, Integer currentPage)
+    public List<CarHutCar> getCarsWithFilter(CarHutCarFilterModel carHutCarFilterModel, String sortBy, String sortOrder, Integer offersPerPage, Integer currentPage)
                                             throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
-        if (models != null && !models.isEmpty()) {
+        if (carHutCarFilterModel.getModels() != null && !carHutCarFilterModel.getModels().isEmpty()) {
             List<CarHutCar> resultList = new ArrayList<>();
-            for (ModelsPostModel car : models) {
+            for (ModelsPostModel car : carHutCarFilterModel.getModels()) {
                 List<CarHutCar> filteredList = getAllCars();
-                resultList.addAll(filterCarModels(car.getBrand(), car.getModel(), priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, filteredList, offersPerPage, currentPage));
+                resultList.addAll(filterCarModels(car.getBrand(), car.getModel(), carHutCarFilterModel, filteredList, offersPerPage, currentPage));
             }
             return sortCars(sortBy, sortOrder, resultList);
         }
 
-        return filterCarModels(brand, model, priceFrom, priceTo, mileageFrom, mileageTo, fuelType, gearbox, powertrain, powerFrom, powerTo, getAllCars(), offersPerPage, currentPage);
+        return filterCarModels(null, null, carHutCarFilterModel, getAllCars(), offersPerPage, currentPage);
     }
 
-    private List<CarHutCar> filterCarModels(String brand, String model, String priceFrom, String priceTo, String mileageFrom,
-                                            String mileageTo, String fuelType, String gearbox, String powertrain,
-                                            String powerFrom, String powerTo, List<CarHutCar> filteredList,
-                                            Integer offersPerPage, Integer currentPage)
+    private boolean isStringNullOrEmpty(String string) {
+        return string == null || string.isEmpty();
+    }
+
+    // Firstly, it filters more obscure search params, so it filters faster
+    private List<CarHutCar> filterCarModels(String brand, String model, CarHutCarFilterModel carHutCarFilterModel, List<CarHutCar> filteredList, Integer offersPerPage, Integer currentPage)
             throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         Filter filter = new Filter();
 
-        if (brand != null) {
-            if (!brand.isEmpty()) {
-                Integer brandId = getBrandIdFromBrandName(brand);
-                filter.filterCarBrands(filteredList, brandId);
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getSeatingConfig())) {
+            filter.filterCarSeatingConfig(filteredList, carHutCarFilterModel.getSeatingConfig());
+        }
+
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getDoors())) {
+            filter.filterCarDoors(filteredList, carHutCarFilterModel.getDoors());
+        }
+
+        if (carHutCarFilterModel.getCarTypes() != null) {
+            if (!carHutCarFilterModel.getCarTypes().isEmpty()) {
+                filter.filterCarTypes(filteredList, carHutCarFilterModel.getCarTypes());
             }
         }
 
-        if (model != null) {
-            if (!model.isEmpty()) {
-                Integer modelId = getModelIdFromModelName(model, getBrandIdFromBrandName(brand));
-                filter.filterCarModels(filteredList, modelId);
-            }
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getRegistrationFrom())) {
+            filter.filterCarRegistrationFrom(filteredList, carHutCarFilterModel.getRegistrationFrom());
         }
 
-        // carType coming soon
-
-        if (priceFrom != null) {
-            if (!priceFrom.isEmpty()) {
-                filter.filterCarPriceFrom(filteredList, priceFrom);
-            }
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getRegistrationTo())) {
+            filter.filterCarRegistrationTo(filteredList, carHutCarFilterModel.getRegistrationTo());
         }
 
-        if (priceTo != null) {
-            if (!priceTo.isEmpty()) {
-                filter.filterCarPriceTo(filteredList, priceTo);
-            }
+        // There might be a multiple models so check brand of models list first
+        if (!isStringNullOrEmpty(brand)) {
+            Integer brandId = getBrandIdFromBrandName(brand);
+            filter.filterCarBrands(filteredList, brandId);
+        } else if (!isStringNullOrEmpty(carHutCarFilterModel.getBrand())) {
+            Integer brandId = getBrandIdFromBrandName(carHutCarFilterModel.getBrand());
+            filter.filterCarBrands(filteredList, brandId);
         }
 
-        if (mileageFrom != null) {
-            if (!mileageFrom.isEmpty()) {
-                filter.filterCarMileageFrom(filteredList, mileageFrom);
-            }
+        // Same as with brand, check model of models list first
+        if (!isStringNullOrEmpty(model)) {
+            Integer modelId = getModelIdFromModelName(model, getBrandIdFromBrandName(brand)); // -> brand is certainly not null
+            filter.filterCarModels(filteredList, modelId);
+        } else if (!isStringNullOrEmpty(carHutCarFilterModel.getModel())) {
+            Integer modelId = getModelIdFromModelName(carHutCarFilterModel.getModel(), getBrandIdFromBrandName(carHutCarFilterModel.getBrand()));
+            filter.filterCarModels(filteredList, modelId);
         }
 
-        if (mileageTo != null) {
-            if (!mileageTo.isEmpty()) {
-                filter.filterCarMileageTo(filteredList, mileageTo);
-            }
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getPriceFrom())) {
+            filter.filterCarPriceFrom(filteredList, carHutCarFilterModel.getPriceFrom());
         }
 
-        if (fuelType != null) {
-            if (!fuelType.isEmpty()) {
-                filter.filterCarFuelType(filteredList, fuelType);
-            }
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getPriceTo())) {
+            filter.filterCarPriceTo(filteredList, carHutCarFilterModel.getPriceTo());
         }
 
-        if (gearbox != null) {
-            if (!gearbox.isEmpty()) {
-                filter.filterCarGearbox(filteredList, gearbox);
-            }
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getMileageFrom())) {
+            filter.filterCarMileageFrom(filteredList, carHutCarFilterModel.getMileageFrom());
         }
 
-        if (powertrain != null) {
-            if (!powertrain.isEmpty()) {
-                filter.filterCarPowertrain(filteredList, powertrain);
-            }
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getMileageTo())) {
+            filter.filterCarMileageTo(filteredList, carHutCarFilterModel.getMileageTo());
         }
 
-        if (powerFrom != null) {
-            if (!powerFrom.isEmpty()) {
-                filter.filterCarPowerFrom(filteredList, powerFrom);
-            }
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getFuelType())) {
+            filter.filterCarFuelType(filteredList, carHutCarFilterModel.getFuelType());
         }
 
-        if (powerTo != null) {
-            if (!powerTo.isEmpty()) {
-                filter.filterCarPowerTo(filteredList, powerTo);
-            }
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getGearbox())) {
+            filter.filterCarGearbox(filteredList, carHutCarFilterModel.getGearbox());
+        }
+
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getPowertrain())) {
+            filter.filterCarPowertrain(filteredList, carHutCarFilterModel.getPowertrain());
+        }
+
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getPowerFrom())) {
+            filter.filterCarPowerFrom(filteredList, carHutCarFilterModel.getPowerFrom());
+        }
+
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getPowerTo())) {
+            filter.filterCarPowerTo(filteredList, carHutCarFilterModel.getPowerTo());
+        }
+
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getDisplacementFrom())) {
+            filter.filterCarDisplacementFrom(filteredList, carHutCarFilterModel.getDisplacementFrom());
+        }
+
+        if (!isStringNullOrEmpty(carHutCarFilterModel.getDisplacementTo())) {
+            filter.filterCarDisplacementTo(filteredList, carHutCarFilterModel.getDisplacementTo());
         }
 
         if (offersPerPage == 0 || currentPage == 0) {
@@ -436,16 +445,10 @@ public class CarHutAPIService {
         return sortedList;
     }
 
-    public int getNumberOfFilteredCars(String brand, String model, String carType, String priceFrom, String priceTo,
-                                       String mileageFrom, String mileageTo, String registration, String seatingConfig,
-                                       String doors, String location, String postalCode, String fuelType,
-                                       String powerFrom, String powerTo, String displacement, String gearbox,
-                                       String powertrain, List<ModelsPostModel> modelsPostModel)
+    public int getNumberOfFilteredCars(CarHutCarFilterModel carHutCarFilterModel)
             throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException
     {
-        return getCarsWithFilter(brand, model,null, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig,
-                 doors, location, postalCode, fuelType, powerFrom, powerTo, displacement, gearbox, powertrain,
-                null, null, modelsPostModel, 999999999, 0).size();
+        return getCarsWithFilter(carHutCarFilterModel, null, null, Integer.MAX_VALUE, 1).size();
     }
 
     public List<String> getBodyTypes() {

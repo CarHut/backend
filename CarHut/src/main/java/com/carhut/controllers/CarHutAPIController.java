@@ -526,32 +526,14 @@ public class CarHutAPIController {
     @PostMapping("/getCarsWithFilters")
     @ResponseBody
     public ResponseEntity<List<CarHutCar>> getCarsWithFilters(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String carType,
-            @RequestParam(required = false) String priceFrom,
-            @RequestParam(required = false) String priceTo,
-            @RequestParam(required = false) String mileageFrom,
-            @RequestParam(required = false) String mileageTo,
-            @RequestParam(required = false) String registration,
-            @RequestParam(required = false) String seatingConfig,
-            @RequestParam(required = false) String doors,
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) String postalCode,
-            @RequestParam(required = false) String fuelType,
-            @RequestParam(required = false) String powerFrom,
-            @RequestParam(required = false) String powerTo,
-            @RequestParam(required = false) String displacement,
-            @RequestParam(required = false) String gearbox,
-            @RequestParam(required = false) String powertrain,
+            @RequestBody(required = false) CarHutCarFilterModel carHutCarFilterModel,
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String sortOrder,
-            @RequestBody(required = false) List<ModelsPostModel> models,
             @RequestParam(required = false) Integer offersPerPage,
             @RequestParam(required = false) Integer currentPage
     ) {
         try {
-            List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(brand, model, carType, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig, doors, location, postalCode, fuelType, powerFrom, powerTo, displacement, gearbox, powertrain, sortBy, sortOrder, models, offersPerPage, currentPage);
+            List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, currentPage);
 
             if (cars != null) {
                 controllerLogger.saveToFile("[CarHutAPIController][OK]: /getCarsWithFilters - Successfully retrieved data.");
@@ -569,29 +551,9 @@ public class CarHutAPIController {
 
     @PostMapping("/getNumberOfFilteredCars")
     @ResponseBody
-    public ResponseEntity<Integer> getNumberOfFilteredCars(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String carType,
-            @RequestParam(required = false) String priceFrom,
-            @RequestParam(required = false) String priceTo,
-            @RequestParam(required = false) String mileageFrom,
-            @RequestParam(required = false) String mileageTo,
-            @RequestParam(required = false) String registration,
-            @RequestParam(required = false) String seatingConfig,
-            @RequestParam(required = false) String doors,
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) String postalCode,
-            @RequestParam(required = false) String fuelType,
-            @RequestParam(required = false) String powerFrom,
-            @RequestParam(required = false) String powerTo,
-            @RequestParam(required = false) String displacement,
-            @RequestParam(required = false) String gearbox,
-            @RequestParam(required = false) String powertrain,
-            @RequestBody(required = false) List<ModelsPostModel> modelsPostModel
-    ) {
+    public ResponseEntity<Integer> getNumberOfFilteredCars(@RequestBody CarHutCarFilterModel carHutCarFilterModel) {
         try {
-            Integer size = carHutAPIService.getNumberOfFilteredCars(brand, model, carType, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig, doors, location, postalCode, fuelType, powerFrom, powerTo, displacement, gearbox, powertrain, modelsPostModel);
+            Integer size = carHutAPIService.getNumberOfFilteredCars(carHutCarFilterModel);
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /getNumberOfFilteredCars - Successfully retrieved data.");
             return ResponseEntity.ok(size);
         }
