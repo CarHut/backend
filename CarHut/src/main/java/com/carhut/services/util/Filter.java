@@ -1,5 +1,6 @@
 package com.carhut.services.util;
 
+import ch.qos.logback.core.encoder.EchoEncoder;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.temputils.models.TempCarModel;
 
@@ -81,8 +82,6 @@ public class Filter {
         cars.removeIf(car -> Double.valueOf(car.getEnginePower().replaceAll("kW|NotStated", "").isEmpty() ? "0" : car.getEnginePower().replaceAll("kW", "")) > powerToToInt);
     }
 
-
-
     public void filterCarBrands(List<CarHutCar> cars, Integer brand) {
         cars.removeIf(car -> car.getBrandId() != brand);
     }
@@ -93,11 +92,25 @@ public class Filter {
 
     public void filterCarPriceFrom(List<CarHutCar> cars, String priceFrom) {
         if (priceFrom.equals("priceMore")) {
-            cars.removeIf(car -> Integer.parseInt(car.getPrice().replaceAll("€", "")) < 200000);
+            cars.removeIf(car -> {
+                try {
+                    int price = Integer.parseInt(car.getPrice().replaceAll("€", "").trim());
+                    return price < 200000;
+                } catch (Exception e) {
+                    return true;
+                }
+            });
             return;
         }
         int priceFromInt = Integer.parseInt(priceFrom);
-        cars.removeIf(car -> Integer.parseInt(car.getPrice().replaceAll("€", "")) < priceFromInt);
+        cars.removeIf(car -> {
+            try {
+                int price = Integer.parseInt(car.getPrice().replaceAll("€", "").trim());
+                return price < priceFromInt;
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
 
     public void filterCarPriceTo(List<CarHutCar> cars, String priceTo) {
@@ -106,16 +119,37 @@ public class Filter {
             return;
         }
         int priceToInt = Integer.parseInt(priceTo);
-        cars.removeIf(car -> Integer.parseInt(car.getPrice().replaceAll("€", "")) > priceToInt);
+        cars.removeIf(car -> {
+            try {
+                int price = Integer.parseInt(car.getPrice().replaceAll("€", "").trim());
+                return price > priceToInt;
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
 
     public void filterCarMileageFrom(List<CarHutCar> cars, String mileageFrom) {
         if (mileageFrom.equals("mileageMore")) {
-            cars.removeIf(car -> Integer.parseInt(car.getMileage().replaceAll("[\\s\\u00A0]|km|neuvedené", "").isEmpty() ? "0" : car.getMileage().replaceAll("[\\s\\u00A0]|km", "")) < 200000);
+            cars.removeIf(car -> {
+                try {
+                    int mileage = Integer.parseInt(car.getMileage().replaceAll("[\\s\\u00A0]|km|neuvedené", "").isEmpty() ? "0" : car.getMileage().replaceAll("[\\s\\u00A0]|km", "").trim());
+                    return mileage < 200000;
+                } catch (Exception e) {
+                    return true;
+                }
+            });
             return;
         }
         int mileageFromInt = Integer.parseInt(mileageFrom);
-        cars.removeIf(car -> Integer.parseInt(car.getMileage().replaceAll("[\\s\\u00A0]|km|neuvedené", "").isEmpty() ? "0" : car.getMileage().replaceAll("[\\s\\u00A0]|km", "")) < mileageFromInt);
+        cars.removeIf(car -> {
+            try {
+                int mileage = Integer.parseInt(car.getMileage().replaceAll("[\\s\\u00A0]|km|neuvedené", "").isEmpty() ? "0" : car.getMileage().replaceAll("[\\s\\u00A0]|km", "").trim());
+                return mileage < mileageFromInt;
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
 
     public void filterCarMileageTo(List<CarHutCar> cars, String mileageTo) {
@@ -124,7 +158,14 @@ public class Filter {
             return;
         }
         int mileageToInt = Integer.parseInt(mileageTo);
-        cars.removeIf(car -> Integer.parseInt(car.getMileage().replaceAll("[\\s\\u00A0]|km|neuvedené", "").isEmpty() ? "0" : car.getMileage().replaceAll("[\\s\\u00A0]|km", "")) > mileageToInt);
+        cars.removeIf(car -> {
+            try {
+                int mileage = Integer.parseInt(car.getMileage().replaceAll("[\\s\\u00A0]|km|neuvedené", "").isEmpty() ? "0" : car.getMileage().replaceAll("[\\s\\u00A0]|km", "").trim());
+                return mileage > mileageToInt;
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
 
     public void filterCarFuelType(List<CarHutCar> cars, String fuelType) {
@@ -141,11 +182,25 @@ public class Filter {
 
     public void filterCarPowerFrom(List<CarHutCar> cars, String powerFrom) {
         if (powerFrom.equals("powerMore")) {
-            cars.removeIf(car -> Double.valueOf(car.getEnginePower().replaceAll("kW|NotStated", "").isEmpty() ? "0" : car.getEnginePower().replaceAll("kW", "")) < 300);
+            cars.removeIf(car -> {
+                try {
+                    double power = Double.valueOf(car.getEnginePower().replaceAll("kW|NotStated", "").isEmpty() ? "0" : car.getEnginePower().replaceAll("kW", "").trim());
+                    return power < 300;
+                } catch (Exception e) {
+                    return true;
+                }
+            });
             return;
         }
         int powerFromToInt = Integer.parseInt(powerFrom);
-        cars.removeIf(car -> Double.valueOf(car.getEnginePower().replaceAll("kW|NotStated", "").isEmpty() ? "0" : car.getEnginePower().replaceAll("kW", "")) < powerFromToInt);
+        cars.removeIf(car -> {
+            try {
+                double power = Double.valueOf(car.getEnginePower().replaceAll("kW|NotStated", "").isEmpty() ? "0" : car.getEnginePower().replaceAll("kW", "").trim());
+                return power < powerFromToInt;
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
     public void filterCarPowerTo(List<CarHutCar> cars, String powerTo) {
         // No need to filter out because there isn't upper limit
@@ -153,7 +208,14 @@ public class Filter {
             return;
         }
         int powerToToInt = Integer.parseInt(powerTo);
-        cars.removeIf(car -> Double.valueOf(car.getEnginePower().replaceAll("kW|NotStated", "").isEmpty() ? "0" : car.getEnginePower().replaceAll("kW", "")) > powerToToInt);
+        cars.removeIf(car -> {
+            try {
+                double power = Double.valueOf(car.getEnginePower().replaceAll("kW|NotStated", "").isEmpty() ? "0" : car.getEnginePower().replaceAll("kW", "").trim());
+                return power > powerToToInt;
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
 
     public void filterCarTypes(List<CarHutCar> cars, List<String> carTypes) {
@@ -165,7 +227,13 @@ public class Filter {
         if (registrationFrom.equals("registrationOlder")) {
             return;
         }
-        cars.removeIf(car -> !car.getRegistration().equals("NotStated") ? Integer.parseInt(registrationFrom) > Integer.parseInt(car.getRegistration()) : false);
+        cars.removeIf(car -> {
+            try {
+                return !car.getRegistration().equals("NotStated") ? Integer.parseInt(registrationFrom) > Integer.parseInt(car.getRegistration()) : false;
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
 
     public void filterCarRegistrationTo(List<CarHutCar> cars, String registrationTo) {
@@ -173,7 +241,13 @@ public class Filter {
             cars.removeIf(car -> 1960 < Integer.parseInt(car.getRegistration()));
             return;
         }
-        cars.removeIf(car -> !car.getRegistration().equals("NotStated") ? Integer.parseInt(registrationTo) < Integer.parseInt(car.getRegistration()) : false);
+        cars.removeIf(car -> {
+            try {
+                return !car.getRegistration().equals("NotStated") ? Integer.parseInt(registrationTo) < Integer.parseInt(car.getRegistration()) : false;
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
 
     public void filterCarSeatingConfig(List<CarHutCar> cars, String seatingConfig) {
@@ -186,16 +260,34 @@ public class Filter {
 
     public void filterCarDisplacementFrom(List<CarHutCar> cars, String displacementFrom) {
         if (displacementFrom.equals("displacementMore")) {
-            cars.removeIf(car -> 200000 > Integer.parseInt(car.getEngineDisplacement()));
+            cars.removeIf(car -> {
+                try {
+                    return 200000 > Integer.parseInt(car.getEngineDisplacement());
+                } catch (Exception e) {
+                    return true;
+                }
+            });
             return;
         }
-        cars.removeIf(car -> Integer.parseInt(displacementFrom) > Integer.parseInt(car.getEngineDisplacement()));
+        cars.removeIf(car -> {
+            try {
+                return Integer.parseInt(displacementFrom) > Integer.parseInt(car.getEngineDisplacement());
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
 
     public void filterCarDisplacementTo(List<CarHutCar> cars, String displacementTo) {
         if (displacementTo.equals("displacementMore")) {
             return;
         }
-        cars.removeIf(car -> Integer.parseInt(displacementTo) < Integer.parseInt(car.getEngineDisplacement()));
+        cars.removeIf(car -> {
+            try {
+                return Integer.parseInt(displacementTo) < Integer.parseInt(car.getEngineDisplacement());
+            } catch (Exception e) {
+                return true;
+            }
+        });
     }
 }

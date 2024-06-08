@@ -3,6 +3,7 @@ package com.carhut.services.util;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.temputils.models.TempCarModel;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -88,7 +89,11 @@ public class Sorter {
             return Integer.MAX_VALUE; // Assigning a large value to represent empty strings
         }
 
-        return Integer.parseInt(string.replaceAll("[^0-9]", ""));
+        try {
+            return Integer.parseInt(string.replaceAll("[^0-9]", ""));
+        } catch (Exception e) {
+            return Integer.MAX_VALUE;
+        }
     }
 
     private double extractDoubleNumberFromString(String string) {
@@ -96,7 +101,11 @@ public class Sorter {
             return Double.MAX_VALUE;
         }
 
-        return Double.valueOf(string.replaceAll("kW", ""));
+        try {
+            return Double.valueOf(string.replaceAll("kW", ""));
+        } catch (Exception e) {
+            return Integer.MAX_VALUE;
+        }
     }
 
     @Deprecated
@@ -161,12 +170,13 @@ public class Sorter {
     }
 
     public List<CarHutCar> sortCarsByAlphabet(List<CarHutCar> cars, String sortOrder) {
-        cars.sort((car1, car2) -> {
-            String header1 = car1.getHeader();
-            String header2 = car2.getHeader();
-
-            return sortOrder.equals("ASC") ? header1.compareTo(header2) : header2.compareTo(header1);
-        });
+        if (sortOrder.equalsIgnoreCase("ASC")) {
+            cars.sort(Comparator.comparing(CarHutCar::getHeader));
+        } else if (sortOrder.equalsIgnoreCase("DESC")) {
+            cars.sort(Comparator.comparing(CarHutCar::getHeader).reversed());
+        } else {
+            throw new IllegalArgumentException("Invalid sort order: " + sortOrder);
+        }
 
         return cars;
     }

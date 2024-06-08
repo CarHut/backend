@@ -4,13 +4,11 @@ import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.*;
 import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.services.CarHutAPIService;
-import com.carhut.services.ImageService;
+import com.carhut.services.CarImageService;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.util.exceptions.CarHutException;
 import com.carhut.util.exceptions.carhutapi.*;
 import com.carhut.util.loggers.ControllerLogger;
-import org.apache.coyote.Response;
-import org.hibernate.id.IntegralDataTypeHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,7 @@ public class CarHutAPIController {
     @Autowired
     private CarHutAPIService carHutAPIService;
     @Autowired
-    private ImageService imageService;
+    private CarImageService carImageService;
     private ControllerLogger controllerLogger = ControllerLogger.getLogger();
 
     @GetMapping("/getUserIdByUsername")
@@ -230,7 +228,7 @@ public class CarHutAPIController {
     public ResponseEntity<List<byte[]>> getImages(@RequestParam String carId) {
         List<byte[]> images = null;
         try {
-            images = imageService.getImagesWithCarId(carId);
+            images = carImageService.getImagesWithCarId(carId);
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /getImages successfully executed.");
         } catch (Exception e) {
             controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getColorStringNameFromColorId something went wrong. Message: " + e.getMessage());
@@ -258,45 +256,19 @@ public class CarHutAPIController {
         }
     }
 
-    @PostMapping("/addCarToDatabase")
+    @PostMapping(value = "/addCarToDatabase", consumes = "multipart/form-data")
     @ResponseBody
-    public ResponseEntity<String> addCarToDatabase(@RequestBody CarHutCar carHutCar) {
+    public ResponseEntity<String> addCarToDatabase(@RequestPart("carHutCar") CarHutCar carHutCar,
+                                                   @RequestPart("multipartFiles") List<MultipartFile> multipartFiles) {
         try {
             carHutAPIService.addCarToDatabase(carHutCar);
-            imageService.addImagesToDatabase(carHutCar);
+            carImageService.addImagesToDatabase(carHutCar, multipartFiles);
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /addCarToDatabase - Successfully executed.");
             return ResponseEntity.ok("Car was successfully added to database.");
         } catch (Exception e) {
             controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /addCarToDatabase - Internal error. Message: " + e.getMessage());
             return ResponseEntity.internalServerError().body("Something went wrong while trying to add car to database.");
         }
-    }
-
-    @PostMapping("/uploadImage")
-    @ResponseBody
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image,  @RequestParam("username") String username) {
-        try {
-            imageService.uploadImageToFileSystem(image, username);
-            controllerLogger.saveToFile("[CarHutAPIController][OK]: /uploadImage - Successfully executed.");
-            return ResponseEntity.ok("Image uploaded successfully!");
-        } catch (Exception e) {
-            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /uploadImage - Internal error. Message: " + e.getMessage());
-            return ResponseEntity.internalServerError().body("Failed to upload image.");
-        }
-    }
-
-    @Deprecated
-    @RequestMapping("/getImageById")
-    @ResponseBody
-    public Image getImageById(@RequestParam String id) {
-        return imageService.getImageById(id);
-    }
-
-    @Deprecated
-    @RequestMapping("/getImagesByCarId/{carId}")
-    @ResponseBody
-    public List<Image> getImagesByCarId(@PathVariable String carId) {
-        return imageService.getImagesByCarId(carId);
     }
 
     @RequestMapping("/getFeatures")
@@ -526,7 +498,7 @@ public class CarHutAPIController {
     @PostMapping("/getCarsWithFilters")
     @ResponseBody
     public ResponseEntity<List<CarHutCar>> getCarsWithFilters(
-            @RequestBody(required = false) CarHutCarFilterModel carHutCarFilterModel,
+            @RequestBody CarHutCarFilterModel carHutCarFilterModel,
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String sortOrder,
             @RequestParam(required = false) Integer offersPerPage,

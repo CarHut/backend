@@ -315,12 +315,19 @@ public class CarHutAPIService {
             List<CarHutCar> resultList = new ArrayList<>();
             for (ModelsPostModel car : carHutCarFilterModel.getModels()) {
                 List<CarHutCar> filteredList = getAllCars();
-                resultList.addAll(filterCarModels(car.getBrand(), car.getModel(), carHutCarFilterModel, filteredList, offersPerPage, currentPage));
+                resultList.addAll(filterCarModels(car.getBrand(), car.getModel(), carHutCarFilterModel, filteredList));
             }
-            return sortCars(sortBy, sortOrder, resultList);
+            return stripCarHutCarList(sortCars(sortBy, sortOrder, resultList), offersPerPage, currentPage);
         }
 
-        return filterCarModels(null, null, carHutCarFilterModel, getAllCars(), offersPerPage, currentPage);
+        return stripCarHutCarList(sortCars(sortBy, sortOrder, filterCarModels(carHutCarFilterModel.getBrand(), carHutCarFilterModel.getModel(), carHutCarFilterModel, getAllCars())), offersPerPage, currentPage);
+    }
+
+    private List<CarHutCar> stripCarHutCarList(List<CarHutCar> list, Integer offersPerPage, Integer currentPage) {
+        int startIndex = (currentPage - 1) * offersPerPage;
+        int endIndex = Math.min(startIndex + offersPerPage, list.isEmpty() ? 0 : list.size() - 1) ;
+
+        return list.subList(startIndex, endIndex);
     }
 
     private boolean isStringNullOrEmpty(String string) {
@@ -328,7 +335,7 @@ public class CarHutAPIService {
     }
 
     // Firstly, it filters more obscure search params, so it filters faster
-    private List<CarHutCar> filterCarModels(String brand, String model, CarHutCarFilterModel carHutCarFilterModel, List<CarHutCar> filteredList, Integer offersPerPage, Integer currentPage)
+    private List<CarHutCar> filterCarModels(String brand, String model, CarHutCarFilterModel carHutCarFilterModel, List<CarHutCar> filteredList)
             throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         Filter filter = new Filter();
 
@@ -416,14 +423,7 @@ public class CarHutAPIService {
             filter.filterCarDisplacementTo(filteredList, carHutCarFilterModel.getDisplacementTo());
         }
 
-        if (offersPerPage == 0 || currentPage == 0) {
-            return filteredList;
-        }
-
-        int startIndex = (currentPage - 1) * offersPerPage;
-        int endIndex = Math.min(startIndex + offersPerPage, filteredList.isEmpty() ? 0 : filteredList.size() - 1) ;
-
-        return filteredList.subList(startIndex, endIndex);
+        return filteredList;
     }
 
     private List<CarHutCar> sortCars(String sortBy, String sortOrder, List<CarHutCar> filteredList) {
