@@ -4,6 +4,7 @@ import com.carhut.database.repository.ResetPasswordTokenRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.mail.service.EmailService;
+import com.carhut.models.security.Authority;
 import com.carhut.models.security.User;
 import com.carhut.models.security.PasswordResetRequestBody;
 import com.carhut.models.security.PasswordResetToken;
@@ -11,6 +12,8 @@ import com.carhut.paths.NetworkPaths;
 import com.carhut.util.exceptions.authentication.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +30,8 @@ public class AuthenticationService {
     private EmailService emailService;
     @Autowired
     private UserCredentialsRepository userCredentialsRepository;
+    @Autowired
+    private OpaqueTokenIntrospector introspector;
 
     public RequestStatusEntity resetPasswordSendEmail(String email, UserCredentialsService userCredentialsService) throws CarHutAuthenticationException {
         User user;
@@ -47,7 +52,7 @@ public class AuthenticationService {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Hello, please click on the following link to finish the password reset procedure.\n");
-        stringBuilder.append(NetworkPaths.publicIPAddress + "api/auth/passwordReset?resetPasswordToken=").append(token);
+        stringBuilder.append(NetworkPaths.publicIPAddress + ":3000/passwordReset?resetPasswordToken=").append(token);
         stringBuilder.append("\n\n");
         stringBuilder.append("CarHut");
 
@@ -136,5 +141,33 @@ public class AuthenticationService {
         }
 
         return RequestStatusEntity.SUCCESS;
+    }
+
+    public boolean createAccountForUserLoggedWithGoogleOAuth2(String token) {
+        OAuth2AuthenticatedPrincipal userInfo = introspector.introspect(token);
+
+        if (userExists(userInfo)) {
+            return false;
+        }
+
+        User user = new User(
+                userInfo.getAttributes().get("name").toString(),
+                "",
+                userInfo.getAttributes().get("email").toString(),
+                "",
+                "",
+                new java.sql.Date(System.currentTimeMillis()),
+                0,
+                true,
+                new Authority(2, "ROLE_USER")
+        );
+
+        userCredentialsRepository.save(user);
+        return true;
+    }
+
+    private boolean userExists(OAuth2AuthenticatedPrincipal user) {
+        User user1 = userCredentialsRepository.findUserByEmail(user.getAttributes().get("email").toString());
+        return user1 != null;
     }
 }

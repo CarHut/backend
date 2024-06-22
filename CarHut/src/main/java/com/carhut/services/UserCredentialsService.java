@@ -2,9 +2,9 @@ package com.carhut.services;
 
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.models.security.User;
+import com.carhut.models.security.UserDetailsRequestBody;
 import com.carhut.util.exceptions.usercredentials.UserCredentialsNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,9 +30,9 @@ public class UserCredentialsService implements UserDetailsService {
         }
     }
 
-    public User getUserDetailsInfo(String username) throws UserCredentialsNotFoundException {
+    public User getUserDetailsInfo(UserDetailsRequestBody userDetailsRequestBody) throws UserCredentialsNotFoundException {
         try {
-            return userCredentialsRepository.findUserByUsername(username);
+            return userCredentialsRepository.findUserByUsername(userDetailsRequestBody.getUsername());
         }
         catch (Exception e) {
             throw new UserCredentialsNotFoundException("Internal error while getting user from database. Message: " + e.getMessage());

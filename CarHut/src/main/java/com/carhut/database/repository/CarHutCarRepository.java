@@ -12,7 +12,7 @@ public interface CarHutCarRepository extends JpaRepository<CarHutCar, String> {
     @Query(value = "SELECT * FROM carhut_cars WHERE id = :id",nativeQuery = true)
     CarHutCar getCarWithId(@Param("id") String carId);
 
-    @Query(value = "SELECT * FROM carhut_cars", nativeQuery = true)
+    @Query(value = "SELECT * FROM carhut_cars WHERE is_active = true", nativeQuery = true)
     List<CarHutCar> getAllCars();
 
     @Query(value = "SELECT c.seller_id FROM carhut_cars c WHERE id = :carId", nativeQuery = true)

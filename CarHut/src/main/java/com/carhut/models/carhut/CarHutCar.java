@@ -4,11 +4,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "carhut_cars")
 public class CarHutCar {
@@ -54,6 +58,7 @@ public class CarHutCar {
     private Date emissionInspectionDate;
     private int[] features;
     private Date dateAdded;
+    private boolean isActive;
 
     public CarHutCar() {}
 
@@ -105,6 +110,7 @@ public class CarHutCar {
         this.emissionInspectionDate = emissionInspectionDate;
         this.features = features;
         this.dateAdded = dateAdded;
+        this.isActive = true;
     }
 
     public CarHutCar(String id, String sellerId, String sellerAddress, int brandId, int modelId, String header,
@@ -151,294 +157,7 @@ public class CarHutCar {
         this.emissionInspectionDate = emissionInspectionDate;
         this.features = features;
         this.dateAdded = dateAdded;
-    }
-
-    public Date getDateAdded() {
-        return dateAdded;
-    }
-
-    public void setDateAdded(Date dateAdded) {
-        this.dateAdded = dateAdded;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getSellerId() {
-        return sellerId;
-    }
-
-    public void setSellerId(String sellerId) {
-        this.sellerId = sellerId;
-    }
-
-    public String getSellerAddress() {
-        return sellerAddress;
-    }
-
-    public void setSellerAddress(String sellerAddress) {
-        this.sellerAddress = sellerAddress;
-    }
-
-    public int getBrandId() {
-        return brandId;
-    }
-
-    public void setBrandId(int brandId) {
-        this.brandId = brandId;
-    }
-
-    public int getModelId() {
-        return modelId;
-    }
-
-    public void setModelId(int modelId) {
-        this.modelId = modelId;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getMileage() {
-        return mileage;
-    }
-
-    public void setMileage(String mileage) {
-        this.mileage = mileage;
-    }
-
-    public String getRegistration() {
-        return registration;
-    }
-
-    public void setRegistration(String registration) {
-        this.registration = registration;
-    }
-
-    public String getEnginePower() {
-        return enginePower;
-    }
-
-    public void setEnginePower(String enginePower) {
-        this.enginePower = enginePower;
-    }
-
-    public String getEngineDisplacement() {
-        return engineDisplacement;
-    }
-
-    public void setEngineDisplacement(String engineDisplacement) {
-        this.engineDisplacement = engineDisplacement;
-    }
-
-    public String getFuel() {
-        return fuel;
-    }
-
-    public void setFuel(String fuel) {
-        this.fuel = fuel;
-    }
-
-    public String getFuelConsumptionAvg() {
-        return fuelConsumptionAvg;
-    }
-
-    public void setFuelConsumptionAvg(String fuelConsumptionAvg) {
-        this.fuelConsumptionAvg = fuelConsumptionAvg;
-    }
-
-    public String getFuelConsumptionCity() {
-        return fuelConsumptionCity;
-    }
-
-    public void setFuelConsumptionCity(String fuelConsumptionCity) {
-        this.fuelConsumptionCity = fuelConsumptionCity;
-    }
-
-    public String getFuelConsumptionHighway() {
-        return fuelConsumptionHighway;
-    }
-
-    public void setFuelConsumptionHighway(String fuelConsumptionHighway) {
-        this.fuelConsumptionHighway = fuelConsumptionHighway;
-    }
-
-    public String getGearbox() {
-        return gearbox;
-    }
-
-    public void setGearbox(String gearbox) {
-        this.gearbox = gearbox;
-    }
-
-    public String getGearboxGears() {
-        return gearboxGears;
-    }
-
-    public void setGearboxGears(String gearboxGears) {
-        this.gearboxGears = gearboxGears;
-    }
-
-    public String getBodyType() {
-        return bodyType;
-    }
-
-    public void setBodyType(String bodyType) {
-        this.bodyType = bodyType;
-    }
-
-    public String getPowertrain() {
-        return powertrain;
-    }
-
-    public void setPowertrain(String powertrain) {
-        this.powertrain = powertrain;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getBaseImgPath() {
-        return baseImgPath;
-    }
-
-    public void setBaseImgPath(String baseImgPath) {
-        this.baseImgPath = baseImgPath;
-    }
-
-    public String getPreviousOwners() {
-        return previousOwners;
-    }
-
-    public void setPreviousOwners(String previousOwners) {
-        this.previousOwners = previousOwners;
-    }
-
-    public String getEnergyEffClass() {
-        return energyEffClass;
-    }
-
-    public void setEnergyEffClass(String energyEffClass) {
-        this.energyEffClass = energyEffClass;
-    }
-
-    public String getSeats() {
-        return seats;
-    }
-
-    public void setSeats(String seats) {
-        this.seats = seats;
-    }
-
-    public String getDoors() {
-        return doors;
-    }
-
-    public void setDoors(String doors) {
-        this.doors = doors;
-    }
-
-    public String getEmissionClass() {
-        return emissionClass;
-    }
-
-    public void setEmissionClass(String emissionClass) {
-        this.emissionClass = emissionClass;
-    }
-
-    public String getExteriorColorId() {
-        return exteriorColorId;
-    }
-
-    public void setExteriorColorId(String exteriorColorId) {
-        this.exteriorColorId = exteriorColorId;
-    }
-
-    public String getInteriorColorId() {
-        return interiorColorId;
-    }
-
-    public void setInteriorColorId(String interiorColorId) {
-        this.interiorColorId = interiorColorId;
-    }
-
-    public String getDamageStatus() {
-        return damageStatus;
-    }
-
-    public void setDamageStatus(String damageStatus) {
-        this.damageStatus = damageStatus;
-    }
-
-    public boolean isParkingSensors() {
-        return parkingSensors;
-    }
-
-    public void setParkingSensors(boolean parkingSensors) {
-        this.parkingSensors = parkingSensors;
-    }
-
-    public boolean isParkingCameras() {
-        return parkingCameras;
-    }
-
-    public void setParkingCameras(boolean parkingCameras) {
-        this.parkingCameras = parkingCameras;
-    }
-
-    public String getCountryOfOrigin() {
-        return countryOfOrigin;
-    }
-
-    public void setCountryOfOrigin(String countryOfOrigin) {
-        this.countryOfOrigin = countryOfOrigin;
-    }
-
-    public Date getTechnicalInspectionDate() {
-        return technicalInspectionDate;
-    }
-
-    public void setTechnicalInspectionDate(Date technicalInspectionDate) {
-        this.technicalInspectionDate = technicalInspectionDate;
-    }
-
-    public Date getEmissionInspectionDate() {
-        return emissionInspectionDate;
-    }
-
-    public void setEmissionInspectionDate(Date emissionInspectionDate) {
-        this.emissionInspectionDate = emissionInspectionDate;
-    }
-
-    public int[] getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(int[] features) {
-        this.features = features;
+        this.isActive = true;
     }
 
     private String generateId(String sellerId, String sellerAddress, int brandId, int modelId, String header,

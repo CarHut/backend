@@ -575,7 +575,9 @@ public class CarHutAPIService {
             if (car == null) {
                 return RequestStatusEntity.ERROR;
             }
-            carHutCarRepository.delete(car);
+
+            car.setActive(false);
+            carHutCarRepository.save(car);
             return RequestStatusEntity.SUCCESS;
         }
         catch (Exception e) {
