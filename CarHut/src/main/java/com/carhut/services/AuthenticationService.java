@@ -3,11 +3,11 @@ package com.carhut.services;
 import com.carhut.database.repository.ResetPasswordTokenRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.enums.RequestStatusEntity;
+import com.carhut.jwt.utils.JwtUtil;
 import com.carhut.mail.service.EmailService;
-import com.carhut.models.security.Authority;
-import com.carhut.models.security.User;
-import com.carhut.models.security.PasswordResetRequestBody;
-import com.carhut.models.security.PasswordResetToken;
+import com.carhut.models.requestmodels.AuthenticationRequest;
+import com.carhut.models.requestmodels.PasswordResetRequestBody;
+import com.carhut.models.security.*;
 import com.carhut.paths.NetworkPaths;
 import com.carhut.util.exceptions.authentication.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,7 @@ public class AuthenticationService {
     private UserCredentialsRepository userCredentialsRepository;
     @Autowired
     private OpaqueTokenIntrospector introspector;
+    private JwtUtil jwtUtil = new JwtUtil();
 
     public RequestStatusEntity resetPasswordSendEmail(String email, UserCredentialsService userCredentialsService) throws CarHutAuthenticationException {
         User user;
@@ -61,6 +62,7 @@ public class AuthenticationService {
     }
 
     private void createPasswordResetToken(User user, String token) throws CarHutAuthenticationException {
+
         LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(PasswordResetToken.EXPIRATION_TIME);
         PasswordResetToken newTokenObject = new PasswordResetToken(user.getId(), token, user, Date.from(expiryDate.atZone(ZoneId.systemDefault()).toInstant()));
         try {
@@ -159,7 +161,8 @@ public class AuthenticationService {
                 new java.sql.Date(System.currentTimeMillis()),
                 0,
                 true,
-                new Authority(2, "ROLE_USER")
+                new Authority(2, "ROLE_USER"),
+                "google"
         );
 
         userCredentialsRepository.save(user);
@@ -169,5 +172,22 @@ public class AuthenticationService {
     private boolean userExists(OAuth2AuthenticatedPrincipal user) {
         User user1 = userCredentialsRepository.findUserByEmail(user.getAttributes().get("email").toString());
         return user1 != null;
+    }
+
+    public boolean isAuthenticationValid(AuthenticationRequest request) throws AuthenticationUserNotFoundException {
+        try {
+            User user = userCredentialsRepository.findUserByUsername(request.getUsername());
+            if (!user.getRegistrationType().equals("standard")) {
+                return false;
+            }
+
+            if (!user.isActive()) {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new AuthenticationUserNotFoundException("User with name " + request.getUsername() + " was not found in database.");
+        }
+
+        return true;
     }
 }

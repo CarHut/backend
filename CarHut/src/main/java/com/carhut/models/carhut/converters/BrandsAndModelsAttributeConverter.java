@@ -1,7 +1,6 @@
 package com.carhut.models.carhut.converters;
 
-import com.carhut.models.carhut.ModelsPostModel;
-import com.carhut.models.carhut.SavedSearch;
+import com.carhut.models.requestmodels.ModelsPostModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

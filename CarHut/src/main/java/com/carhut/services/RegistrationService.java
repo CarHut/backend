@@ -1,9 +1,11 @@
 package com.carhut.services;
 
 import com.carhut.database.repository.RegistrationTokenRepository;
+import com.carhut.database.repository.SellerRatingRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.enums.RegistrationStatus;
 import com.carhut.mail.service.EmailService;
+import com.carhut.models.carhut.SellerRating;
 import com.carhut.models.security.Authority;
 import com.carhut.models.security.RegisterUserBody;
 import com.carhut.models.security.RegistrationToken;
@@ -105,7 +107,7 @@ public class RegistrationService {
 
         User user = new User(registerUserBody.getUsername(), hashedPassword, registerUserBody.getEmail(),
                 registerUserBody.getFirstName(), registerUserBody.getSurname(), new Date(System.currentTimeMillis()),
-                0, false, new Authority(2, "ROLE_USER"));
+                0, false, new Authority(2, "ROLE_USER"), "standard");
 
         try {
             userCredentialsRepository.save(user);

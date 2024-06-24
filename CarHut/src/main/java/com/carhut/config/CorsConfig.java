@@ -1,6 +1,5 @@
 package com.carhut.config;
 
-import com.carhut.paths.NetworkPaths;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -14,8 +13,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry
                 .addMapping("/**")
-                .allowedMethods("GET", "POST", "OPTIONS")
-                .allowedOrigins(NetworkPaths.corsWebAddress);
+                .allowedMethods("GET", "POST", "OPTIONS");
     }
 
 

@@ -21,6 +21,9 @@ public interface UserCredentialsRepository extends JpaRepository<User, String> {
     @Query(value = "SELECT * FROM users WHERE email = :email", nativeQuery = true)
     User findUserByEmail(String email);
 
+    @Query(value = "SELECT * FROM users WHERE id = :id", nativeQuery = true)
+    User findUserById(@Param("id") String id);
+
     @Modifying
     @Transactional
     @Query(value = "UPDATE users SET password = :password WHERE email = :email", nativeQuery = true)

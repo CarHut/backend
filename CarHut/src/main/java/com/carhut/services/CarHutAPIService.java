@@ -9,6 +9,8 @@ import com.carhut.models.enums.BodyType;
 import com.carhut.models.enums.Fuel;
 import com.carhut.models.enums.Gearbox;
 import com.carhut.models.enums.Powertrain;
+import com.carhut.models.requestmodels.CarHutCarFilterModel;
+import com.carhut.models.requestmodels.ModelsPostModel;
 import com.carhut.models.security.User;
 import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;

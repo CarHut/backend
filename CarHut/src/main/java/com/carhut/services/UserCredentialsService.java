@@ -2,7 +2,7 @@ package com.carhut.services;
 
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.models.security.User;
-import com.carhut.models.security.UserDetailsRequestBody;
+import com.carhut.models.requestmodels.UserDetailsRequestBody;
 import com.carhut.util.exceptions.usercredentials.UserCredentialsNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

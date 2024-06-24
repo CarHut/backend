@@ -1,4 +1,4 @@
-package com.carhut.models.carhut;
+package com.carhut.models.requestmodels;
 
 import lombok.Getter;
 import lombok.Setter;

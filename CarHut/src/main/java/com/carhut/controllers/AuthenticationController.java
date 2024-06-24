@@ -1,14 +1,17 @@
 package com.carhut.controllers;
 
-import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.dtos.TokenDto;
 import com.carhut.dtos.UrlDto;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.jwt.utils.JwtUtil;
+import com.carhut.models.requestmodels.AuthenticationRequest;
+import com.carhut.models.requestmodels.PasswordResetRequestBody;
+import com.carhut.models.requestmodels.UserDetailsRequestBody;
 import com.carhut.models.security.*;
 import com.carhut.paths.NetworkPaths;
 import com.carhut.services.AuthenticationService;
 import com.carhut.services.UserCredentialsService;
+import com.carhut.util.exceptions.authentication.AuthenticationUserNotFoundException;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.usercredentials.UserCredentialsException;
 import com.carhut.util.loggers.ControllerLogger;
@@ -17,7 +20,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeToken
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.auto.value.AutoAnnotation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +33,6 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.ldap.Control;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -96,7 +97,13 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
-        // TO-DO CHECK IF USER HAS ACTIVATED ACCOUNT
+        try {
+            if (!authenticationService.isAuthenticationValid(request)) {
+                return ResponseEntity.status(404).body(null);
+            }
+        } catch (AuthenticationUserNotFoundException e) {
+            return ResponseEntity.status(500).body(null);
+        }
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
@@ -109,6 +116,7 @@ public class AuthenticationController {
     public ResponseEntity<User> getUserDetailsInfo(@RequestBody UserDetailsRequestBody userDetailsRequestBody) {
         try {
             User user = userCredentialsService.getUserDetailsInfo(userDetailsRequestBody);
+
             if (user != null) {
                 controllerLogger.saveToFile("[AuthenticationController][OK]: /getUserDetailsInfo - User credentials were retrieved successfully.");
                 return ResponseEntity.ok(user);

@@ -1,4 +1,4 @@
-package com.carhut.models.security;
+package com.carhut.models.requestmodels;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

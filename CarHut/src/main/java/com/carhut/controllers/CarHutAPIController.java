@@ -3,6 +3,8 @@ package com.carhut.controllers;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.*;
 import com.carhut.models.deprecated.AutobazarEUCarObject;
+import com.carhut.models.requestmodels.CarHutCarFilterModel;
+import com.carhut.models.requestmodels.ModelsPostModel;
 import com.carhut.services.CarHutAPIService;
 import com.carhut.services.CarImageService;
 import com.carhut.temputils.models.TempCarModel;

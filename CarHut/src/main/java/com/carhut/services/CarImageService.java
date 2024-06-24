@@ -5,7 +5,6 @@ import com.carhut.database.repository.ColorRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.CarImage;
-import com.carhut.models.carhut.UploadCarModel;
 import com.carhut.paths.Paths;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,8 @@
 package com.carhut.jwt.utils;
 
+import com.carhut.database.repository.UserCredentialsRepository;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -13,20 +15,31 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
     private static final SecretKey key = Jwts.SIG.HS256.key().build();
+    @Autowired
+    private UserCredentialsRepository userCredentialsRepository;
 
     public String generateToken(UserDetails userDetails, Map<String, Object> claims) {
         return createToken(userDetails, claims);
     }
 
     private String createToken(UserDetails userDetails, Map<String, Object> claims) {
-        return Jwts.builder()
+
+        Date dateCreated = new Date(System.currentTimeMillis());
+        Date expirationDate = new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24));
+
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .claim("authorities", userDetails.getAuthorities())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)))
+                .setIssuedAt(dateCreated)
+                .setExpiration(expirationDate)
                 .signWith(key)
                 .compact();
+
+//        AccessToken accessToken = new AccessToken(token, userCredentialsRepository.findUserIdByUsername(userDetails.getUsername()), (java.sql.Date) dateCreated, (java.sql.Date) expirationDate);
+//        accessTokenRepository.save(accessToken);
+
+        return token;
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

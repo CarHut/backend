@@ -2,6 +2,7 @@ package com.carhut.models.security;
 
 import com.carhut.models.security.Authority;
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,15 +27,16 @@ public class User implements UserDetails {
     private String surname;
     private Date dateRegistered;
     private Integer numOfOfferedCars;
-
+    private String registrationType;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "authority_id")
     private Authority authority;
 
+
     public User() {}
 
     public User(String id, String username, String password, String email, String firstName, String surname, Date dateRegistered,
-                Integer numOfOfferedCars, boolean isActive, Authority authority) {
+                Integer numOfOfferedCars, boolean isActive, Authority authority, String registrationType) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -45,12 +47,13 @@ public class User implements UserDetails {
         this.surname = surname;
         this.dateRegistered = dateRegistered;
         this.numOfOfferedCars = numOfOfferedCars;
+        this.registrationType = registrationType;
     }
 
     // Automatically generated id
     public User(String username, String password, String email, String firstName, String surname, Date dateRegistered,
-                Integer numOfOfferedCars, boolean isActive, Authority authority) {
-        this.id = generateUserId(username, password, email, firstName, surname, dateRegistered, numOfOfferedCars, isActive, authority);
+                Integer numOfOfferedCars, boolean isActive, Authority authority, String registrationType) {
+        this.id = generateUserId(username, password, email, firstName, surname, dateRegistered, numOfOfferedCars, isActive, authority, registrationType);
         this.username = username;
         this.password = password;
         this.email = email;
@@ -60,12 +63,13 @@ public class User implements UserDetails {
         this.surname = surname;
         this.dateRegistered = dateRegistered;
         this.numOfOfferedCars = numOfOfferedCars;
+        this.registrationType = registrationType;
     }
 
     private String generateUserId(String username, String password, String email, String firstName, String surname,
-                                  Date dateRegistered, Integer numOfOfferedCars, boolean isActive, Authority authority) {
+                                  Date dateRegistered, Integer numOfOfferedCars, boolean isActive, Authority authority, String registrationType) {
 
-        String dataToHash = username + password + email + firstName + surname + dateRegistered;
+        String dataToHash = username + password + email + firstName + surname + dateRegistered + registrationType;
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -191,4 +195,13 @@ public class User implements UserDetails {
     public Authority getAuthority() {
         return authority;
     }
+
+    public String getRegistrationType() {
+        return registrationType;
+    }
+
+    public void setRegistrationType(String registrationType) {
+        this.registrationType = registrationType;
+    }
+
 }

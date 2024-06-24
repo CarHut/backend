@@ -1,4 +1,5 @@
-package com.carhut.models.carhut;
+package com.carhut.models.requestmodels;
+import com.carhut.models.carhut.CarHutCar;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
