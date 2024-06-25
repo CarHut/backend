@@ -65,7 +65,7 @@ public class SellerRatingService {
 
     private boolean doesRatingAlreadyExist(GiveSellerRatingRequestModel giveSellerRatingRequestModel) {
         SellerRating rating;
-        
+
         try {
             rating = sellerRatingRepository.getRatingBySellerIdAndUserId(giveSellerRatingRequestModel.getSellerId(), giveSellerRatingRequestModel.getUserId());
         } catch (Exception e) {
@@ -101,6 +101,6 @@ public class SellerRatingService {
             throw new CannotFindUserForRatingException("Cannot find user model for id: " + giveSellerRatingRequestModel.getUserId() + ". Error message: " + e.getMessage());
         }
 
-        return user != null && seller != null;
+        return (user != null && seller != null) && (!user.getId().equals(seller.getId()));
     }
 }

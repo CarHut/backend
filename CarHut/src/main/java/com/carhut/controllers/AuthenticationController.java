@@ -10,9 +10,11 @@ import com.carhut.models.requestmodels.UserDetailsRequestBody;
 import com.carhut.models.security.*;
 import com.carhut.paths.NetworkPaths;
 import com.carhut.services.AuthenticationService;
+import com.carhut.services.GoogleOAuth2Service;
 import com.carhut.services.UserCredentialsService;
 import com.carhut.util.exceptions.authentication.AuthenticationUserNotFoundException;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
+import com.carhut.util.exceptions.googleoauth2.GoogleOAuth2Exception;
 import com.carhut.util.exceptions.usercredentials.UserCredentialsException;
 import com.carhut.util.loggers.ControllerLogger;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
@@ -21,6 +23,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -42,13 +45,8 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    @Value("${spring.security.oauth2.resourceserver.opaquetoken.client-id}")
-    private String clientId;
-    @Value("${spring.security.oauth2.resourceserver.opaquetoken.client-secret}")
-    private String clientSecret;
-
     @Autowired
-    private OpaqueTokenIntrospector introspector;
+    private GoogleOAuth2Service googleOAuth2Service;
     private final AuthenticationService authenticationService;
     private final AuthenticationManager authenticationManager;
     private final UserCredentialsService userCredentialsService;
@@ -57,51 +55,48 @@ public class AuthenticationController {
 
     @GetMapping("/getGoogleAuthUrl")
     public ResponseEntity<UrlDto> auth() {
-        String url = new GoogleAuthorizationCodeRequestUrl(
-                clientId,
-                NetworkPaths.publicWebAddress,
-                Arrays.asList("email", "profile", "openid")
-        ).build();
-
-        return ResponseEntity.ok(new UrlDto(url));
+        try {
+            UrlDto urlDto = googleOAuth2Service.getGoogleAuthUrl();
+            if (urlDto != null) {
+                controllerLogger.saveToFile("[AuthenticationController][OK]: /getGoogleAuthUrl - Successfully built Google authentication url.");
+                return ResponseEntity.ok().body(urlDto);
+            } else {
+                controllerLogger.saveToFile("[AuthenticationController][WARN]: /getGoogleAuthUrl - Cannot build Google authentication url. Url is null.");
+                return ResponseEntity.status(404).body(null);
+            }
+        } catch (GoogleOAuth2Exception e) {
+            controllerLogger.saveToFile("[AuthenticationController][ERROR]: /getGoogleAuthUrl - Internal error. Error message: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
+        }
     }
 
     @GetMapping("/getGoogleToken")
     public ResponseEntity<TokenDto> getGoogleToken(@RequestParam("code") String code) {
-        GoogleTokenResponse token;
         try {
-            token = new GoogleAuthorizationCodeTokenRequest(
-                    new NetHttpTransport(),
-                    new GsonFactory(),
-                    clientId,
-                    clientSecret,
-                    code,
-                    NetworkPaths.publicWebAddress
-            ).execute();
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            TokenDto tokenDto = googleOAuth2Service.getGoogleToken(code, jwtUtil);
+
+            if (tokenDto != null) {
+                controllerLogger.saveToFile("[AuthenticationController][OK]: /getGoogleToken - Successfully created Google token.");
+                return ResponseEntity.internalServerError().body(null);
+            } else {
+                controllerLogger.saveToFile("[AuthenticationController][WARN]: /getGoogleToken - Cannot create Google token. Token is null.");
+                return ResponseEntity.internalServerError().body(null);
+            }
+        } catch (GoogleOAuth2Exception e) {
+            controllerLogger.saveToFile("[AuthenticationController][ERROR]: /getGoogleToken - Internal error. Error message: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
         }
-
-        boolean status = authenticationService.createAccountForUserLoggedWithGoogleOAuth2(token.getAccessToken());
-        if (status) {
-            System.out.println("New account has been created.");
-        } else {
-            System.out.println("Account already exists.");
-        }
-
-        OAuth2AuthenticatedPrincipal principal = introspector.introspect(token.getAccessToken());
-        UserDetails userDetails = userCredentialsService.loadUserByUsername((String) principal.getAttributes().get("name"));
-
-        return ResponseEntity.ok(new TokenDto(jwtUtil.generateToken(userDetails, new HashMap<>()), userDetails.getUsername()));
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
         try {
             if (!authenticationService.isAuthenticationValid(request)) {
+                controllerLogger.saveToFile("[AuthenticationController][ERROR] - /authenticate - Authentication request is invalid.");
                 return ResponseEntity.status(404).body(null);
             }
         } catch (AuthenticationUserNotFoundException e) {
+            controllerLogger.saveToFile("[AuthenticationController][ERROR] - /authenticate - Authentication request is invalid. User was not found.");
             return ResponseEntity.status(500).body(null);
         }
 

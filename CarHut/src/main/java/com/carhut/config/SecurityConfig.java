@@ -87,8 +87,8 @@ public class SecurityConfig {
                                     .requestMatchers("/api/auth/getUserDetailsInfo", "/api/auth/resetPassword",
                                             "/api/carhut/savedCars/**", "/api/carhut/getMyListings",
                                             "/api/carhut/removeOffer", "/api/carhut/savedSearches/**",
-                                            "/api/carhut/getUserIdByUsername").hasRole("USER")
-                                    .anyRequest().authenticated()
+                                            "/api/carhut/getUserIdByUsername", "/api/rating/giveSellerRating").hasRole("USER")
+                                    .anyRequest().permitAll()
                     )
                     .sessionManagement(sessionManagement ->
                             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -117,8 +117,8 @@ public class SecurityConfig {
                                     .requestMatchers("/api/auth/getUserDetailsInfo", "/api/auth/resetPassword",
                                             "/api/carhut/savedCars/**", "/api/carhut/getMyListings",
                                             "/api/carhut/removeOffer", "/api/carhut/savedSearches/**",
-                                            "/api/carhut/getUserIdByUsername").hasRole("USER")
-                                    .anyRequest().authenticated()
+                                            "/api/carhut/getUserIdByUsername", "/api/rating/giveSellerRating").hasRole("USER")
+                                    .anyRequest().permitAll()
                     )
                     .sessionManagement(sessionManagement ->
                             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
