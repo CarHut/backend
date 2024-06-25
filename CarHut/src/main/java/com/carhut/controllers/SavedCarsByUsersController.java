@@ -6,6 +6,7 @@ import com.carhut.models.carhut.SavedCarByUser;
 import com.carhut.services.SavedCarsByUsersService;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.util.exceptions.CarHutException;
+import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.loggers.ControllerLogger;
 import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class SavedCarsByUsersController {
 
     @Deprecated
     @PostMapping("/getSavedTempCarsByUsername")
-    public ResponseEntity<List<TempCarModel>> getSavedTempCarsByUsername(@RequestBody String username) {
+    public ResponseEntity<List<TempCarModel>> getSavedTempCarsByUsername(@RequestBody String username) throws CarHutAuthenticationException {
         return ResponseEntity.ok(savedCarsByUsersService.getSavedTempCarsByUserUsername(username));
     }
 

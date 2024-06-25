@@ -3,6 +3,7 @@ package com.carhut.controllers;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.SavedSearch;
 import com.carhut.services.SavedSearchesService;
+import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.savedsearches.SavedSearchesException;
 import com.carhut.util.loggers.ControllerLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class SavedSearchesController {
         catch (SavedSearchesException e) {
             controllerLogger.saveToFile("[SavedSearchesController][ERROR]: /addNewSavedSearch - Internal error. Message: " + e.getMessage());
             return ResponseEntity.internalServerError().body(null);
+        } catch (CarHutAuthenticationException e) {
+            controllerLogger.saveToFile("[SavedSearchesController][ERROR]: /addNewSavedSearch - Unauthorized access. Message: " + e.getMessage());
+            return ResponseEntity.status(403).body(null);
         }
     }
 
@@ -57,6 +61,9 @@ public class SavedSearchesController {
         catch (SavedSearchesException e) {
             controllerLogger.saveToFile("[SavedSearchesController][ERROR]: /getSavedSearchesByUsername - Internal error. Message: " + e.getMessage());
             return ResponseEntity.internalServerError().body(null);
+        } catch (CarHutAuthenticationException e) {
+            controllerLogger.saveToFile("[SavedSearchesController][ERROR]: /getSavedSearchesByUsername - Unauthorized access. Message: " + e.getMessage());
+            return ResponseEntity.status(403).body(null);
         }
     }
 

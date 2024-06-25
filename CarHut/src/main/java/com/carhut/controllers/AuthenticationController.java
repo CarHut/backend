@@ -8,7 +8,6 @@ import com.carhut.models.requestmodels.AuthenticationRequest;
 import com.carhut.models.requestmodels.PasswordResetRequestBody;
 import com.carhut.models.requestmodels.UserDetailsRequestBody;
 import com.carhut.models.security.*;
-import com.carhut.paths.NetworkPaths;
 import com.carhut.services.AuthenticationService;
 import com.carhut.services.GoogleOAuth2Service;
 import com.carhut.services.UserCredentialsService;
@@ -17,27 +16,14 @@ import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.googleoauth2.GoogleOAuth2Exception;
 import com.carhut.util.exceptions.usercredentials.UserCredentialsException;
 import com.carhut.util.loggers.ControllerLogger;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 @Controller
@@ -77,7 +63,7 @@ public class AuthenticationController {
 
             if (tokenDto != null) {
                 controllerLogger.saveToFile("[AuthenticationController][OK]: /getGoogleToken - Successfully created Google token.");
-                return ResponseEntity.internalServerError().body(null);
+                return ResponseEntity.internalServerError().body(tokenDto);
             } else {
                 controllerLogger.saveToFile("[AuthenticationController][WARN]: /getGoogleToken - Cannot create Google token. Token is null.");
                 return ResponseEntity.internalServerError().body(null);
@@ -123,6 +109,9 @@ public class AuthenticationController {
         catch (UserCredentialsException e) {
             controllerLogger.saveToFile("[AuthenticationController][ERROR]: /getUserDetailsInfo - Internal error while getting user credentials. Message: " + e.getMessage());
             return ResponseEntity.internalServerError().body(null);
+        } catch (CarHutAuthenticationException e) {
+            controllerLogger.saveToFile("[AuthenticationController][ERROR]: /getUserDetailsInfo - Unauthorized access. Message: " + e.getMessage());
+            return ResponseEntity.status(403).body(null);
         }
     }
 

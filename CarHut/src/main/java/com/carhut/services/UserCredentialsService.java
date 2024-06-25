@@ -3,8 +3,12 @@ package com.carhut.services;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.models.security.User;
 import com.carhut.models.requestmodels.UserDetailsRequestBody;
+import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.usercredentials.UserCredentialsNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,7 +34,14 @@ public class UserCredentialsService implements UserDetailsService {
         }
     }
 
-    public User getUserDetailsInfo(UserDetailsRequestBody userDetailsRequestBody) throws UserCredentialsNotFoundException {
+    public User getUserDetailsInfo(UserDetailsRequestBody userDetailsRequestBody) throws UserCredentialsNotFoundException, CarHutAuthenticationException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+
+        if (!userSecurityContextHolder.getUsername().equals(userDetailsRequestBody.getUsername())) {
+            throw new CarHutAuthenticationException("Unauthorized access to user data.");
+        }
+
         try {
             return userCredentialsRepository.findUserByUsername(userDetailsRequestBody.getUsername());
         }

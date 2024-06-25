@@ -16,8 +16,11 @@ import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.temputils.repo.TempCarRepository;
+import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -561,7 +564,15 @@ public class CarHutAPIService {
         return userCredentialsRepository.getEmailByUserId(userId);
     }
 
-    public List<CarHutCar> getMyListings(String username) throws CarHutAPIException {
+    public List<CarHutCar> getMyListings(String username) throws CarHutAPIException, CarHutAuthenticationException {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+
+        if (!userSecurityContextHolder.getUsername().equals(username)) {
+            throw new CarHutAuthenticationException("Unauthorized access to user data.");
+        }
+
         try {
             User user = userCredentialsRepository.findUserByUsername(username);
             return carHutCarRepository.getMyListings(user.getId());
@@ -571,7 +582,15 @@ public class CarHutAPIService {
         }
     }
 
-    public RequestStatusEntity removeOffer(String carId) throws CarHutAPIException {
+    public RequestStatusEntity removeOffer(String carId) throws CarHutAPIException, CarHutAuthenticationException {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+
+        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(carHutCarRepository.getSellerIdByCarId(carId)))) {
+            throw new CarHutAuthenticationException("Unauthorized access to remove car.");
+        }
+
         try {
             CarHutCar car = carHutCarRepository.getCarWithId(carId);
             if (car == null) {

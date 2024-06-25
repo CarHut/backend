@@ -3,6 +3,7 @@ package com.carhut.controllers;
 import com.carhut.dtos.SellerRatingDto;
 import com.carhut.models.requestmodels.GiveSellerRatingRequestModel;
 import com.carhut.services.SellerRatingService;
+import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.rating.RatingException;
 import com.carhut.util.loggers.ControllerLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,11 @@ public class SellerRatingController {
                 return ResponseEntity.status(404).body("Something went wrong while adding new rating. Check post model. Also users might not exist.");
             }
         } catch (RatingException e) {
-            controllerLogger.saveToFile("[SellerRatingController][WARN] - /giveSellerRating - Internal error. Error message: " + e.getMessage());
+            controllerLogger.saveToFile("[SellerRatingController][ERROR] - /giveSellerRating - Internal error. Error message: " + e.getMessage());
             return ResponseEntity.internalServerError().body(null);
+        } catch (CarHutAuthenticationException e) {
+            controllerLogger.saveToFile("[SellerRatingController][WARN] - /giveSellerRating - Unauthorized access. Error message: " + e.getMessage());
+            return ResponseEntity.status(403).body(null);
         }
     }
 }

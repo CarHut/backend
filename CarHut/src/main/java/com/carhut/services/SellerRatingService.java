@@ -6,10 +6,13 @@ import com.carhut.dtos.SellerRatingDto;
 import com.carhut.models.carhut.SellerRating;
 import com.carhut.models.requestmodels.GiveSellerRatingRequestModel;
 import com.carhut.models.security.User;
+import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.rating.CannotFindUserForRatingException;
 import com.carhut.util.exceptions.rating.CannotGetAverageRatingException;
 import com.carhut.util.exceptions.rating.CannotGetRatingsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,7 +48,14 @@ public class SellerRatingService {
         return new SellerRatingDto(sellerId, rating.getAsDouble(), numOfRatings);
     }
 
-    public boolean giveSellerRating(GiveSellerRatingRequestModel giveSellerRatingRequestModel) throws CannotFindUserForRatingException {
+    public boolean giveSellerRating(GiveSellerRatingRequestModel giveSellerRatingRequestModel) throws CannotFindUserForRatingException, CarHutAuthenticationException {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+
+        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(giveSellerRatingRequestModel.getUserId()))) {
+            throw new CarHutAuthenticationException("Unauthorized access to give rating.");
+        }
 
         if (doesRatingAlreadyExist(giveSellerRatingRequestModel)) {
             return true;

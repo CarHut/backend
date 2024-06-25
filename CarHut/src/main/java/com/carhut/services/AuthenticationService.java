@@ -11,6 +11,8 @@ import com.carhut.models.security.*;
 import com.carhut.paths.NetworkPaths;
 import com.carhut.util.exceptions.authentication.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
@@ -35,6 +37,14 @@ public class AuthenticationService {
     private JwtUtil jwtUtil = new JwtUtil();
 
     public RequestStatusEntity resetPasswordSendEmail(String email, UserCredentialsService userCredentialsService) throws CarHutAuthenticationException {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+
+        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.findUserByEmail(email).getUsername())) {
+            throw new CarHutAuthenticationException("Unauthorized access.");
+        }
+
         User user;
 
         try {

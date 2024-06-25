@@ -114,7 +114,7 @@ public class SecurityConfig {
                                     .requestMatchers("/api/auth/authenticate", "/api/logout/**", "/api/register/**",
                                             "/api/auth/resetPasswordInitiate", "/api/auth/resetPasswordSendEmail",
                                             "/api/carhut/**", "/api/auth/getGoogleAuthUrl", "/api/auth/getGoogleToken").permitAll()
-                                    .requestMatchers("/api/auth/getUserDetailsInfo", "/api/auth/resetPassword",
+                                    .requestMatchers("/api/auth/getUserDetailsInfo", "/api/auth/resetPasswordSendEmail",
                                             "/api/carhut/savedCars/**", "/api/carhut/getMyListings",
                                             "/api/carhut/removeOffer", "/api/carhut/savedSearches/**",
                                             "/api/carhut/getUserIdByUsername", "/api/rating/giveSellerRating").hasRole("USER")

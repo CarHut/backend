@@ -9,12 +9,15 @@ import com.carhut.models.carhut.SavedCarByUser;
 import com.carhut.models.security.User;
 import com.carhut.temputils.models.TempCarModel;
 import com.carhut.temputils.repo.TempCarRepository;
+import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.CarHutAPICarNotFoundException;
 import com.carhut.util.exceptions.savedcars.SavedCarsCanNotBeDeletedException;
 import com.carhut.util.exceptions.savedcars.SavedCarsCanNotBeSavedException;
 import com.carhut.util.exceptions.savedcars.SavedCarsNotFoundException;
 import com.carhut.util.exceptions.usercredentials.UserCredentialsNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,10 +36,17 @@ public class SavedCarsByUsersService {
     private CarHutCarRepository carHutCarRepository;
 
     @Deprecated
-    public List<TempCarModel> getSavedTempCarsByUserUsername(String username) {
+    public List<TempCarModel> getSavedTempCarsByUserUsername(String username) throws CarHutAuthenticationException {
         User user = userCredentialsRepository.findUserByUsername(username);
 
-        List<SavedCarByUser> savedCars =savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+
+        if (!userSecurityContextHolder.getUsername().equals(username)) {
+            throw new CarHutAuthenticationException("Unauthorized access to user data.");
+        }
+
+        List<SavedCarByUser> savedCars = savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
 
         List<TempCarModel> cars = new ArrayList<>();
 
@@ -47,7 +57,7 @@ public class SavedCarsByUsersService {
         return cars;
     }
 
-    public List<CarHutCar> getSavedCarsByUsername(String username) throws UserCredentialsNotFoundException, SavedCarsNotFoundException, CarHutAPICarNotFoundException {
+    public List<CarHutCar> getSavedCarsByUsername(String username) throws UserCredentialsNotFoundException, SavedCarsNotFoundException, CarHutAPICarNotFoundException, CarHutAuthenticationException {
         User user;
         try {
             user = userCredentialsRepository.findUserByUsername(username);
@@ -58,6 +68,13 @@ public class SavedCarsByUsersService {
 
         if (user == null) {
             return List.of();
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+
+        if (!userSecurityContextHolder.getUsername().equals(username)) {
+            throw new CarHutAuthenticationException("Unauthorized access to user data.");
         }
 
         List<SavedCarByUser> savedCars;
@@ -82,13 +99,20 @@ public class SavedCarsByUsersService {
         return cars;
     }
 
-    public RequestStatusEntity addSavedCarByUser(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeSavedException {
+    public RequestStatusEntity addSavedCarByUser(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeSavedException, CarHutAuthenticationException {
         User user;
         try {
             user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
         }
         catch (Exception e) {
             throw new UserCredentialsNotFoundException("Error occurred while getting user credentials. Message: " + e.getMessage());
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+
+        if (!userSecurityContextHolder.getUsername().equals(user.getUsername())) {
+            throw new CarHutAuthenticationException("Unauthorized access to user data.");
         }
 
         try {
@@ -102,13 +126,20 @@ public class SavedCarsByUsersService {
     }
 
 
-    public RequestStatusEntity removeSavedCarByUsername(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeDeletedException {
+    public RequestStatusEntity removeSavedCarByUsername(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeDeletedException, CarHutAuthenticationException {
         User user;
         try {
             user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
         }
         catch (Exception e) {
             throw new UserCredentialsNotFoundException("Error occurred while getting user credentials. Message: " + e.getMessage());
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+
+        if (!userSecurityContextHolder.getUsername().equals(user.getUsername())) {
+            throw new CarHutAuthenticationException("Unauthorized access to user data.");
         }
 
         try {
