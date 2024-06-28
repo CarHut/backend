@@ -83,11 +83,13 @@ public class SecurityConfig {
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeRequests(authorizeRequests ->
                             authorizeRequests
-                                    .requestMatchers("/api/auth/getGoogleAuthUrl", "/api/auth/getGoogleToken").permitAll()
+                                    .requestMatchers("/api/auth/getGoogleAuthUrl", "/api/auth/getGoogleToken")
+                                    .permitAll()
                                     .requestMatchers("/api/auth/getUserDetailsInfo", "/api/auth/resetPassword",
                                             "/api/carhut/savedCars/**", "/api/carhut/getMyListings",
                                             "/api/carhut/removeOffer", "/api/carhut/savedSearches/**",
-                                            "/api/carhut/getUserIdByUsername", "/api/rating/giveSellerRating").hasRole("USER")
+                                            "/api/carhut/getUserIdByUsername", "/api/rating/giveSellerRating")
+                                    .hasRole("USER")
                                     .anyRequest().permitAll()
                     )
                     .sessionManagement(sessionManagement ->
@@ -97,6 +99,7 @@ public class SecurityConfig {
                             oauth2ResourceServer.opaqueToken(Customizer.withDefaults())
                     )
                     .addFilterBefore(oAuth2GoogleFilter(), BearerTokenAuthenticationFilter.class);
+
             return httpSecurity.build();
         }
     }
@@ -113,11 +116,13 @@ public class SecurityConfig {
                             authorizeRequests
                                     .requestMatchers("/api/auth/authenticate", "/api/logout/**", "/api/register/**",
                                             "/api/auth/resetPasswordInitiate", "/api/auth/resetPasswordSendEmail",
-                                            "/api/carhut/**", "/api/auth/getGoogleAuthUrl", "/api/auth/getGoogleToken").permitAll()
+                                            "/api/carhut/**", "/api/auth/getGoogleAuthUrl", "/api/auth/getGoogleToken")
+                                    .permitAll()
                                     .requestMatchers("/api/auth/getUserDetailsInfo", "/api/auth/resetPasswordSendEmail",
                                             "/api/carhut/savedCars/**", "/api/carhut/getMyListings",
                                             "/api/carhut/removeOffer", "/api/carhut/savedSearches/**",
-                                            "/api/carhut/getUserIdByUsername", "/api/rating/giveSellerRating").hasRole("USER")
+                                            "/api/carhut/getUserIdByUsername", "/api/rating/giveSellerRating")
+                                    .hasRole("USER")
                                     .anyRequest().permitAll()
                     )
                     .sessionManagement(sessionManagement ->
@@ -125,6 +130,7 @@ public class SecurityConfig {
                     )
                     .authenticationProvider(authenticationProvider())
                     .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+
             return httpSecurity.build();
         }
     }

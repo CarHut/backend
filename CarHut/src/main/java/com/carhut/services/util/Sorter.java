@@ -11,13 +11,10 @@ import java.util.List;
 public class Sorter {
 
     public List<CarHutCar> sortCarsByPrice(List<CarHutCar> cars, String sortOrder) {
-        cars.sort(new Comparator<CarHutCar>() {
-            @Override
-            public int compare(CarHutCar car1, CarHutCar car2) {
-                int price1 = extractNumberFromString(car1.getPrice());
-                int price2 = extractNumberFromString(car2.getPrice());
-                return sortOrder.equals("ASC") ? Integer.compare(price1, price2) : Integer.compare(price2, price1);
-            }
+        cars.sort((car1, car2) -> {
+            int price1 = extractNumberFromString(car1.getPrice());
+            int price2 = extractNumberFromString(car2.getPrice());
+            return sortOrder.equals("ASC") ? Integer.compare(price1, price2) : Integer.compare(price2, price1);
         });
 
         return cars;
@@ -25,13 +22,10 @@ public class Sorter {
 
     @Deprecated
     public List<TempCarModel> sortByPrice(List<TempCarModel> cars, String sortOrder) {
-        cars.sort(new Comparator<TempCarModel>() {
-            @Override
-            public int compare(TempCarModel car1, TempCarModel car2) {
-                int price1 = extractNumberFromString(car1.getPrice());
-                int price2 = extractNumberFromString(car2.getPrice());
-                return sortOrder.equals("ASC") ? Integer.compare(price1, price2) : Integer.compare(price2, price1);
-            }
+        cars.sort((car1, car2) -> {
+            int price1 = extractNumberFromString(car1.getPrice());
+            int price2 = extractNumberFromString(car2.getPrice());
+            return sortOrder.equals("ASC") ? Integer.compare(price1, price2) : Integer.compare(price2, price1);
         });
 
         return cars;

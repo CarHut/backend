@@ -36,9 +36,6 @@ public class JwtUtil {
                 .signWith(key)
                 .compact();
 
-//        AccessToken accessToken = new AccessToken(token, userCredentialsRepository.findUserIdByUsername(userDetails.getUsername()), (java.sql.Date) dateCreated, (java.sql.Date) expirationDate);
-//        accessTokenRepository.save(accessToken);
-
         return token;
     }
 

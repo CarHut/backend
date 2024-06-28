@@ -54,8 +54,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
-    private boolean bearerTokenAndUsernameValidate(String requestUsername, String jwtTokenUsername) {
-        return requestUsername.equals(jwtTokenUsername);
-    }
 }
