@@ -454,18 +454,6 @@ public class CarHutAPIController {
         }
     }
 
-    @Deprecated
-    @RequestMapping("/updateBrand")
-    public void updateBrand(@RequestParam String brand, @RequestParam String id) throws CarHutAPIBrandNotFoundException {
-        carHutAPIService.updateBrand(brand, id);
-    }
-
-    @Deprecated
-    @RequestMapping("/updateModel")
-    public void updateModel(@RequestParam String model, @RequestParam String id) throws CarHutAPIModelNotFoundException {
-        carHutAPIService.updateModel(model, id);
-    }
-
     @RequestMapping("/getCarWithId")
     @ResponseBody
     public ResponseEntity<CarHutCar> getCarWithId(@RequestParam String carId) {
@@ -481,19 +469,6 @@ public class CarHutAPIController {
         } catch (CarHutAPICarNotFoundException e) {
             controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getCarWithId - Internal error. Message: " + e.getMessage());
             return ResponseEntity.internalServerError().body(null);
-        }
-    }
-
-    @Deprecated
-    @GetMapping("/getAllCars")
-    @ResponseBody
-    public List<CarHutCar> getAllCars(@RequestParam(required = false) String sortBy,
-                                      @RequestParam(required = false, defaultValue = "ASC") String sortOrder) throws CarHutAPICanNotGetCarsException {
-        if (sortBy != null && !sortBy.isEmpty()) {
-            // If sortBy parameter is provided, apply sorting
-            return carHutAPIService.getAllCarsSorted(sortBy, sortOrder);
-        } else {
-            return carHutAPIService.getAllCars();
         }
     }
 
@@ -536,89 +511,5 @@ public class CarHutAPIController {
             return ResponseEntity.internalServerError().body(null);
         }
     }
-
-    @Deprecated
-    @RequestMapping("/getTempCarWithId")
-    @ResponseBody
-    public TempCarModel getTempCarWithId(@RequestParam String carId) {
-        return carHutAPIService.getTempCarWithId(carId);
-    }
-
-    @Deprecated
-    @RequestMapping("/getAllAutobazarCars")
-    public void getAllAutobazarCars() {
-        List<AutobazarEUCarObject> cars = carHutAPIService.getAllAutobazarCars();
-    }
-
-    @Deprecated
-    @GetMapping("/getAllTempCars")
-    @ResponseBody
-    public List<TempCarModel> getAllTempCars(@RequestParam(required = false) String sortBy,
-                                             @RequestParam(required = false, defaultValue = "ASC") String sortOrder) {
-        if (sortBy != null && !sortBy.isEmpty()) {
-            // If sortBy parameter is provided, apply sorting
-            return carHutAPIService.getAllTempCarsSorted(sortBy, sortOrder);
-        } else {
-            // If sortBy parameter is not provided, return unsorted list
-            return carHutAPIService.getAllTempCars();
-        }
-    }
-
-    @Deprecated
-    @PostMapping("/getTempCarsWithFilters")
-    @ResponseBody
-    public List<TempCarModel> getTempCarsWithFilters(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String carType,
-            @RequestParam(required = false) String priceFrom,
-            @RequestParam(required = false) String priceTo,
-            @RequestParam(required = false) String mileageFrom,
-            @RequestParam(required = false) String mileageTo,
-            @RequestParam(required = false) String registration,
-            @RequestParam(required = false) String seatingConfig,
-            @RequestParam(required = false) String doors,
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) String postalCode,
-            @RequestParam(required = false) String fuelType,
-            @RequestParam(required = false) String powerFrom,
-            @RequestParam(required = false) String powerTo,
-            @RequestParam(required = false) String displacement,
-            @RequestParam(required = false) String gearbox,
-            @RequestParam(required = false) String powertrain,
-            @RequestParam(required = false) String sortBy,
-            @RequestParam(required = false) String sortOrder,
-            @RequestBody(required = false) List<ModelsPostModel> models
-    ) throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
-        return carHutAPIService.getTempCarsWithFilter(brand, model, carType, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig, doors, location, postalCode, fuelType, powerFrom, powerTo, displacement, gearbox, powertrain, sortBy, sortOrder, models);
-    }
-
-    @Deprecated
-    @GetMapping("/getNumberOfTempFilteredCars")
-    @ResponseBody
-    public int getNumberOfTempFilteredCars(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String carType,
-            @RequestParam(required = false) String priceFrom,
-            @RequestParam(required = false) String priceTo,
-            @RequestParam(required = false) String mileageFrom,
-            @RequestParam(required = false) String mileageTo,
-            @RequestParam(required = false) String registration,
-            @RequestParam(required = false) String seatingConfig,
-            @RequestParam(required = false) String doors,
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) String postalCode,
-            @RequestParam(required = false) String fuelType,
-            @RequestParam(required = false) String powerFrom,
-            @RequestParam(required = false) String powerTo,
-            @RequestParam(required = false) String displacement,
-            @RequestParam(required = false) String gearbox,
-            @RequestParam(required = false) String powertrain
-    ) throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
-        return carHutAPIService.getNumberOfTempFilteredCars(brand, model, carType, priceFrom, priceTo, mileageFrom, mileageTo, registration, seatingConfig, doors, location, postalCode, fuelType, powerFrom, powerTo, displacement, gearbox, powertrain);
-    }
-
-
-
+    
 }
