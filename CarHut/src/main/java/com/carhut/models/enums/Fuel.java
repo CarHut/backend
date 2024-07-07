@@ -13,16 +13,20 @@ public class Fuel {
     public static final String CNG = "CMG";
     public static final String NOT_STATED = "Not stated";
 
+    private List<String> fuelTypes = new ArrayList<>();
+
+    public Fuel() {
+        fuelTypes.add(PETROL);
+        fuelTypes.add(DIESEL);
+        fuelTypes.add(HYBRID);
+        fuelTypes.add(ELECTRIC);
+        fuelTypes.add(LPG);
+        fuelTypes.add(CNG);
+        fuelTypes.add(NOT_STATED);
+    }
+
     public List<String> getFuelTypes() {
-        List<String> fuelList = new ArrayList<>();
-        fuelList.add(PETROL);
-        fuelList.add(DIESEL);
-        fuelList.add(HYBRID);
-        fuelList.add(ELECTRIC);
-        fuelList.add(LPG);
-        fuelList.add(CNG);
-        fuelList.add(NOT_STATED);
-        return fuelList;
+        return fuelTypes;
     }
 
 }

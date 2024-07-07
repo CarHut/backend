@@ -84,7 +84,7 @@ public class Sorter {
         try {
             return Double.valueOf(string.replaceAll("kW", ""));
         } catch (Exception e) {
-            return Integer.MAX_VALUE;
+            return Double.MAX_VALUE;
         }
     }
 

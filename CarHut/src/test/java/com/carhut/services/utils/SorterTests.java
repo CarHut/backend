@@ -4,11 +4,14 @@ import com.carhut.models.carhut.CarHutCar;
 import com.carhut.services.util.Sorter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestComponent;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+@SpringBootTest
 public class SorterTests {
 
     private Sorter sorter = new Sorter();
@@ -466,5 +469,159 @@ public class SorterTests {
         Assertions.assertEquals("1", newList.get(0).getId());
         Assertions.assertEquals("3", newList.get(1).getId());
         Assertions.assertEquals("2", newList.get(2).getId());
+    }
+
+    @Test
+    void sortCarsByPower_TwoValuesAreNotValid() {
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar carHutCar1 = new CarHutCar();
+        CarHutCar carHutCar2 = new CarHutCar();
+        CarHutCar carHutCar3 = new CarHutCar();
+
+        carHutCar1.setEnginePower("");
+        carHutCar2.setEnginePower("");
+        carHutCar3.setEnginePower("123");
+
+        carHutCar1.setId("1");
+        carHutCar2.setId("2");
+        carHutCar3.setId("3");
+
+        cars.add(carHutCar1);
+        cars.add(carHutCar2);
+        cars.add(carHutCar3);
+
+        List<CarHutCar> newList = sorter.sortCarsByPower(cars, "ASC");
+
+        Assertions.assertEquals("3", newList.get(0).getId());
+        // Other values are not really necessary due to both not having a valid value so they are pushed to the end of the array
+    }
+
+    @Test
+    void sortCarsByPower_OneValueIsNotValid_TestOne() {
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar carHutCar1 = new CarHutCar();
+        CarHutCar carHutCar2 = new CarHutCar();
+        CarHutCar carHutCar3 = new CarHutCar();
+
+        carHutCar1.setEnginePower("");
+        carHutCar2.setEnginePower("20");
+        carHutCar3.setEnginePower("123");
+
+        carHutCar1.setId("1");
+        carHutCar2.setId("2");
+        carHutCar3.setId("3");
+
+        cars.add(carHutCar1);
+        cars.add(carHutCar2);
+        cars.add(carHutCar3);
+
+        List<CarHutCar> newList = sorter.sortCarsByPower(cars, "ASC");
+
+        Assertions.assertEquals("2", newList.get(0).getId());
+        Assertions.assertEquals("3", newList.get(1).getId());
+        // Other values are not really necessary due to both not having a valid value so they are pushed to the end of the array
+    }
+
+    @Test
+    void sortCarsByPower_OneValueIsNotValid_TestTwo() {
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar carHutCar1 = new CarHutCar();
+        CarHutCar carHutCar2 = new CarHutCar();
+        CarHutCar carHutCar3 = new CarHutCar();
+
+        carHutCar1.setEnginePower("20");
+        carHutCar2.setEnginePower("");
+        carHutCar3.setEnginePower("123");
+
+        carHutCar1.setId("1");
+        carHutCar2.setId("2");
+        carHutCar3.setId("3");
+
+        cars.add(carHutCar1);
+        cars.add(carHutCar2);
+        cars.add(carHutCar3);
+
+        List<CarHutCar> newList = sorter.sortCarsByPower(cars, "ASC");
+
+        Assertions.assertEquals("1", newList.get(0).getId());
+        Assertions.assertEquals("3", newList.get(1).getId());
+        // Other values are not really necessary due to both not having a valid value so they are pushed to the end of the array
+    }
+
+    @Test
+    void sortCarsByMileage_TwoValuesAreInvalid() {
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar carHutCar1 = new CarHutCar();
+        CarHutCar carHutCar2 = new CarHutCar();
+        CarHutCar carHutCar3 = new CarHutCar();
+
+        carHutCar1.setMileage("");
+        carHutCar2.setMileage("");
+        carHutCar3.setMileage("123");
+
+        carHutCar1.setId("1");
+        carHutCar2.setId("2");
+        carHutCar3.setId("3");
+
+        cars.add(carHutCar1);
+        cars.add(carHutCar2);
+        cars.add(carHutCar3);
+
+        List<CarHutCar> newList = sorter.sortCarsByMileage(cars, "ASC");
+
+        Assertions.assertEquals("3", newList.get(0).getId());
+        // Other values are not really necessary due to both not having a valid value, so they are pushed to the end of the array
+    }
+
+    @Test
+    void sortCarsByMileage_OneValuesIsInvalid_TestOne() {
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar carHutCar1 = new CarHutCar();
+        CarHutCar carHutCar2 = new CarHutCar();
+        CarHutCar carHutCar3 = new CarHutCar();
+
+        carHutCar1.setMileage("");
+        carHutCar2.setMileage("20");
+        carHutCar3.setMileage("123");
+
+        carHutCar1.setId("1");
+        carHutCar2.setId("2");
+        carHutCar3.setId("3");
+
+        cars.add(carHutCar1);
+        cars.add(carHutCar2);
+        cars.add(carHutCar3);
+
+        List<CarHutCar> newList = sorter.sortCarsByMileage(cars, "DESC");
+
+        Assertions.assertEquals("1", newList.get(0).getId());
+        Assertions.assertEquals("3", newList.get(1).getId());
+        Assertions.assertEquals("2", newList.get(2).getId());
+    }
+
+    @Test
+    void sortCarsByMileage_OneValuesIsInvalid_TestTwo() {
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar carHutCar1 = new CarHutCar();
+        CarHutCar carHutCar2 = new CarHutCar();
+        CarHutCar carHutCar3 = new CarHutCar();
+
+        carHutCar1.setMileage("20");
+        carHutCar2.setMileage("");
+        carHutCar3.setMileage("123");
+
+        carHutCar1.setId("1");
+        carHutCar2.setId("2");
+        carHutCar3.setId("3");
+
+        cars.add(carHutCar1);
+        cars.add(carHutCar2);
+        cars.add(carHutCar3);
+
+        List<CarHutCar> newList = sorter.sortCarsByMileage(cars, "DESC");
+
+        Assertions.assertEquals("2", newList.get(0).getId());
+        Assertions.assertEquals("3", newList.get(1).getId());
+        Assertions.assertEquals("1", newList.get(2).getId());
     }
 }

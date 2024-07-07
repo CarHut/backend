@@ -46,11 +46,6 @@ public class CarHutAPIService {
     @Autowired
     private UserCredentialsRepository userCredentialsRepository;
 
-    @Deprecated
-    private TempCarRepository tempCarRepository;
-    @Deprecated
-    private AutobazarEUCarRepository autobazarEUCarRepository;
-
     @Autowired
     public CarHutAPIService(BrandRepository brandRepository, ModelRepository modelRepository) {
         this.brandRepository = brandRepository;
@@ -66,15 +61,6 @@ public class CarHutAPIService {
             throw new CarHutAPIBrandsNotFoundException("Error occurred while getting brands from database. Message: " + e.getMessage());
         }
 
-    }
-
-    public List<Model> getModelsByBrand(String brand) throws CarHutAPIModelsNotFoundException {
-        try {
-            return modelRepository.getModelByBrandId(brand);
-        }
-        catch (Exception e) {
-            throw new CarHutAPIModelsNotFoundException("Error occurred while getting models from database. Message: " + e.getMessage());
-        }
     }
 
     public List<Model> getModelsByBrandName(String brandName) throws CarHutAPIModelsNotFoundException {
@@ -124,18 +110,6 @@ public class CarHutAPIService {
         }
     }
 
-    public List<CarHutCar> getAllCarsSorted(String sortBy, String sortOrder) throws CarHutAPICanNotGetCarsException {
-        List<CarHutCar> cars = getAllCars();
-
-        return switch (sortBy) {
-            case "PFL", "PFH" -> sorter.sortCarsByPrice(cars, sortOrder);
-            case "MFL", "MFH" -> sorter.sortCarsByMileage(cars, sortOrder);
-            case "SFL", "SFH" -> sorter.sortCarsByPower(cars, sortOrder);
-            default -> cars;
-        };
-
-    }
-
     public List<CarHutCar> getCarsWithFilter(CarHutCarFilterModel carHutCarFilterModel, String sortBy, String sortOrder, Integer offersPerPage, Integer currentPage)
                                             throws CarHutAPICanNotGetCarsException, CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException {
         if (carHutCarFilterModel.getModels() != null && !carHutCarFilterModel.getModels().isEmpty()) {
@@ -152,7 +126,7 @@ public class CarHutAPIService {
 
     private List<CarHutCar> stripCarHutCarList(List<CarHutCar> list, Integer offersPerPage, Integer currentPage) {
         int startIndex = (currentPage - 1) * offersPerPage;
-        int endIndex = Math.min(startIndex + offersPerPage, list.isEmpty() ? 0 : list.size() - 1) ;
+        int endIndex = Math.min(startIndex + offersPerPage, list.isEmpty() ? 0 : list.size()) ;
 
         return list.subList(startIndex, endIndex);
     }
@@ -254,19 +228,21 @@ public class CarHutAPIService {
     }
 
     private List<CarHutCar> sortCars(String sortBy, String sortOrder, List<CarHutCar> filteredList) {
+        if (sortBy == null || sortOrder == null || filteredList == null) {
+            return filteredList;
+        }
+
         List<CarHutCar> sortedList = filteredList;
 
-        if (sortBy != null && sortOrder != null) {
-            if (!sortBy.isEmpty() && !sortOrder.isEmpty()) {
-                sortedList = switch (sortBy) {
-                    case "PFL", "PFH" -> sorter.sortCarsByPrice(filteredList, sortOrder);
-                    case "MFL", "MFH" -> sorter.sortCarsByMileage(filteredList, sortOrder);
-                    case "AFL", "AFH" -> sorter.sortCarsByAlphabet(filteredList, sortOrder);
-                    case "SFL", "SFH" -> sorter.sortCarsByPower(filteredList, sortOrder);
-                    case "DAO", "DAN" -> sorter.sortCarsByDateAdded(filteredList, sortOrder);
-                    default -> sortedList;
-                };
-            }
+        if (!sortBy.isEmpty() && !sortOrder.isEmpty()) {
+            sortedList = switch (sortBy) {
+                case "PFL", "PFH" -> sorter.sortCarsByPrice(filteredList, sortOrder);
+                case "MFL", "MFH" -> sorter.sortCarsByMileage(filteredList, sortOrder);
+                case "AFL", "AFH" -> sorter.sortCarsByAlphabet(filteredList, sortOrder);
+                case "SFL", "SFH" -> sorter.sortCarsByPower(filteredList, sortOrder);
+                case "DAO", "DAN" -> sorter.sortCarsByDateAdded(filteredList, sortOrder);
+                default -> sortedList;
+            };
         }
 
         return sortedList;
@@ -312,8 +288,14 @@ public class CarHutAPIService {
         }
     }
 
-    public void addCarToDatabase(CarHutCar carHutCar) throws CarHutAPICarCanNotBeSavedException {
-        CarHutCar newCar = new CarHutCar(userCredentialsRepository.findUserIdByUsername(carHutCar.getSellerId()), carHutCar.getSellerAddress(),
+    /**
+     *
+     * @param carHutCar
+     * @return Id of new Car
+     * @throws CarHutAPICarCanNotBeSavedException
+     */
+    public String addCarToDatabase(CarHutCar carHutCar) throws CarHutAPICarCanNotBeSavedException {
+        CarHutCar newCar = new CarHutCar(carHutCar.getSellerId(), carHutCar.getSellerAddress(),
                 carHutCar.getBrandId(), carHutCar.getModelId(), carHutCar.getHeader(),
                 carHutCar.getPrice(), carHutCar.getMileage(), carHutCar.getRegistration(),
                 carHutCar.getEnginePower(), carHutCar.getEngineDisplacement(), carHutCar.getFuel(),
@@ -329,6 +311,7 @@ public class CarHutAPIService {
         try {
             carHutCarRepository.save(newCar);
             userCredentialsRepository.updateCountOfAddedOffers(newCar.getSellerId());
+            return newCar.getId();
         }
         catch (Exception e) {
             throw new CarHutAPICarCanNotBeSavedException("Error occurred while saving the car. Message: " + e.getMessage());
@@ -336,6 +319,10 @@ public class CarHutAPIService {
     }
 
     public Integer getFeatureIdByFeatureName(String feature) throws CarHutAPICanNotGetFeaturesException {
+        if (feature == null) {
+            return null;
+        }
+
         try {
             return featureRepository.getFeatureIdByFeatureName(feature);
         }
@@ -345,6 +332,10 @@ public class CarHutAPIService {
     }
 
     public String getColorStringNameFromColorId(String colorId) throws CarHutAPICanNotGetColorsException {
+        if (colorId == null) {
+            return null;
+        }
+
         try {
             return colorRepository.getColorStringNameFromColorId(colorId);
         }
@@ -354,6 +345,10 @@ public class CarHutAPIService {
     }
 
     public String getFeatureNameByFeatureId(Integer featureId) throws CarHutAPICanNotGetFeaturesException {
+        if (featureId == null) {
+            return null;
+        }
+
         try {
             return featureRepository.getFeatureNameByFeatureId(featureId);
         }
@@ -362,31 +357,61 @@ public class CarHutAPIService {
         }
     }
 
-    public List<String> getMultipleFeaturesByIds(List<Integer> featureIds) throws CarHutAPICanNotGetFeaturesException {
+    public List<String> getMultipleFeaturesByIds(List<Integer> featureIds) {
+        if (featureIds == null) {
+            return null;
+        }
+
         List<String> featureNames = new ArrayList<>();
         for (Integer id : featureIds) {
-            featureNames.add(getFeatureNameByFeatureId(id));
+            String featureName = null;
+            try {
+                featureName = getFeatureNameByFeatureId(id);
+                if (featureName != null) {
+                    featureNames.add(featureName);
+                }
+            } catch (CarHutAPICanNotGetFeaturesException e) {
+                System.out.println(e.getMessage());
+            }
         }
         return featureNames;
     }
 
     public String getUsernameByUserId(String userId) {
+        if (userId == null) {
+            return null;
+        }
         return userCredentialsRepository.getUsernameByUserId(userId);
     }
 
     public String getFirstNameAndSurnameByUserId(String userId) {
+        if (userId == null) {
+            return null;
+        }
+
         return userCredentialsRepository.getFirstNameAndSurnameByUserId(userId);
     }
 
     public Integer getOffersNumByUserId(String userId) {
+        if (userId == null) {
+            return null;
+        }
+
         return userCredentialsRepository.getOffersNumByUserId(userId);
     }
 
     public String getEmailByUserId(String userId) {
+        if (userId == null) {
+            return null;
+        }
+
         return userCredentialsRepository.getEmailByUserId(userId);
     }
 
     public List<CarHutCar> getMyListings(String username) throws CarHutAPIException, CarHutAuthenticationException {
+        if (username == null) {
+            return null;
+        }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userSecurityContextHolder = ((User)authentication.getPrincipal());
@@ -404,7 +429,11 @@ public class CarHutAPIService {
         }
     }
 
-    public RequestStatusEntity removeOffer(String carId) throws CarHutAPIException, CarHutAuthenticationException {
+    public RequestStatusEntity removeOffer(String carId) throws CarHutAPIException, CarHutAuthenticationException, NullPointerException{
+
+        if (carId == null) {
+            return RequestStatusEntity.ERROR;
+        }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userSecurityContextHolder = ((User)authentication.getPrincipal());
@@ -431,8 +460,7 @@ public class CarHutAPIService {
     public String getUserIdByUsername(String username) throws CarHutAPIException {
         try {
             return userCredentialsRepository.getUserIdByUsername(username);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new CarHutAPIException("Couldn't retrieve user id.");
         }
     }

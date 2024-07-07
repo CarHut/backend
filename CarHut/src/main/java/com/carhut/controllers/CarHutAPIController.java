@@ -58,7 +58,7 @@ public class CarHutAPIController {
 
             if (status == RequestStatusEntity.SUCCESS) {
                 controllerLogger.saveToFile("[CarHutAPIController][OK]: /removeOffer - Successfully removed car offer.");
-                return ResponseEntity.internalServerError().body("Successfully removed car offer.");
+                return ResponseEntity.ok("Successfully removed car offer.");
             } else {
                 controllerLogger.saveToFile("[CarHutAPIController][WARN]: /removeOffer - Something went wrong when removing offer.");
                 return ResponseEntity.internalServerError().body("Something went wrong when removing offer.");
@@ -78,7 +78,7 @@ public class CarHutAPIController {
 
             if (cars != null) {
                 controllerLogger.saveToFile("[CarHutAPIController][OK]: /getMyListings - Successfully retrieved listings for username: " + username);
-                return ResponseEntity.internalServerError().body(cars);
+                return ResponseEntity.ok(cars);
             } else {
                 controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getMyListings - Something went wrong when retrieving listings for username: " + username);
                 return ResponseEntity.internalServerError().body(null);
@@ -169,19 +169,13 @@ public class CarHutAPIController {
     @PostMapping("/getMultipleFeaturesByIds")
     @ResponseBody
     public ResponseEntity<List<String>> getMultipleFeaturesByIds(@RequestBody List<Integer> featureIds) {
-        try {
-            List<String> resultListOfFeatures = carHutAPIService.getMultipleFeaturesByIds(featureIds);
-            if (resultListOfFeatures != null) {
-                controllerLogger.saveToFile("[CarHutAPIController][OK]: /getMultipleFeaturesByIds - Successfully retrieved data.");
-                return ResponseEntity.ok(resultListOfFeatures);
-            } else {
-                controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getMultipleFeaturesByIds - Couldn't retrieve data.");
-                return ResponseEntity.status(404).body(null);
-            }
-        }
-        catch (CarHutAPICanNotGetFeaturesException e) {
-            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getMultipleFeaturesByIds - Internal error. Message: " + e.getMessage());
-            return ResponseEntity.internalServerError().body(null);
+        List<String> resultListOfFeatures = carHutAPIService.getMultipleFeaturesByIds(featureIds);
+        if (resultListOfFeatures != null) {
+            controllerLogger.saveToFile("[CarHutAPIController][OK]: /getMultipleFeaturesByIds - Successfully retrieved data.");
+            return ResponseEntity.ok(resultListOfFeatures);
+        } else {
+            controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getMultipleFeaturesByIds - Couldn't retrieve data.");
+            return ResponseEntity.status(404).body(null);
         }
     }
 
@@ -263,7 +257,7 @@ public class CarHutAPIController {
     public ResponseEntity<String> addCarToDatabase(@RequestPart("carHutCar") CarHutCar carHutCar,
                                                    @RequestPart("multipartFiles") List<MultipartFile> multipartFiles) {
         try {
-            carHutAPIService.addCarToDatabase(carHutCar);
+            String id = carHutAPIService.addCarToDatabase(carHutCar);
             carImageService.addImagesToDatabase(carHutCar, multipartFiles);
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /addCarToDatabase - Successfully executed.");
             return ResponseEntity.ok("Car was successfully added to database.");
@@ -420,7 +414,7 @@ public class CarHutAPIController {
     @ResponseBody
     public ResponseEntity<List<Model>> getModelsByBrand(@PathVariable String brand) {
         try {
-            List<Model> models = carHutAPIService.getModelsByBrand(brand);
+            List<Model> models = carHutAPIService.getModelsByBrandName(brand);
             if (models != null) {
                 controllerLogger.saveToFile("[CarHutAPIController][OK]: /getModelsByBrand - Successfully retrieved data.");
                 return ResponseEntity.ok(models);

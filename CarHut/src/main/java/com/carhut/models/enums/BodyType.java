@@ -20,9 +20,9 @@ public class BodyType {
     public static final String SEDAN = "Sedan";
     public static final String COMBI = "Combi";
     public static final String NOT_STATED = "Not stated";
+    private List<String> bodyTypesList = new ArrayList<>();
 
-    public List<String> getBodyTypes() {
-        List<String> bodyTypesList = new ArrayList<>();
+    public BodyType() {
         bodyTypesList.add(SUV);
         bodyTypesList.add(OTHER);
         bodyTypesList.add(TARGA);
@@ -38,6 +38,9 @@ public class BodyType {
         bodyTypesList.add(SEDAN);
         bodyTypesList.add(COMBI);
         bodyTypesList.add(NOT_STATED);
+    }
+
+    public List<String> getBodyTypes() {
         return bodyTypesList;
     }
 }
