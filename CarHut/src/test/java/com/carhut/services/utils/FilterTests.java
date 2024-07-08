@@ -1,5 +1,6 @@
 package com.carhut.services.utils;
 
+import com.carhut.CarHutApplication;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.services.util.Filter;
 import org.junit.jupiter.api.Assertions;
@@ -9,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(classes = CarHutApplication.class)
 public class FilterTests {
 
     private Filter filter = new Filter();

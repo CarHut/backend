@@ -1,5 +1,6 @@
 package com.carhut.services.utils;
 
+import com.carhut.CarHutApplication;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.services.util.Sorter;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +12,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(classes = CarHutApplication.class)
 public class SorterTests {
 
     private Sorter sorter = new Sorter();
