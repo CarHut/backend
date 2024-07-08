@@ -74,7 +74,6 @@ public class CarImageService {
             String postfix = switch (image.getContentType()) {
                 case "image/jpg" -> ".jpg";
                 case "image/jpeg" -> ".jpeg";
-                case null -> null;
                 default -> ".png";
             };
 
@@ -115,7 +114,6 @@ public class CarImageService {
         String postfix = switch (image.getContentType()) {
             case "image/jpg" -> ".jpg";
             case "image/jpeg" -> ".jpeg";
-            case null -> null;
             default -> ".png";
         };
 
