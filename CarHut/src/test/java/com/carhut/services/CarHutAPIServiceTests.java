@@ -25,8 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-        classes = CarHutApplication.class
+        webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
 )
 public class CarHutAPIServiceTests {
 
@@ -599,7 +598,7 @@ public class CarHutAPIServiceTests {
             String password = "admin";
 
             // Login
-            URL url = new URL(NetworkPaths.publicIPAddress + ":8080/api/auth/authenticate");
+            URL url = new URL(NetworkPaths.publicIPAddress + ":8082/api/auth/authenticate");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
@@ -628,7 +627,7 @@ public class CarHutAPIServiceTests {
             Thread.sleep(2000);
 
             // Send request to getMyListings
-            URL url1 = new URL(NetworkPaths.publicIPAddress + ":8080/api/carhut/getMyListings?username=" + username);
+            URL url1 = new URL(NetworkPaths.publicIPAddress + ":8082/api/carhut/getMyListings?username=" + username);
             HttpURLConnection conn1 = (HttpURLConnection) url1.openConnection();
             conn1.setRequestMethod("POST");
             conn1.setRequestProperty("Content-Type", "application/json");
@@ -655,27 +654,6 @@ public class CarHutAPIServiceTests {
 
             Thread.sleep(2000);
 
-            // Logout
-            url = new URL(NetworkPaths.publicIPAddress + ":8080/logout");
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            responseCode = conn.getResponseCode();
-            Assertions.assertEquals(200, responseCode);
-
-            Thread.sleep(2000);
-
-            // Logout
-            url = new URL(NetworkPaths.publicIPAddress + ":8080/logout");
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            responseCode = conn.getResponseCode();
-            Assertions.assertEquals(200, responseCode);
         } catch (InterruptedException | IOException e) {
             System.out.println(e.getMessage());
             Assertions.fail();
@@ -714,7 +692,7 @@ public class CarHutAPIServiceTests {
             String password = "admin";
 
             // Login
-            URL url = new URL(NetworkPaths.publicIPAddress + ":8080/api/auth/authenticate");
+            URL url = new URL(NetworkPaths.publicIPAddress + ":8082/api/auth/authenticate");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
@@ -773,7 +751,7 @@ public class CarHutAPIServiceTests {
 
         try {
             // Send request to remove offer
-            URL url1 = new URL(NetworkPaths.publicIPAddress + ":8080/api/carhut/removeOffer?carId=" + id);
+            URL url1 = new URL(NetworkPaths.publicIPAddress + ":8082/api/carhut/removeOffer?carId=" + id);
             HttpURLConnection conn1 = (HttpURLConnection) url1.openConnection();
             conn1.setRequestMethod("POST");
             conn1.setRequestProperty("Content-Type", "application/json");

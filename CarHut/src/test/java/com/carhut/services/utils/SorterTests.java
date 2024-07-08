@@ -12,7 +12,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest(classes = CarHutApplication.class)
+@SpringBootTest
 public class SorterTests {
 
     private Sorter sorter = new Sorter();

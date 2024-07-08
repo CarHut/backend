@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest(classes = CarHutApplication.class)
+@SpringBootTest
 public class FilterTests {
 
     private Filter filter = new Filter();
