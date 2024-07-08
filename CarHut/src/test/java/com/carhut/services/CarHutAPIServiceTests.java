@@ -181,7 +181,8 @@ public class CarHutAPIServiceTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
+            Assertions.fail();
         }
 
         try {
@@ -651,8 +652,33 @@ public class CarHutAPIServiceTests {
             Assertions.assertNotNull(cars);
             Assertions.assertFalse(cars.isEmpty());
             cars.forEach(car -> Assertions.assertEquals("user0", car.getSellerId()));
+
+            Thread.sleep(2000);
+
+            // Logout
+            url = new URL(NetworkPaths.publicIPAddress + ":8080/logout");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            responseCode = conn.getResponseCode();
+            Assertions.assertEquals(200, responseCode);
+
+            Thread.sleep(2000);
+
+            // Logout
+            url = new URL(NetworkPaths.publicIPAddress + ":8080/logout");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            responseCode = conn.getResponseCode();
+            Assertions.assertEquals(200, responseCode);
         } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
+            Assertions.fail();
         }
     }
 
@@ -680,7 +706,7 @@ public class CarHutAPIServiceTests {
 
     @Test
     void removeOffer_IdIsValid() throws InterruptedException {
-        String bearerToken;
+        String bearerToken = null;
         try {
             // First user logs in
             Thread.sleep(1000);
@@ -705,7 +731,7 @@ public class CarHutAPIServiceTests {
             Assertions.assertEquals(200, responseCode);
 
             InputStream stream = conn.getInputStream();
-            bearerToken = null;
+
             try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
                 bearerToken = br.readLine();
             }
@@ -716,7 +742,8 @@ public class CarHutAPIServiceTests {
 
             Thread.sleep(2000);
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
+            Assertions.fail();
         }
 
         CarHutCar car = new CarHutCar(
@@ -738,7 +765,8 @@ public class CarHutAPIServiceTests {
             id = carHutAPIService.addCarToDatabase(car);
             Assertions.assertNotNull(id);
         } catch (CarHutAPICarCanNotBeSavedException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
+            Assertions.fail();
         }
 
         Thread.sleep(1000);
@@ -781,7 +809,8 @@ public class CarHutAPIServiceTests {
             CarHutCar deletedCar = carHutCarRepository.getCarWithId(id);
             Assertions.assertNull(deletedCar);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
+            Assertions.fail();
         }
 
     }
