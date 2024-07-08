@@ -1,5 +1,6 @@
 package com.carhut.services;
 
+import com.carhut.CarHutApplication;
 import com.carhut.database.repository.CarHutCarRepository;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.*;
@@ -25,7 +26,7 @@ import java.util.List;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-        classes = CarHutAPIServiceTests.class
+        classes = CarHutApplication.class
 )
 public class CarHutAPIServiceTests {
 
