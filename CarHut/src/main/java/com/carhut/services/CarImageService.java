@@ -84,7 +84,7 @@ public class CarImageService {
             carImageRepository.save(carImage);
         }
     }
-     
+          
     private String generateNewImageId(MultipartFile image) throws NoSuchAlgorithmException {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
