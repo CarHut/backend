@@ -34,7 +34,7 @@ public class CarImageService {
         List<byte[]> resources = new ArrayList<>();
         List<CarImage> images = carImageRepository.getImagesByCarId(carId);
 
-        for (CarImage image : images) {
+        for (CarImage image : images) {    
             File file = new File(image.getPath());
             if (file.isFile()) {
                 byte[] imageResource = convertToResource(file);
