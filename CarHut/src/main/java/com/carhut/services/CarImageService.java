@@ -39,6 +39,7 @@ public class CarImageService {
             if (file.isFile()) {
                 byte[] imageResource = convertToResource(file);
                 if (imageResource != null) {
+
                     resources.add(imageResource);
                 }
             }
