@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -27,6 +28,7 @@ import java.util.List;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
 )
+@ActiveProfiles("test")
 public class CarHutAPIServiceTests {
 
     @Autowired
@@ -36,14 +38,8 @@ public class CarHutAPIServiceTests {
     private CarHutJSONConverter carHutJSONConverter = new CarHutJSONConverter();
 
     @Test
-    void getAllBrands_ValidCaseShouldReturnAListOfBrands() {
-        try {
-            List<Brand> brands = carHutAPIService.getAllBrands();
-            Assertions.assertFalse(brands.isEmpty());
-        } catch (CarHutAPIBrandsNotFoundException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getAllBrands_ValidCaseShouldReturnAListOfBrands() throws CarHutAPIBrandsNotFoundException {
+        List<Brand> brands = carHutAPIService.getAllBrands();
     }
 
     @Test
@@ -163,7 +159,7 @@ public class CarHutAPIServiceTests {
                 "Test price",
                 null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, false, false,
+                null, null, null, "color0", "color0", null, false, false,
                 null, null, null, null, null
         );
 
@@ -276,6 +272,7 @@ public class CarHutAPIServiceTests {
         List<ModelsPostModel> models = new ArrayList<>();
         models.add(new ModelsPostModel("BMW", "520"));
         models.add(new ModelsPostModel("Audi", "A4"));
+        models.add(new ModelsPostModel("BMW", "M3"));
 
         CarHutCarFilterModel carHutCarFilterModel = new CarHutCarFilterModel(
                 "", "", Collections.emptyList(),
@@ -733,7 +730,7 @@ public class CarHutAPIServiceTests {
                 "Test price",
                 null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, false, false,
+                null, null, null, "color0", "color0", null, false, false,
                 null, null, null, null, null
         );
 

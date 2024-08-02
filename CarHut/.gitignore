@@ -39,6 +39,5 @@ build/
 /src/main/resources/env.properties
 #images
 /src/main/resources/carhutimages/
-/src/main/java/com/carhut/secret/
 /image-props
 /carhutimages

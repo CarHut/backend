@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestComponent;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class SorterTests {
 
     private Sorter sorter = new Sorter();

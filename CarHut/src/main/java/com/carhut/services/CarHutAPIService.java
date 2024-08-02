@@ -1,10 +1,8 @@
 package com.carhut.services;
 
 import com.carhut.database.repository.*;
-import com.carhut.datatransfer.AutobazarEUCarRepository;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.*;
-import com.carhut.models.deprecated.AutobazarEUCarObject;
 import com.carhut.models.enums.BodyType;
 import com.carhut.models.enums.Fuel;
 import com.carhut.models.enums.Gearbox;
@@ -14,8 +12,6 @@ import com.carhut.models.requestmodels.ModelsPostModel;
 import com.carhut.models.security.User;
 import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;
-import com.carhut.temputils.models.TempCarModel;
-import com.carhut.temputils.repo.TempCarRepository;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -420,13 +416,8 @@ public class CarHutAPIService {
             throw new CarHutAuthenticationException("Unauthorized access to user data.");
         }
 
-        try {
-            User user = userCredentialsRepository.findUserByUsername(username);
-            return carHutCarRepository.getMyListings(user.getId());
-        }
-        catch (Exception e) {
-            throw new CarHutAPIException("Couldn't retrieve data from database.");
-        }
+        User user = userCredentialsRepository.findUserByUsername(username);
+        return carHutCarRepository.getMyListings(user.getId());
     }
 
     public RequestStatusEntity removeOffer(String carId) throws CarHutAPIException, CarHutAuthenticationException, NullPointerException{
