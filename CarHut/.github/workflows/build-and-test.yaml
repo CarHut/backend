@@ -24,12 +24,12 @@ jobs:
           sudo apt-get install -y maven
 
       - name: Build project
-        run: | 
-          mvn clean install
-          -Dspring.datasource.url=${{ secrets.H2_EMBEDDED_DATA_SOURCE }} 
-          -Dspring.datasource.username=${{ secrets.H2_EMBEDDED_DATA_SOURCE_USERNAME }}
-          -Dspring.datasource.password=
-          -Dspring.mail.host=${{ secrets.MAIL_HOST }}
-          -Dspring.mail.port=${{ secrets.MAIL_PORT }}
-          -Dspring.mail.username=${{ secrets.MAIL_USERNAME }}
-          -Dspring.mail.password=${{ secrets.MAIL_PASSWORD }}
+        run: |
+          mvn clean install \
+            -Dspring.datasource.url=${{ secrets.H2_EMBEDDED_DATA_SOURCE }} \
+            -Dspring.datasource.username=${{ secrets.H2_EMBEDDED_DATA_SOURCE_USERNAME }} \
+            -Dspring.datasource.password=${{ secrets.H2_EMBEDDED_DATA_SOURCE_PASSWORD }} \
+            -Dspring.mail.host=${{ secrets.MAIL_HOST }} \
+            -Dspring.mail.port=${{ secrets.MAIL_PORT }} \
+            -Dspring.mail.username=${{ secrets.MAIL_USERNAME }} \
+            -Dspring.mail.password=${{ secrets.MAIL_PASSWORD }}
