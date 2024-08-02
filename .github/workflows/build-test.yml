@@ -25,7 +25,8 @@ jobs:
 
       - name: Build project
         run: |
-          mvn clean install ./CarHut \
+          cd CarHut
+          mvn clean install \
             -Dspring.datasource.url=${{ secrets.H2_EMBEDDED_DATA_SOURCE }} \
             -Dspring.datasource.username=${{ secrets.H2_EMBEDDED_DATA_SOURCE_USERNAME }} \
             -Dspring.datasource.password=${{ secrets.H2_EMBEDDED_DATA_SOURCE_PASSWORD }} \
