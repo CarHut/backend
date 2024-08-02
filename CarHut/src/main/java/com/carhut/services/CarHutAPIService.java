@@ -14,6 +14,7 @@ import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.*;
+import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +31,9 @@ public class CarHutAPIService {
     private final Gearbox gearbox = new Gearbox();
     private final Powertrain powertrain = new Powertrain();
     private final Fuel fuel = new Fuel();
+    @Autowired
     private BrandRepository brandRepository;
+    @Autowired
     private ModelRepository modelRepository;
     private Sorter sorter;
     @Autowired
@@ -42,10 +45,7 @@ public class CarHutAPIService {
     @Autowired
     private UserCredentialsRepository userCredentialsRepository;
 
-    @Autowired
-    public CarHutAPIService(BrandRepository brandRepository, ModelRepository modelRepository) {
-        this.brandRepository = brandRepository;
-        this.modelRepository = modelRepository;
+    public CarHutAPIService() {
         this.sorter = new Sorter();
     }
 
@@ -455,4 +455,19 @@ public class CarHutAPIService {
             throw new CarHutAPIException("Couldn't retrieve user id.");
         }
     }
+
+    /*
+     * FOR TESTING PURPOSES ONLY
+     */
+    public void save(CarHutCar car) {
+        carHutCarRepository.save(car);
+    }
+
+    /*
+     * FOR TESTING PURPOSES ONLY
+     */
+    public void delete(CarHutCar car) {
+        carHutCarRepository.delete(car);
+    }
+
 }

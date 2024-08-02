@@ -1,12 +1,10 @@
 package com.carhut.services.utils;
 
-import com.carhut.CarHutApplication;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.services.util.Sorter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestComponent;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.Date;

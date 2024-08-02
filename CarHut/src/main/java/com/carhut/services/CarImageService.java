@@ -7,6 +7,8 @@ import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.CarImage;
 import com.carhut.paths.Paths;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +32,14 @@ public class CarImageService {
     @Autowired
     private ColorRepository colorRepository;
 
+    @Value("${images.path}")
+    private String basePath;
+
     public List<byte[]> getImagesWithCarId(String carId) throws IOException {
+        if (carId == null || carId.isEmpty()) {
+            return null;
+        }
+
         List<byte[]> resources = new ArrayList<>();
         List<CarImage> images = carImageRepository.getImagesByCarId(carId);
 
@@ -52,6 +61,16 @@ public class CarImageService {
     }
 
     public void addImagesToDatabase(CarHutCar carHutCar, List<MultipartFile> multipartFiles) throws Exception {
+        if (multipartFiles == null || carHutCar == null) {
+            System.out.println("Cannot add images to database because carHutCar or multipartFiles is null.");
+            return;
+        }
+
+        if (multipartFiles.isEmpty()) {
+            System.out.println("List of images is empty. Nothing will be added to database.");
+            return;
+        }
+
         CarHutCar newCar = new CarHutCar(userCredentialsRepository.findUserIdByUsername(carHutCar.getSellerId()), carHutCar.getSellerAddress(),
                 carHutCar.getBrandId(), carHutCar.getModelId(), carHutCar.getHeader(),
                 carHutCar.getPrice(), carHutCar.getMileage(), carHutCar.getRegistration(),
@@ -65,27 +84,28 @@ public class CarImageService {
                 carHutCar.isParkingSensors(), carHutCar.isParkingCameras(), carHutCar.getCountryOfOrigin(),
                 carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures(), null);
 
-        String basePath = System.getProperty("user.dir");
-        String locationPath = Paths.carHutImages + "/" + newCar.getId();
-
-        Path path = Files.createDirectory(Path.of(basePath + locationPath));
+        String locationPath = basePath + newCar.getId();
+        Path path = Files.createDirectory(Path.of(locationPath));
 
         for (MultipartFile image : multipartFiles) {
-            String postfix = switch (image.getContentType()) {
-                case "image/jpg" -> ".jpg";
-                case "image/jpeg" -> ".jpeg";
-                default -> ".png";
-            };
+            if (image != null) {
+                String postfix = switch (image.getContentType()) {
+                    case "image/jpg" -> ".jpg";
+                    case "image/jpeg" -> ".jpeg";
+                    default -> ".png";
+                };
 
-            String id = generateNewImageId(image);
-            File file = new File(path + "/" + id + postfix);
-            CarImage carImage = new CarImage(id, file.getPath(), newCar.getId(), newCar.getSellerId(), true);
-            image.transferTo(file);
-            carImageRepository.save(carImage);
+                String id = generateNewImageId(image);
+                File file = new File(path + "/" + id + postfix);
+                CarImage carImage = new CarImage(id, file.getPath(), carHutCar.getId(), newCar.getSellerId(), true);
+                image.transferTo(file);
+
+                carImageRepository.save(carImage);
+            }
         }
     }
               
-    private String generateNewImageId(MultipartFile image) throws NoSuchAlgorithmException {
+    private String generateNewImageId(MultipartFile image) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = digest.digest(image.getBytes());
@@ -104,21 +124,10 @@ public class CarImageService {
         }
     }
 
-    public void uploadImageToFileSystem(MultipartFile image, String username) throws IOException {
-        String basePath = System.getProperty("user.dir");
-        File uploadDir = new File(basePath + Paths.carHutImages + username);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
-        }
-
-        String postfix = switch (image.getContentType()) {
-            case "image/jpg" -> ".jpg";
-            case "image/jpeg" -> ".jpeg";
-            default -> ".png";
-        };
-
-        File file = new File(basePath + Paths.carHutImages + username + "/temp_" + UUID.randomUUID() + postfix);
-
-        image.transferTo(file);
+    /*
+        For testing only
+     */
+    public void deleteAll() {
+        carImageRepository.deleteAll();
     }
 }

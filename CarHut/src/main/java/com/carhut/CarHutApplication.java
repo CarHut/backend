@@ -33,8 +33,8 @@ public class CarHutApplication {
 	}
 
 	@Bean
-	public CarHutAPIService carHutAPIService(BrandRepository brandRepository, ModelRepository modelRepository) {
-		return new CarHutAPIService(brandRepository, modelRepository);
+	public CarHutAPIService carHutAPIService() {
+		return new CarHutAPIService();
 	}
 
 }

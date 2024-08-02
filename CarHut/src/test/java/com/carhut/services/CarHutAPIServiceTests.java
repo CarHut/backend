@@ -11,8 +11,11 @@ import com.carhut.util.converters.CarHutJSONConverter;
 import com.carhut.util.exceptions.CarHutException;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.*;
+import com.carhut.utils.AuthLogger;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,6 +32,7 @@ import java.util.List;
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
 )
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CarHutAPIServiceTests {
 
     @Autowired
@@ -36,24 +40,23 @@ public class CarHutAPIServiceTests {
     @Autowired
     private CarHutCarRepository carHutCarRepository;
     private CarHutJSONConverter carHutJSONConverter = new CarHutJSONConverter();
+    private String bearerToken;
+
+
+    @BeforeAll
+    public void loginToCarHutAPI() throws Exception {
+        AuthLogger authLogger = new AuthLogger();
+        bearerToken = authLogger.loginToCarHutAPI();
+        if (bearerToken == null) {
+            throw new Exception("Cannot run tests for CarHutAPIService because test unit couldn't login to server.");
+        }
+    }
 
     @Test
     void getAllBrands_ValidCaseShouldReturnAListOfBrands() throws CarHutAPIBrandsNotFoundException {
         List<Brand> brands = carHutAPIService.getAllBrands();
     }
 
-    @Test
-    void getAllBrands_MockedBrandRepository_ShouldThrowError() {
-        CarHutAPIService carHutAPIService1 = new CarHutAPIService(null, null);
-
-        try {
-            List<Brand> brands = carHutAPIService1.getAllBrands();
-            Assertions.assertNull(brands);
-        } catch (CarHutAPIBrandsNotFoundException e) {
-            System.out.println(e.getMessage());
-            // Expected ending
-        }
-    }
 
     @Test
     void getModelsByBrandName_ValidCaseShouldReturnAListOfModels() {
@@ -66,18 +69,7 @@ public class CarHutAPIServiceTests {
         }
     }
 
-    @Test
-    void getModelsByBrandName_MockedModelRepository_ShouldThrowError() {
-        CarHutAPIService carHutAPIService1 = new CarHutAPIService(null, null);
 
-        try {
-            List<Model> models = carHutAPIService1.getModelsByBrandName("Audi");
-            Assertions.assertNull(models);
-        } catch (CarHutAPIModelsNotFoundException e) {
-            System.out.println(e.getMessage());
-            // Expected ending
-        }
-    }
 
     @Test
     void getBrandIdFromBrandName_BrandRepositoryIsNotNull_ShouldReturnId() {
@@ -87,19 +79,6 @@ public class CarHutAPIServiceTests {
         } catch (CarHutAPIBrandNotFoundException e) {
             System.out.println(e.getMessage());
             Assertions.fail();
-        }
-    }
-
-    @Test
-    void getBrandIdFromBrandName_BrandRepositoryIsNull_ShouldThrowException() {
-        CarHutAPIService carHutAPIService1 = new CarHutAPIService(null, null);
-
-        try {
-            Integer id = carHutAPIService1.getBrandIdFromBrandName("Audi");
-            Assertions.assertNull(id);
-        } catch (CarHutAPIBrandNotFoundException e) {
-            System.out.println(e.getMessage());
-            // Expected ending
         }
     }
 
@@ -125,19 +104,7 @@ public class CarHutAPIServiceTests {
         }
     }
 
-    @Test
-    void getModelIdFroModelName_ShouldThrowException() {
-        CarHutAPIService carHutAPIService1 = new CarHutAPIService(null, null);
-        try {
-            Integer id = carHutAPIService1.getModelIdFromModelName("A4", 1);
-            Assertions.assertNull(id);
-        } catch (CarHutAPIModelNotFoundException e) {
-            System.out.println(e.getMessage());
-            // Expected ending
-        }
-    }
-
-    @Test
+     @Test
     void getModelIdFromModelName_ShouldReturnDefaultId_ModelNameIsNotInDatabase() {
         try {
             Integer id = carHutAPIService.getModelIdFromModelName("Random brand", 1);
@@ -590,48 +557,15 @@ public class CarHutAPIServiceTests {
     @Test
     void getMyListing_UsernameIsValid_UserIsLoggedIn() {
         try {
-            Thread.sleep(1000);
-            String username = "admin";
-            String password = "admin";
-
-            // Login
-            URL url = new URL(NetworkPaths.publicIPAddress + ":8082/api/auth/authenticate");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            String jsonInputString = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
-
-            try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = conn.getResponseCode();
-            Assertions.assertEquals(200, responseCode);
-
-            InputStream stream = conn.getInputStream();
-            String bearerToken = null;
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-                bearerToken = br.readLine();
-            }
-
-            Assertions.assertNotNull(bearerToken);
-
-            System.out.println(bearerToken);
-
-            Thread.sleep(2000);
-
             // Send request to getMyListings
-            URL url1 = new URL(NetworkPaths.publicIPAddress + ":8082/api/carhut/getMyListings?username=" + username);
+            URL url1 = new URL(NetworkPaths.publicIPAddress + ":8082/api/carhut/getMyListings?username=admin");
             HttpURLConnection conn1 = (HttpURLConnection) url1.openConnection();
             conn1.setRequestMethod("POST");
             conn1.setRequestProperty("Content-Type", "application/json");
             conn1.setRequestProperty("Authorization", "Bearer " + bearerToken);
             conn1.setDoOutput(true);
 
-            responseCode = conn1.getResponseCode();
+            int responseCode = conn1.getResponseCode();
             System.out.println("Response Code: " + responseCode);
 
             List<CarHutCar> cars;
@@ -681,46 +615,6 @@ public class CarHutAPIServiceTests {
 
     @Test
     void removeOffer_IdIsValid() throws InterruptedException {
-        String bearerToken = null;
-        try {
-            // First user logs in
-            Thread.sleep(1000);
-            String username = "admin";
-            String password = "admin";
-
-            // Login
-            URL url = new URL(NetworkPaths.publicIPAddress + ":8082/api/auth/authenticate");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            String jsonInputString = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
-
-            try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = conn.getResponseCode();
-            Assertions.assertEquals(200, responseCode);
-
-            InputStream stream = conn.getInputStream();
-
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-                bearerToken = br.readLine();
-            }
-
-            Assertions.assertNotNull(bearerToken);
-
-            System.out.println(bearerToken);
-
-            Thread.sleep(2000);
-        } catch (IOException | InterruptedException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
-
         CarHutCar car = new CarHutCar(
                 "user0", // Please add seller name due to logic of adding car to database (id=user0,name=admin)
                 "Test address",

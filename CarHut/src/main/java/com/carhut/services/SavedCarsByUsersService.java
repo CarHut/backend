@@ -7,8 +7,6 @@ import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.SavedCarByUser;
 import com.carhut.models.security.User;
-import com.carhut.temputils.models.TempCarModel;
-import com.carhut.temputils.repo.TempCarRepository;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.CarHutAPICarNotFoundException;
 import com.carhut.util.exceptions.savedcars.SavedCarsCanNotBeDeletedException;
@@ -29,33 +27,9 @@ public class SavedCarsByUsersService {
     @Autowired
     private SavedCarsByUsersRepository savedCarsByUsersRepository;
     @Autowired
-    private TempCarRepository tempCarRepository;
-    @Autowired
     private UserCredentialsRepository userCredentialsRepository;
     @Autowired
     private CarHutCarRepository carHutCarRepository;
-
-    @Deprecated
-    public List<TempCarModel> getSavedTempCarsByUserUsername(String username) throws CarHutAuthenticationException {
-        User user = userCredentialsRepository.findUserByUsername(username);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-
-        if (!userSecurityContextHolder.getUsername().equals(username)) {
-            throw new CarHutAuthenticationException("Unauthorized access to user data.");
-        }
-
-        List<SavedCarByUser> savedCars = savedCarsByUsersRepository.getSavedCarsByUserId(user.getId());
-
-        List<TempCarModel> cars = new ArrayList<>();
-
-        for (SavedCarByUser savedCarByUser : savedCars) {
-            cars.add(tempCarRepository.getTempCarWithId(savedCarByUser.getCarId()));
-        }
-
-        return cars;
-    }
 
     public List<CarHutCar> getSavedCarsByUsername(String username) throws UserCredentialsNotFoundException, SavedCarsNotFoundException, CarHutAPICarNotFoundException, CarHutAuthenticationException {
         User user;
@@ -100,6 +74,10 @@ public class SavedCarsByUsersService {
     }
 
     public RequestStatusEntity addSavedCarByUser(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeSavedException, CarHutAuthenticationException {
+        if (savedCarByUser == null) {
+            return RequestStatusEntity.ERROR;
+        }
+
         User user;
         try {
             user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());

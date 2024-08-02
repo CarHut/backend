@@ -1,6 +1,5 @@
 package com.carhut.services.utils;
 
-import com.carhut.CarHutApplication;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.services.util.Filter;
 import org.junit.jupiter.api.Assertions;

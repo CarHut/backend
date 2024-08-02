@@ -26,12 +26,6 @@ public class SavedCarsByUsersController {
     private SavedCarsByUsersService savedCarsByUsersService;
     private final ControllerLogger controllerLogger = ControllerLogger.getLogger();
 
-    @Deprecated
-    @PostMapping("/getSavedTempCarsByUsername")
-    public ResponseEntity<List<TempCarModel>> getSavedTempCarsByUsername(@RequestBody String username) throws CarHutAuthenticationException {
-        return ResponseEntity.ok(savedCarsByUsersService.getSavedTempCarsByUserUsername(username));
-    }
-
     @PostMapping("/getSavedCarsByUsername")
     public ResponseEntity<List<CarHutCar>> getSavedCarsByUsername(@RequestBody String username) {
         try {
