@@ -9,181 +9,181 @@
 -- Data for Name: authorities; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO h2.public.authorities (id, authority) VALUES (1, 'ROLE_ADMIN');
-INSERT INTO h2.public.authorities (id, authority) VALUES (2, 'ROLE_USER');
+INSERT INTO authorities (id, authority) VALUES (1, 'ROLE_ADMIN');
+INSERT INTO authorities (id, authority) VALUES (2, 'ROLE_USER');
 
 --
 -- Data for Name: brand; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO h2.public.brand (id, brand) VALUES (1, 'Audi');
-INSERT INTO h2.public.brand (id, brand) VALUES (2, 'BMW');
-INSERT INTO h2.public.brand (id, brand) VALUES (3, 'Mercedes-Benz');
-INSERT INTO h2.public.brand (id, brand) VALUES (4, 'Volkswagen');
-INSERT INTO h2.public.brand (id, brand) VALUES (5, 'Abarth');
-INSERT INTO h2.public.brand (id, brand) VALUES (6, 'AC');
-INSERT INTO h2.public.brand (id, brand) VALUES (7, 'Acura');
-INSERT INTO h2.public.brand (id, brand) VALUES (8, 'Aiways');
-INSERT INTO h2.public.brand (id, brand) VALUES (9, 'Aixam');
-INSERT INTO h2.public.brand (id, brand) VALUES (10, 'Alfa Romeo');
-INSERT INTO h2.public.brand (id, brand) VALUES (11, 'ALPINA');
-INSERT INTO h2.public.brand (id, brand) VALUES (12, 'Artega');
-INSERT INTO h2.public.brand (id, brand) VALUES (13, 'Asia Motors');
-INSERT INTO h2.public.brand (id, brand) VALUES (14, 'Aston Martin');
-INSERT INTO h2.public.brand (id, brand) VALUES (15, 'Austin');
-INSERT INTO h2.public.brand (id, brand) VALUES (16, 'Austin Healey');
-INSERT INTO h2.public.brand (id, brand) VALUES (17, 'BAIC');
-INSERT INTO h2.public.brand (id, brand) VALUES (18, 'Bentley');
-INSERT INTO h2.public.brand (id, brand) VALUES (19, 'Borgward');
-INSERT INTO h2.public.brand (id, brand) VALUES (20, 'Brilliance');
-INSERT INTO h2.public.brand (id, brand) VALUES (21, 'Bugatti');
-INSERT INTO h2.public.brand (id, brand) VALUES (22, 'Buick');
-INSERT INTO h2.public.brand (id, brand) VALUES (23, 'BYD');
-INSERT INTO h2.public.brand (id, brand) VALUES (24, 'Cadillac');
-INSERT INTO h2.public.brand (id, brand) VALUES (25, 'Casalini');
-INSERT INTO h2.public.brand (id, brand) VALUES (26, 'Caterham');
-INSERT INTO h2.public.brand (id, brand) VALUES (27, 'Chatenet');
-INSERT INTO h2.public.brand (id, brand) VALUES (28, 'Chevrolet');
-INSERT INTO h2.public.brand (id, brand) VALUES (29, 'Chrysler');
-INSERT INTO h2.public.brand (id, brand) VALUES (30, 'Citroën');
-INSERT INTO h2.public.brand (id, brand) VALUES (31, 'Cobra');
-INSERT INTO h2.public.brand (id, brand) VALUES (32, 'Corvette');
-INSERT INTO h2.public.brand (id, brand) VALUES (33, 'Cupra');
-INSERT INTO h2.public.brand (id, brand) VALUES (34, 'Dacia');
-INSERT INTO h2.public.brand (id, brand) VALUES (35, 'Daewoo');
-INSERT INTO h2.public.brand (id, brand) VALUES (36, 'Daihatsu');
-INSERT INTO h2.public.brand (id, brand) VALUES (37, 'DeTomaso');
-INSERT INTO h2.public.brand (id, brand) VALUES (38, 'DFSK');
-INSERT INTO h2.public.brand (id, brand) VALUES (39, 'Dodge');
-INSERT INTO h2.public.brand (id, brand) VALUES (40, 'Donkervoort');
-INSERT INTO h2.public.brand (id, brand) VALUES (41, 'DS Automobiles');
-INSERT INTO h2.public.brand (id, brand) VALUES (42, 'e.GO');
-INSERT INTO h2.public.brand (id, brand) VALUES (43, 'Elaris');
-INSERT INTO h2.public.brand (id, brand) VALUES (44, 'Ferrari');
-INSERT INTO h2.public.brand (id, brand) VALUES (45, 'Fiat');
-INSERT INTO h2.public.brand (id, brand) VALUES (46, 'Fisker');
-INSERT INTO h2.public.brand (id, brand) VALUES (47, 'Ford');
-INSERT INTO h2.public.brand (id, brand) VALUES (48, 'GAC Gonow');
-INSERT INTO h2.public.brand (id, brand) VALUES (49, 'Gemballa');
-INSERT INTO h2.public.brand (id, brand) VALUES (50, 'Genesis');
-INSERT INTO h2.public.brand (id, brand) VALUES (51, 'GMC');
-INSERT INTO h2.public.brand (id, brand) VALUES (52, 'Grecav');
-INSERT INTO h2.public.brand (id, brand) VALUES (53, 'Hamann');
-INSERT INTO h2.public.brand (id, brand) VALUES (54, 'Holden');
-INSERT INTO h2.public.brand (id, brand) VALUES (55, 'Honda');
-INSERT INTO h2.public.brand (id, brand) VALUES (56, 'Hummer');
-INSERT INTO h2.public.brand (id, brand) VALUES (57, 'Hyundai');
-INSERT INTO h2.public.brand (id, brand) VALUES (58, 'INEOS');
-INSERT INTO h2.public.brand (id, brand) VALUES (59, 'Infiniti');
-INSERT INTO h2.public.brand (id, brand) VALUES (60, 'Isuzu');
-INSERT INTO h2.public.brand (id, brand) VALUES (61, 'Iveco');
-INSERT INTO h2.public.brand (id, brand) VALUES (62, 'JAC');
-INSERT INTO h2.public.brand (id, brand) VALUES (63, 'Jaguar');
-INSERT INTO h2.public.brand (id, brand) VALUES (64, 'Jeep');
-INSERT INTO h2.public.brand (id, brand) VALUES (65, 'Kia');
-INSERT INTO h2.public.brand (id, brand) VALUES (66, 'Koenigsegg');
-INSERT INTO h2.public.brand (id, brand) VALUES (67, 'KTM');
-INSERT INTO h2.public.brand (id, brand) VALUES (68, 'Lada');
-INSERT INTO h2.public.brand (id, brand) VALUES (69, 'Lamborghini');
-INSERT INTO h2.public.brand (id, brand) VALUES (70, 'Lancia');
-INSERT INTO h2.public.brand (id, brand) VALUES (71, 'Land Rover');
-INSERT INTO h2.public.brand (id, brand) VALUES (72, 'Landwind');
-INSERT INTO h2.public.brand (id, brand) VALUES (73, 'LEVC');
-INSERT INTO h2.public.brand (id, brand) VALUES (74, 'Lexus');
-INSERT INTO h2.public.brand (id, brand) VALUES (75, 'Ligier');
-INSERT INTO h2.public.brand (id, brand) VALUES (76, 'Lincoln');
-INSERT INTO h2.public.brand (id, brand) VALUES (77, 'Lotus');
-INSERT INTO h2.public.brand (id, brand) VALUES (78, 'Lynk&Co');
-INSERT INTO h2.public.brand (id, brand) VALUES (79, 'Mahindra');
-INSERT INTO h2.public.brand (id, brand) VALUES (80, 'MAN');
-INSERT INTO h2.public.brand (id, brand) VALUES (81, 'Maserati');
-INSERT INTO h2.public.brand (id, brand) VALUES (82, 'Maxus');
-INSERT INTO h2.public.brand (id, brand) VALUES (83, 'Maybach');
-INSERT INTO h2.public.brand (id, brand) VALUES (84, 'Mazda');
-INSERT INTO h2.public.brand (id, brand) VALUES (85, 'McLaren');
-INSERT INTO h2.public.brand (id, brand) VALUES (86, 'MG');
-INSERT INTO h2.public.brand (id, brand) VALUES (87, 'Microcar');
-INSERT INTO h2.public.brand (id, brand) VALUES (88, 'Microlino');
-INSERT INTO h2.public.brand (id, brand) VALUES (89, 'MINI');
-INSERT INTO h2.public.brand (id, brand) VALUES (90, 'Mitsubishi');
-INSERT INTO h2.public.brand (id, brand) VALUES (91, 'Morgan');
-INSERT INTO h2.public.brand (id, brand) VALUES (92, 'NIO');
-INSERT INTO h2.public.brand (id, brand) VALUES (93, 'Nissan');
-INSERT INTO h2.public.brand (id, brand) VALUES (94, 'NSU');
-INSERT INTO h2.public.brand (id, brand) VALUES (95, 'Oldsmobile');
-INSERT INTO h2.public.brand (id, brand) VALUES (96, 'Opel');
-INSERT INTO h2.public.brand (id, brand) VALUES (97, 'ORA');
-INSERT INTO h2.public.brand (id, brand) VALUES (98, 'Pagani');
-INSERT INTO h2.public.brand (id, brand) VALUES (99, 'Peugeot');
-INSERT INTO h2.public.brand (id, brand) VALUES (100, 'Piaggio');
-INSERT INTO h2.public.brand (id, brand) VALUES (101, 'Plymouth');
-INSERT INTO h2.public.brand (id, brand) VALUES (102, 'Polestar');
-INSERT INTO h2.public.brand (id, brand) VALUES (103, 'Pontiac');
-INSERT INTO h2.public.brand (id, brand) VALUES (104, 'Porsche');
-INSERT INTO h2.public.brand (id, brand) VALUES (105, 'Proton');
-INSERT INTO h2.public.brand (id, brand) VALUES (106, 'Renault');
-INSERT INTO h2.public.brand (id, brand) VALUES (107, 'Rolls-Royce');
-INSERT INTO h2.public.brand (id, brand) VALUES (108, 'Rover');
-INSERT INTO h2.public.brand (id, brand) VALUES (109, 'Ruf');
-INSERT INTO h2.public.brand (id, brand) VALUES (110, 'Saab');
-INSERT INTO h2.public.brand (id, brand) VALUES (111, 'Santana');
-INSERT INTO h2.public.brand (id, brand) VALUES (112, 'Seat');
-INSERT INTO h2.public.brand (id, brand) VALUES (113, 'Škoda');
-INSERT INTO h2.public.brand (id, brand) VALUES (114, 'Smart');
-INSERT INTO h2.public.brand (id, brand) VALUES (115, 'speedART');
-INSERT INTO h2.public.brand (id, brand) VALUES (116, 'Spyker');
-INSERT INTO h2.public.brand (id, brand) VALUES (117, 'Ssangyong');
-INSERT INTO h2.public.brand (id, brand) VALUES (118, 'Subaru');
-INSERT INTO h2.public.brand (id, brand) VALUES (119, 'Suzuki');
-INSERT INTO h2.public.brand (id, brand) VALUES (120, 'SWM');
-INSERT INTO h2.public.brand (id, brand) VALUES (121, 'Talbot');
-INSERT INTO h2.public.brand (id, brand) VALUES (122, 'Tata');
-INSERT INTO h2.public.brand (id, brand) VALUES (123, 'TECHART');
-INSERT INTO h2.public.brand (id, brand) VALUES (124, 'Tesla');
-INSERT INTO h2.public.brand (id, brand) VALUES (125, 'Toyota');
-INSERT INTO h2.public.brand (id, brand) VALUES (126, 'Trabant');
-INSERT INTO h2.public.brand (id, brand) VALUES (127, 'Triumph');
-INSERT INTO h2.public.brand (id, brand) VALUES (128, 'TVR');
-INSERT INTO h2.public.brand (id, brand) VALUES (129, 'Volvo');
-INSERT INTO h2.public.brand (id, brand) VALUES (130, 'Wartburg');
-INSERT INTO h2.public.brand (id, brand) VALUES (131, 'Westfield');
-INSERT INTO h2.public.brand (id, brand) VALUES (132, 'WEY');
-INSERT INTO h2.public.brand (id, brand) VALUES (133, 'Wiesmann');
-INSERT INTO h2.public.brand (id, brand) VALUES (134, 'XEV');
-INSERT INTO h2.public.brand (id, brand) VALUES (135, 'Zhidou');
-INSERT INTO h2.public.brand (id, brand) VALUES (136, 'Other');
+INSERT INTO brand (id, brand) VALUES (1, 'Audi');
+INSERT INTO brand (id, brand) VALUES (2, 'BMW');
+INSERT INTO brand (id, brand) VALUES (3, 'Mercedes-Benz');
+INSERT INTO brand (id, brand) VALUES (4, 'Volkswagen');
+INSERT INTO brand (id, brand) VALUES (5, 'Abarth');
+INSERT INTO brand (id, brand) VALUES (6, 'AC');
+INSERT INTO brand (id, brand) VALUES (7, 'Acura');
+INSERT INTO brand (id, brand) VALUES (8, 'Aiways');
+INSERT INTO brand (id, brand) VALUES (9, 'Aixam');
+INSERT INTO brand (id, brand) VALUES (10, 'Alfa Romeo');
+INSERT INTO brand (id, brand) VALUES (11, 'ALPINA');
+INSERT INTO brand (id, brand) VALUES (12, 'Artega');
+INSERT INTO brand (id, brand) VALUES (13, 'Asia Motors');
+INSERT INTO brand (id, brand) VALUES (14, 'Aston Martin');
+INSERT INTO brand (id, brand) VALUES (15, 'Austin');
+INSERT INTO brand (id, brand) VALUES (16, 'Austin Healey');
+INSERT INTO brand (id, brand) VALUES (17, 'BAIC');
+INSERT INTO brand (id, brand) VALUES (18, 'Bentley');
+INSERT INTO brand (id, brand) VALUES (19, 'Borgward');
+INSERT INTO brand (id, brand) VALUES (20, 'Brilliance');
+INSERT INTO brand (id, brand) VALUES (21, 'Bugatti');
+INSERT INTO brand (id, brand) VALUES (22, 'Buick');
+INSERT INTO brand (id, brand) VALUES (23, 'BYD');
+INSERT INTO brand (id, brand) VALUES (24, 'Cadillac');
+INSERT INTO brand (id, brand) VALUES (25, 'Casalini');
+INSERT INTO brand (id, brand) VALUES (26, 'Caterham');
+INSERT INTO brand (id, brand) VALUES (27, 'Chatenet');
+INSERT INTO brand (id, brand) VALUES (28, 'Chevrolet');
+INSERT INTO brand (id, brand) VALUES (29, 'Chrysler');
+INSERT INTO brand (id, brand) VALUES (30, 'Citroën');
+INSERT INTO brand (id, brand) VALUES (31, 'Cobra');
+INSERT INTO brand (id, brand) VALUES (32, 'Corvette');
+INSERT INTO brand (id, brand) VALUES (33, 'Cupra');
+INSERT INTO brand (id, brand) VALUES (34, 'Dacia');
+INSERT INTO brand (id, brand) VALUES (35, 'Daewoo');
+INSERT INTO brand (id, brand) VALUES (36, 'Daihatsu');
+INSERT INTO brand (id, brand) VALUES (37, 'DeTomaso');
+INSERT INTO brand (id, brand) VALUES (38, 'DFSK');
+INSERT INTO brand (id, brand) VALUES (39, 'Dodge');
+INSERT INTO brand (id, brand) VALUES (40, 'Donkervoort');
+INSERT INTO brand (id, brand) VALUES (41, 'DS Automobiles');
+INSERT INTO brand (id, brand) VALUES (42, 'e.GO');
+INSERT INTO brand (id, brand) VALUES (43, 'Elaris');
+INSERT INTO brand (id, brand) VALUES (44, 'Ferrari');
+INSERT INTO brand (id, brand) VALUES (45, 'Fiat');
+INSERT INTO brand (id, brand) VALUES (46, 'Fisker');
+INSERT INTO brand (id, brand) VALUES (47, 'Ford');
+INSERT INTO brand (id, brand) VALUES (48, 'GAC Gonow');
+INSERT INTO brand (id, brand) VALUES (49, 'Gemballa');
+INSERT INTO brand (id, brand) VALUES (50, 'Genesis');
+INSERT INTO brand (id, brand) VALUES (51, 'GMC');
+INSERT INTO brand (id, brand) VALUES (52, 'Grecav');
+INSERT INTO brand (id, brand) VALUES (53, 'Hamann');
+INSERT INTO brand (id, brand) VALUES (54, 'Holden');
+INSERT INTO brand (id, brand) VALUES (55, 'Honda');
+INSERT INTO brand (id, brand) VALUES (56, 'Hummer');
+INSERT INTO brand (id, brand) VALUES (57, 'Hyundai');
+INSERT INTO brand (id, brand) VALUES (58, 'INEOS');
+INSERT INTO brand (id, brand) VALUES (59, 'Infiniti');
+INSERT INTO brand (id, brand) VALUES (60, 'Isuzu');
+INSERT INTO brand (id, brand) VALUES (61, 'Iveco');
+INSERT INTO brand (id, brand) VALUES (62, 'JAC');
+INSERT INTO brand (id, brand) VALUES (63, 'Jaguar');
+INSERT INTO brand (id, brand) VALUES (64, 'Jeep');
+INSERT INTO brand (id, brand) VALUES (65, 'Kia');
+INSERT INTO brand (id, brand) VALUES (66, 'Koenigsegg');
+INSERT INTO brand (id, brand) VALUES (67, 'KTM');
+INSERT INTO brand (id, brand) VALUES (68, 'Lada');
+INSERT INTO brand (id, brand) VALUES (69, 'Lamborghini');
+INSERT INTO brand (id, brand) VALUES (70, 'Lancia');
+INSERT INTO brand (id, brand) VALUES (71, 'Land Rover');
+INSERT INTO brand (id, brand) VALUES (72, 'Landwind');
+INSERT INTO brand (id, brand) VALUES (73, 'LEVC');
+INSERT INTO brand (id, brand) VALUES (74, 'Lexus');
+INSERT INTO brand (id, brand) VALUES (75, 'Ligier');
+INSERT INTO brand (id, brand) VALUES (76, 'Lincoln');
+INSERT INTO brand (id, brand) VALUES (77, 'Lotus');
+INSERT INTO brand (id, brand) VALUES (78, 'Lynk&Co');
+INSERT INTO brand (id, brand) VALUES (79, 'Mahindra');
+INSERT INTO brand (id, brand) VALUES (80, 'MAN');
+INSERT INTO brand (id, brand) VALUES (81, 'Maserati');
+INSERT INTO brand (id, brand) VALUES (82, 'Maxus');
+INSERT INTO brand (id, brand) VALUES (83, 'Maybach');
+INSERT INTO brand (id, brand) VALUES (84, 'Mazda');
+INSERT INTO brand (id, brand) VALUES (85, 'McLaren');
+INSERT INTO brand (id, brand) VALUES (86, 'MG');
+INSERT INTO brand (id, brand) VALUES (87, 'Microcar');
+INSERT INTO brand (id, brand) VALUES (88, 'Microlino');
+INSERT INTO brand (id, brand) VALUES (89, 'MINI');
+INSERT INTO brand (id, brand) VALUES (90, 'Mitsubishi');
+INSERT INTO brand (id, brand) VALUES (91, 'Morgan');
+INSERT INTO brand (id, brand) VALUES (92, 'NIO');
+INSERT INTO brand (id, brand) VALUES (93, 'Nissan');
+INSERT INTO brand (id, brand) VALUES (94, 'NSU');
+INSERT INTO brand (id, brand) VALUES (95, 'Oldsmobile');
+INSERT INTO brand (id, brand) VALUES (96, 'Opel');
+INSERT INTO brand (id, brand) VALUES (97, 'ORA');
+INSERT INTO brand (id, brand) VALUES (98, 'Pagani');
+INSERT INTO brand (id, brand) VALUES (99, 'Peugeot');
+INSERT INTO brand (id, brand) VALUES (100, 'Piaggio');
+INSERT INTO brand (id, brand) VALUES (101, 'Plymouth');
+INSERT INTO brand (id, brand) VALUES (102, 'Polestar');
+INSERT INTO brand (id, brand) VALUES (103, 'Pontiac');
+INSERT INTO brand (id, brand) VALUES (104, 'Porsche');
+INSERT INTO brand (id, brand) VALUES (105, 'Proton');
+INSERT INTO brand (id, brand) VALUES (106, 'Renault');
+INSERT INTO brand (id, brand) VALUES (107, 'Rolls-Royce');
+INSERT INTO brand (id, brand) VALUES (108, 'Rover');
+INSERT INTO brand (id, brand) VALUES (109, 'Ruf');
+INSERT INTO brand (id, brand) VALUES (110, 'Saab');
+INSERT INTO brand (id, brand) VALUES (111, 'Santana');
+INSERT INTO brand (id, brand) VALUES (112, 'Seat');
+INSERT INTO brand (id, brand) VALUES (113, 'Škoda');
+INSERT INTO brand (id, brand) VALUES (114, 'Smart');
+INSERT INTO brand (id, brand) VALUES (115, 'speedART');
+INSERT INTO brand (id, brand) VALUES (116, 'Spyker');
+INSERT INTO brand (id, brand) VALUES (117, 'Ssangyong');
+INSERT INTO brand (id, brand) VALUES (118, 'Subaru');
+INSERT INTO brand (id, brand) VALUES (119, 'Suzuki');
+INSERT INTO brand (id, brand) VALUES (120, 'SWM');
+INSERT INTO brand (id, brand) VALUES (121, 'Talbot');
+INSERT INTO brand (id, brand) VALUES (122, 'Tata');
+INSERT INTO brand (id, brand) VALUES (123, 'TECHART');
+INSERT INTO brand (id, brand) VALUES (124, 'Tesla');
+INSERT INTO brand (id, brand) VALUES (125, 'Toyota');
+INSERT INTO brand (id, brand) VALUES (126, 'Trabant');
+INSERT INTO brand (id, brand) VALUES (127, 'Triumph');
+INSERT INTO brand (id, brand) VALUES (128, 'TVR');
+INSERT INTO brand (id, brand) VALUES (129, 'Volvo');
+INSERT INTO brand (id, brand) VALUES (130, 'Wartburg');
+INSERT INTO brand (id, brand) VALUES (131, 'Westfield');
+INSERT INTO brand (id, brand) VALUES (132, 'WEY');
+INSERT INTO brand (id, brand) VALUES (133, 'Wiesmann');
+INSERT INTO brand (id, brand) VALUES (134, 'XEV');
+INSERT INTO brand (id, brand) VALUES (135, 'Zhidou');
+INSERT INTO brand (id, brand) VALUES (136, 'Other');
 
 --
 -- Data for Name: color; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('1', 'red', 'Not stated', 'Not stated', '#FF0000');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('2', 'blue', 'Not stated', 'Not stated', '#0000FF');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('3', 'green', 'Not stated', 'Not stated', '#008000');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('4', 'yellow', 'Not stated', 'Not stated', '#FFFF00');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('5', 'orange', 'Not stated', 'Not stated', '#FFA500');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('6', 'purple', 'Not stated', 'Not stated', '#800080');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('7', 'pink', 'Not stated', 'Not stated', '#FFC0CB');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('8', 'cyan', 'Not stated', 'Not stated', '#00FFFF');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('9', 'magenta', 'Not stated', 'Not stated', '#FF00FF');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('10', 'brown', 'Not stated', 'Not stated', '#A52A2A');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('11', 'black', 'Not stated', 'Not stated', '#000000');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('12', 'white', 'Not stated', 'Not stated', '#FFFFFF');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('13', 'gray', 'Not stated', 'Not stated', '#808080');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('14', 'silver', 'Not stated', 'Not stated', '#C0C0C0');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('15', 'gold', 'Not stated', 'Not stated', '#FFD700');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('16', 'maroon', 'Not stated', 'Not stated', '#800000');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('17', 'lime', 'Not stated', 'Not stated', '#00FF00');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('18', 'olive', 'Not stated', 'Not stated', '#808000');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('19', 'teal', 'Not stated', 'Not stated', '#008080');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('20', 'navy', 'Not stated', 'Not stated', '#000080');
-INSERT INTO h2.public.color (id, color, finish, secondary_color, color_hex) VALUES ('color0', 'color0', 'color0', 'color0', 'color0');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('1', 'red', 'Not stated', 'Not stated', '#FF0000');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('2', 'blue', 'Not stated', 'Not stated', '#0000FF');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('3', 'green', 'Not stated', 'Not stated', '#008000');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('4', 'yellow', 'Not stated', 'Not stated', '#FFFF00');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('5', 'orange', 'Not stated', 'Not stated', '#FFA500');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('6', 'purple', 'Not stated', 'Not stated', '#800080');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('7', 'pink', 'Not stated', 'Not stated', '#FFC0CB');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('8', 'cyan', 'Not stated', 'Not stated', '#00FFFF');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('9', 'magenta', 'Not stated', 'Not stated', '#FF00FF');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('10', 'brown', 'Not stated', 'Not stated', '#A52A2A');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('11', 'black', 'Not stated', 'Not stated', '#000000');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('12', 'white', 'Not stated', 'Not stated', '#FFFFFF');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('13', 'gray', 'Not stated', 'Not stated', '#808080');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('14', 'silver', 'Not stated', 'Not stated', '#C0C0C0');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('15', 'gold', 'Not stated', 'Not stated', '#FFD700');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('16', 'maroon', 'Not stated', 'Not stated', '#800000');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('17', 'lime', 'Not stated', 'Not stated', '#00FF00');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('18', 'olive', 'Not stated', 'Not stated', '#808000');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('19', 'teal', 'Not stated', 'Not stated', '#008080');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('20', 'navy', 'Not stated', 'Not stated', '#000080');
+INSERT INTO color (id, color, finish, secondary_color, color_hex) VALUES ('color0', 'color0', 'color0', 'color0', 'color0');
 
 --
 -- Data for Name: model; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO h2.public.model (id, model, brand_id) VALUES
+INSERT INTO model (id, model, brand_id) VALUES
 	('1', '100', '1'),
 	('2', '200', '1'),
 	('3', '80', '1'),
@@ -2360,7 +2360,7 @@ INSERT INTO h2.public.model (id, model, brand_id) VALUES
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO h2.public.users (id, username, password, email, is_active, authority_id, first_name, surname, date_registered, num_of_offered_cars, registration_type) VALUES
+INSERT INTO users (id, username, password, email, is_active, authority_id, first_name, surname, date_registered, num_of_offered_cars, registration_type) VALUES
     ('user0', 'admin', '$2a$05$cjCn9LxucuXNP61ZlRQvseLWHlsB9rU/O5YCJAB3e3C/vp/u1VHgG', 'admin@admin.com', true, 2, 'Johny', 'Johny', '2000-01-01', 111, 'standard');
 
 
@@ -2376,7 +2376,7 @@ INSERT INTO h2.public.users (id, username, password, email, is_active, authority
 -- Data for Name: feature; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO h2.public.feature (feature, description, id) VALUES
+INSERT INTO feature (feature, description, id) VALUES
 	('LED lights', 'Light-emitting diode (LED) lights provide bright and energy-efficient illumination.', '1'),
 	('Parking cameras', 'Cameras placed around the vehicle aid in parking and maneuvering in tight spaces.', '2'),
 	('4 zone climate control', 'Allows individual temperature control for four different zones within the vehicle.', '3'),
@@ -2404,7 +2404,7 @@ INSERT INTO h2.public.feature (feature, description, id) VALUES
 	('Blu-ray entertainment system', 'Rear-seat entertainment system that plays Blu-ray discs for passengers.', '25'),
 	('Lane-keeping assist', 'Automatically makes steering adjustments to keep the vehicle centered within its lane.', '26'),
 	('Collision warning system', 'Alerts the driver of an impending collision with visual and/or audible warnings.', '27'),
-	('Active park assist', 'Assists the driver in parallel or perpendicular parking by automatically steering the vehicle INTO h2.public.the space.', '28'),
+	('Active park assist', 'Assists the driver in parallel or perpendicular parking by automatically steering the vehicle INTO the space.', '28'),
 	('Wi-Fi hotspot', 'Provides internet connectivity for passengers by creating a wireless hotspot in the vehicle.', '29'),
 	('Memory seats', 'Allows multiple drivers to save and recall their preferred seating positions.', '30'),
 	('Power-adjustable pedals', 'Pedals that can be electronically adjusted to accommodate drivers of different heights.', '31'),
@@ -2421,7 +2421,7 @@ INSERT INTO h2.public.feature (feature, description, id) VALUES
 	('Adaptive cruise control with stop-and-go', 'Extends adaptive cruise control functionality to include stop-and-go traffic situations.', '42'),
 	('Multi-angle rearview camera', 'Rearview camera system with multiple viewing angles for enhanced visibility while reversing.', '43'),
 	('Proximity keyless entry', 'Allows the driver to unlock and start the vehicle when the key fob is in close proximity, such as in a pocket or bag.', '44'),
-	('Automatic parking system', 'Automatically steers the vehicle INTO h2.public.a parking space with minimal driver input.', '45'),
+	('Automatic parking system', 'Automatically steers the vehicle INTO a parking space with minimal driver input.', '45'),
 	('Power rear sunshade', 'Automatically deploys and retracts a sunshade for the rear window to block out sunlight.', '46'),
 	('Head-up display', 'Projects important information onto the windshield within the drivers line of sight for easy viewing.', '47'),
 	('Wireless headphones', 'Headphones that connect to the vehicles entertainment system without the need for cables.', '48'),
@@ -2429,7 +2429,7 @@ INSERT INTO h2.public.feature (feature, description, id) VALUES
 	('Cross-traffic alert', 'Warns the driver of approaching vehicles when reversing out of a parking space or driveway.', '50'),
 	('Active noise cancellation', 'Uses microphones and speakers to counteract unwanted engine and road noise within the cabin.', '51'),
 	('Electronic stability control', 'Helps maintain control of the vehicle during sudden maneuvers or loss of traction.', '52'),
-	('Automatic parallel parking', 'Automatically steers the vehicle INTO h2.public.parallel parking spaces with minimal driver input.', '53'),
+	('Automatic parallel parking', 'Automatically steers the vehicle INTO parallel parking spaces with minimal driver input.', '53'),
 	('Rear-seat entertainment system', 'Provides entertainment options for rear-seat passengers, often including screens and media players.', '54'),
 	('Automatic emergency call system', 'Automatically contacts emergency services in the event of a severe accident or airbag deployment.', '55'),
 	('Smartphone integration', 'Integrates smartphones with the vehicles infotainment system for hands-free calling and audio streaming.', '56'),
@@ -2453,7 +2453,7 @@ INSERT INTO h2.public.feature (feature, description, id) VALUES
 	('Remote start system', 'Allows the vehicle to be started remotely, typically using a key fob or smartphone app.', '74'),
 	('Adaptive steering system', 'Varies the steering ratio and effort based on vehicle speed and driving conditions for optimal control.', '75'),
 	('Night vision assist', 'Uses infrared technology to detect pedestrians, animals, or obstacles in low-light conditions.', '76'),
-	('Self-parking system', 'Automatically steers the vehicle INTO h2.public.parking spaces with minimal driver input.', '77'),
+	('Self-parking system', 'Automatically steers the vehicle INTO parking spaces with minimal driver input.', '77'),
 	('Road sign recognition', 'Recognizes and displays road signs such as speed limits and warning signs on the vehicles dashboard.', '78'),
 	('Proximity key', 'Key fob that allows the vehicle to be unlocked and started when in close proximity, such as in a pocket or bag.', '79'),
 	('Hands-free liftgate', 'Allows the rear hatch or tailgate to be opened or closed automatically without requiring physical contact.', '80'),
@@ -2462,7 +2462,7 @@ INSERT INTO h2.public.feature (feature, description, id) VALUES
 	('Cross traffic alert', 'Warns the driver of approaching vehicles when backing out of a parking space or driveway.', '83'),
 	('Pedestrian detection', 'Detects pedestrians in the vehicles path and applies brakes to avoid or mitigate collisions.', '84'),
 	('Blind spot assist', 'Warns the driver of vehicles in the blind spots and may intervene to prevent lane-changing collisions.', '85'),
-	('Lane keep assist', 'Automatically steers the vehicle back INTO h2.public.its lane if it begins to drift without signaling.', '86'),
+	('Lane keep assist', 'Automatically steers the vehicle back INTO its lane if it begins to drift without signaling.', '86'),
 	('Remote engine start system', 'Allows the engine to be started remotely using a key fob or smartphone app.', '87'),
 	('Automatic parking brake', 'Engages the parking brake automatically when the vehicle is parked or stopped on an incline.', '88'),
 	('Smartphone connectivity', 'Enables seamless integration of smartphones with the vehicles infotainment system for hands-free operation.', '89'),
@@ -2474,7 +2474,7 @@ INSERT INTO h2.public.feature (feature, description, id) VALUES
 	('Active lane keeping assist', 'Automatically adjusts steering to keep the vehicle centered within its lane during highway driving.', '95'),
 	('Dynamic cruise control', 'Maintains a set speed and following distance from the vehicle ahead by automatically adjusting throttle and brakes.', '96'),
 	('Forward collision mitigation', 'Detects imminent collisions and warns the driver, and if necessary, applies brakes to avoid or reduce impact.', '97'),
-	('Automated parking system', 'Automatically controls steering, throttle, and braking to maneuver the vehicle INTO h2.public.parking spaces.', '98'),
+	('Automated parking system', 'Automatically controls steering, throttle, and braking to maneuver the vehicle INTO parking spaces.', '98'),
 	('Cross-traffic monitoring', 'Warns the driver of approaching vehicles when reversing out of a parking space or driveway.', '99'),
 	('Driver assistance package', 'Includes various advanced driver assistance features to enhance safety and convenience.', '100');
 
@@ -2520,7 +2520,7 @@ INSERT INTO h2.public.feature (feature, description, id) VALUES
 -- Data for Name: carhut_cars; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO h2.public.carhut_cars (id, seller_id, seller_address, brand_id, model_id, header, price, mileage, registration, engine_power, engine_displacement, fuel, fuel_consumption_avg, fuel_consumption_city, fuel_consumption_highway, gearbox, gearbox_gears, body_type, powertrain, description, base_img_path, previous_owners, energy_eff_class, seats, doors, emission_class, exterior_color_id, interior_color_id, damage_status, parking_sensors, parking_cameras, country_of_origin, technical_inspection_date, emission_inspection_date, features, date_added, is_active) VALUES
+INSERT INTO carhut_cars (id, seller_id, seller_address, brand_id, model_id, header, price, mileage, registration, engine_power, engine_displacement, fuel, fuel_consumption_avg, fuel_consumption_city, fuel_consumption_highway, gearbox, gearbox_gears, body_type, powertrain, description, base_img_path, previous_owners, energy_eff_class, seats, doors, emission_class, exterior_color_id, interior_color_id, damage_status, parking_sensors, parking_cameras, country_of_origin, technical_inspection_date, emission_inspection_date, features, date_added, is_active) VALUES
 	('000accbb1c02a3b1375529a68270a4cbca572aab73f2078f8324d2e69e9cd113', 'user0', 'none', 99, 1, 'Peugeot 308 Break/SW SW 1.5 BlueHDi 130 S&S Style EAT8', '13999€', '138000 km', 'NotStated', '96kW', '0ccm', 'Diesel', 'none', 'none', 'none', 'Automatic', '0', 'Combi', 'FrontWheel', 'none', 'none', 'none', 'none', '0', '0', 'none', 'color0', 'color0', 'none', 'f', 'f', 'none', '2000-01-01', '2000-01-01', null, '2000-01-01', 't'),
 	('4b4547f8885f1b82551cfa3da9a4bcc69987ee53fab3796d75a36092e03b9680', 'user0', 'Dlha 556/63', 2, 135, 'BMW M3 *300km/h* unrestricted', '68600', '58000', '2018', '365', '2998', 'Petrol', '9', '15', '8', 'Automatic', '7', 'Not stated', 'AllWheel', '', 'car_4b4547f8885f1b82551cfa3da9a4bcc69987ee53fab3796d75a36092e03b9680', '1', 'D', '4', '5', 'B', '11', '11', 'false', 't', 't', 'Germany', '2024-05-31', '2024-05-31', null, '2000-01-01', 't'),
 	('0031f9ef622e49fcd4b6197be0baf0b61e622bf5317bf63cbf3109517754818b', 'user0', 'none', 47, 106, 'Ford Transit Courier Van 1.5 TDCi EcoBlue Trend', '22990€', '15 km', '2023', '74kW', '0ccm', 'Diesel', 'none', 'none', 'none', 'Manual', '0', 'Van', 'FrontWheel', 'none', 'none', 'none', 'none', '0', '0', 'none', 'color0', 'color0', 'none', 'f', 'f', 'none', '2000-01-01', '2000-01-01', null, '2000-01-01', 't'),
