@@ -2,7 +2,7 @@ name: Build and test CarHut
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, action-setting]
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
 
       - name: Build project
         run: |
-          cd backend/CarHut
+          cd ./CarHut
           mvn clean install \
             -Dspring.datasource.url=${{ secrets.H2_EMBEDDED_DATA_SOURCE }} \
             -Dspring.datasource.username=${{ secrets.H2_EMBEDDED_DATA_SOURCE_USERNAME }} \
@@ -33,7 +33,7 @@ jobs:
             -Dspring.mail.host=${{ secrets.MAIL_HOST }} \
             -Dspring.mail.port=${{ secrets.MAIL_PORT }} \
             -Dspring.mail.username=${{ secrets.MAIL_USERNAME }} \
-            -Dspring.mail.password=${{ secrets.MAIL_PASSWORD }} \
+            -Dspring.mail.password="${{ secrets.MAIL_PASSWORD }}" \
             -Dspring.security.oauth2.resourceserver.opaquetoken.client-id=${{ secrets.OAUTH2_GOOGLE_ID }} \
             -Dspring.security.oauth2.resourceserver.opaquetoken.client-secret=${{ secrets.OAUTH2_GOOGLE_SECRET }} \
             -Dspring.security.oauth2.resourceserver.opaquetoken.introspection-uri=${{ secrets.OAUTH2_GOOGLE_INTROSPECTION_URL }}
