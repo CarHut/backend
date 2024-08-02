@@ -2,7 +2,7 @@ name: Build and test CarHut
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, action-setting]
 
 jobs:
   build:
