@@ -12,10 +12,7 @@ import com.carhut.util.exceptions.CarHutException;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.*;
 import com.carhut.utils.AuthLogger;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,10 +42,20 @@ public class CarHutAPIServiceTests {
 
     @BeforeAll
     public void loginToCarHutAPI() throws Exception {
-        AuthLogger authLogger = new AuthLogger();
-        bearerToken = authLogger.loginToCarHutAPI();
+        bearerToken = AuthLogger.loginToCarHutAPI();
+
+        Thread.sleep(1000);
+
         if (bearerToken == null) {
-            throw new Exception("Cannot run tests for CarHutAPIService because test unit couldn't login to server.");
+            throw new RuntimeException("Cannot run tests for CarHutAPIService because test unit couldn't login to server.");
+        }
+    }
+
+    @AfterAll
+    public void logout() {
+        boolean state = AuthLogger.logout();
+        if (!state) {
+            throw new RuntimeException("Cannot logout from server. Tests automatically failed.");
         }
     }
 
