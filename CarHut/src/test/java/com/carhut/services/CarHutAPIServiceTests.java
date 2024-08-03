@@ -37,93 +37,46 @@ public class CarHutAPIServiceTests {
     @Autowired
     private CarHutCarRepository carHutCarRepository;
     private CarHutJSONConverter carHutJSONConverter = new CarHutJSONConverter();
-    private String bearerToken;
-
-
-    @BeforeAll
-    public void loginToCarHutAPI() throws Exception {
-        bearerToken = AuthLogger.loginToCarHutAPI();
-
-        Thread.sleep(1000);
-
-        if (bearerToken == null) {
-            throw new RuntimeException("Cannot run tests for CarHutAPIService because test unit couldn't login to server.");
-        }
-    }
-
-    @AfterAll
-    public void logout() {
-        boolean state = AuthLogger.logout();
-        if (!state) {
-            throw new RuntimeException("Cannot logout from server. Tests automatically failed.");
-        }
-    }
 
     @Test
     void getAllBrands_ValidCaseShouldReturnAListOfBrands() throws CarHutAPIBrandsNotFoundException {
         List<Brand> brands = carHutAPIService.getAllBrands();
-    }
-
-
-    @Test
-    void getModelsByBrandName_ValidCaseShouldReturnAListOfModels() {
-        try {
-            List<Model> models = carHutAPIService.getModelsByBrandName("Audi");
-            Assertions.assertFalse(models.isEmpty());
-        } catch (CarHutAPIModelsNotFoundException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
-    }
-
-
-
-    @Test
-    void getBrandIdFromBrandName_BrandRepositoryIsNotNull_ShouldReturnId() {
-        try {
-            Integer id = carHutAPIService.getBrandIdFromBrandName("Audi");
-            Assertions.assertNotNull(id);
-        } catch (CarHutAPIBrandNotFoundException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        Assertions.assertNotNull(brands);
+        Assertions.assertFalse(brands.isEmpty());
     }
 
     @Test
-    void getBrandIdFromBrandName_BrandRepositoryIsNotNull_ValueIsNotInDatabase() {
-        try {
-            Integer id = carHutAPIService.getBrandIdFromBrandName("Random brand");
-            Assertions.assertEquals(136, id);
-        } catch (CarHutAPIBrandNotFoundException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getModelsByBrandName_ValidCaseShouldReturnAListOfModels() throws CarHutAPIModelsNotFoundException {
+        List<Model> models = carHutAPIService.getModelsByBrandName("Audi");
+        Assertions.assertFalse(models.isEmpty());
     }
 
     @Test
-    void getModelIdFroModelName_ShouldReturnNotNullInteger() {
-        try {
-            Integer id = carHutAPIService.getModelIdFromModelName("A4", 1);
-            Assertions.assertNotNull(id);
-        } catch (CarHutAPIModelNotFoundException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getBrandIdFromBrandName_BrandRepositoryIsNotNull_ShouldReturnId() throws CarHutAPIBrandNotFoundException {
+        Integer id = carHutAPIService.getBrandIdFromBrandName("Audi");
+        Assertions.assertNotNull(id);
+    }
+
+    @Test
+    void getBrandIdFromBrandName_BrandRepositoryIsNotNull_ValueIsNotInDatabase() throws CarHutAPIBrandNotFoundException {
+        Integer id = carHutAPIService.getBrandIdFromBrandName("Random brand");
+        Assertions.assertEquals(136, id);
+    }
+
+    @Test
+    void getModelIdFroModelName_ShouldReturnNotNullInteger() throws CarHutAPIModelNotFoundException {
+        Integer id = carHutAPIService.getModelIdFromModelName("A4", 1);
+        Assertions.assertNotNull(id);
     }
 
      @Test
-    void getModelIdFromModelName_ShouldReturnDefaultId_ModelNameIsNotInDatabase() {
-        try {
-            Integer id = carHutAPIService.getModelIdFromModelName("Random brand", 1);
-            Assertions.assertEquals(2264, id);
-        } catch (CarHutAPIModelNotFoundException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getModelIdFromModelName_ShouldReturnDefaultId_ModelNameIsNotInDatabase() throws CarHutAPIModelNotFoundException {
+        Integer id = carHutAPIService.getModelIdFromModelName("Random brand", 1);
+        Assertions.assertEquals(2264, id);
     }
 
     @Test
-    void carHutCarDataTransfer_AddNewCarToDatabase_GetCarWithId_ThenDeleteCar_SuccessfulScenario() {
+    void carHutCarDataTransfer_AddNewCarToDatabase_GetCarWithId_ThenDeleteCar_SuccessfulScenario() throws CarHutAPICarCanNotBeSavedException, InterruptedException, CarHutAPICarNotFoundException {
         CarHutCar car = new CarHutCar(
                 "user0", // Please add seller name due to logic of adding car to database (id=user0,name=admin)
                 "Test address",
@@ -137,41 +90,22 @@ public class CarHutAPIServiceTests {
                 null, null, null, null, null
         );
 
-        String newId = null;
+        String newId = carHutAPIService.addCarToDatabase(car);
+        Thread.sleep(1000);
 
-        try {
-            newId = carHutAPIService.addCarToDatabase(car);
-        } catch (CarHutAPICarCanNotBeSavedException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        CarHutCar car1 = carHutAPIService.getCarWithId(newId);
+        Assertions.assertEquals("user0", car1.getSellerId());
+        Assertions.assertEquals(car.getSellerAddress(), car1.getSellerAddress());
+        Assertions.assertEquals(car.getBrandId(), car1.getBrandId());
+        Assertions.assertEquals(car.getModelId(), car1.getModelId());
+        Assertions.assertEquals(car.getHeader(), car1.getHeader());
+        Assertions.assertEquals(car.getPrice(), car1.getPrice());
 
-        // timeout
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
-
-        try {
-            CarHutCar car1 = carHutAPIService.getCarWithId(newId);
-            Assertions.assertEquals("user0", car1.getSellerId());
-            Assertions.assertEquals(car.getSellerAddress(), car1.getSellerAddress());
-            Assertions.assertEquals(car.getBrandId(), car1.getBrandId());
-            Assertions.assertEquals(car.getModelId(), car1.getModelId());
-            Assertions.assertEquals(car.getHeader(), car1.getHeader());
-            Assertions.assertEquals(car.getPrice(), car1.getPrice());
-
-            carHutCarRepository.delete(car1);
-        } catch (CarHutAPICarNotFoundException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        carHutCarRepository.delete(car1);
     }
 
     @Test
-    void addCarToDatabase_InvalidUserId() {
+    void addCarToDatabase_InvalidUserId() throws CarHutAPICarCanNotBeSavedException {
         CarHutCar car = new CarHutCar(
                 "INVALID_USER_ID", // Please add seller name due to logic of adding car to database (id=user0,name=admin)
                 "Test address",
@@ -181,44 +115,29 @@ public class CarHutAPIServiceTests {
                 "Test price",
                 null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, false, false,
+                null, null, null, "color0", "color0", null, false, false,
                 null, null, null, null, null
         );
 
-        try {
-            String id = carHutAPIService.addCarToDatabase(car);
-            Assertions.assertNull(id);
-        } catch (CarHutAPICarCanNotBeSavedException e) {
-            System.out.println(e.getMessage());
-            // Expected ending
-        }
-
+        String id = carHutAPIService.addCarToDatabase(car);
+        Assertions.assertNull(id);
     }
 
     @Test
-    void getCarWithId_InvalidCarId_ShouldReturnNull_NoException() {
-        try {
-            CarHutCar car = carHutAPIService.getCarWithId("INVALID_CAR_ID");
-            Assertions.assertNull(car);
-        } catch (CarHutAPICarNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+    void getCarWithId_InvalidCarId_ShouldReturnNull_NoException() throws CarHutAPICarNotFoundException {
+        CarHutCar car = carHutAPIService.getCarWithId("INVALID_CAR_ID");
+        Assertions.assertNull(car);
     }
 
     @Test
-    void getAllCars_ShouldReturnListOfSizeGreaterThanZero() {
-        try {
-            List<CarHutCar> cars = carHutAPIService.getAllCars();
-            Assertions.assertNotNull(cars);
-            Assertions.assertFalse(cars.isEmpty());
-        } catch (CarHutAPICanNotGetCarsException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getAllCars_ShouldReturnListOfSizeGreaterThanZero() throws CarHutAPICanNotGetCarsException {
+        List<CarHutCar> cars = carHutAPIService.getAllCars();
+        Assertions.assertNotNull(cars);
+        Assertions.assertFalse(cars.isEmpty());
     }
 
     @Test
-    void getCarsWithFilter_ValidScenario_ShouldShowAllCarsAvailable() {
+    void getCarsWithFilter_ValidScenario_ShouldShowAllCarsAvailable() throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException, CarHutAPICanNotGetCarsException {
         CarHutCarFilterModel carHutCarFilterModel = new CarHutCarFilterModel(
                 "", "", Collections.emptyList(),
                 "", "", "", "", "", "", "", "", "",
@@ -229,19 +148,13 @@ public class CarHutAPIServiceTests {
         String sortOrder = "";
         Integer offersPerPage = Integer.MAX_VALUE;
 
-        try {
-            List<CarHutCar> filteredCars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, 1);
-            List<CarHutCar> allCars = carHutAPIService.getAllCars();
-            Assertions.assertEquals(allCars.size(), filteredCars.size());
-        } catch (CarHutAPIBrandNotFoundException | CarHutAPIModelNotFoundException |
-                 CarHutAPICanNotGetCarsException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> filteredCars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, 1);
+        List<CarHutCar> allCars = carHutAPIService.getAllCars();
+        Assertions.assertEquals(allCars.size(), filteredCars.size());
     }
 
     @Test
-    void getCarsWithFilter_MultipleModels() {
+    void getCarsWithFilter_MultipleModels() throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException, CarHutAPICanNotGetCarsException {
 
         List<ModelsPostModel> models = new ArrayList<>();
         models.add(new ModelsPostModel("BMW", "520"));
@@ -258,18 +171,13 @@ public class CarHutAPIServiceTests {
         String sortOrder = "";
         Integer offersPerPage = Integer.MAX_VALUE;
 
-        try {
-            List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, 1);
-            Assertions.assertFalse(cars.isEmpty());
-            Assertions.assertTrue(cars.size() <= carHutAPIService.getAllCars().size());
-        } catch (CarHutException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, 1);
+        Assertions.assertFalse(cars.isEmpty());
+        Assertions.assertTrue(cars.size() <= carHutAPIService.getAllCars().size());
     }
 
     @Test
-    void getCarsWithFilter_AllFilterParametersAreSet() {
+    void getCarsWithFilter_AllFilterParametersAreSet() throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException, CarHutAPICanNotGetCarsException {
         List<ModelsPostModel> models = new ArrayList<>();
         models.add(new ModelsPostModel("BMW", "520"));
         models.add(new ModelsPostModel("Audi", "A4"));
@@ -288,17 +196,12 @@ public class CarHutAPIServiceTests {
                 "21345", "Petrol", "150", "500", "2000", "5000", "Automatic", "All-wheel", models
         );
 
-        try {
-            List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, 1);
-            Assertions.assertTrue(cars.size() <= carHutAPIService.getAllCars().size());
-        } catch (CarHutException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, 1);
+        Assertions.assertTrue(cars.size() <= carHutAPIService.getAllCars().size());
     }
 
     @Test
-    void getNumberOfFilteredCars_ValidScenario() {
+    void getNumberOfFilteredCars_ValidScenario() throws CarHutAPIBrandNotFoundException, CarHutAPIModelNotFoundException, CarHutAPICanNotGetCarsException {
         List<ModelsPostModel> models = new ArrayList<>();
         models.add(new ModelsPostModel("BMW", "520"));
         models.add(new ModelsPostModel("Audi", "A4"));
@@ -313,15 +216,9 @@ public class CarHutAPIServiceTests {
         String sortOrder = "";
         Integer offersPerPage = Integer.MAX_VALUE;
 
-        try {
-            List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, 1);
-            Integer size = carHutAPIService.getNumberOfFilteredCars(carHutCarFilterModel);
-            Assertions.assertEquals(cars.size(), size);
-        } catch (CarHutException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
-
+        List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, 1);
+        Integer size = carHutAPIService.getNumberOfFilteredCars(carHutCarFilterModel);
+        Assertions.assertEquals(cars.size(), size);
     }
 
     @Test
@@ -349,93 +246,53 @@ public class CarHutAPIServiceTests {
     }
 
     @Test
-    void getColors_ValidScenario() {
-        try {
-            List<Color> colors = carHutAPIService.getColors();
-            Assertions.assertNotNull(colors);
-            Assertions.assertFalse(colors.isEmpty());
-        } catch (CarHutAPICanNotGetColorsException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getColors_ValidScenario() throws CarHutAPICanNotGetColorsException {
+        List<Color> colors = carHutAPIService.getColors();
+        Assertions.assertNotNull(colors);
+        Assertions.assertFalse(colors.isEmpty());
     }
 
     @Test
-    void getFeatures_ValidScenario() {
-        try {
-            List<Feature> features = carHutAPIService.getFeatures();
-            Assertions.assertNotNull(features);
-            Assertions.assertFalse(features.isEmpty());
-        } catch (CarHutAPICanNotGetFeaturesException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getFeatures_ValidScenario() throws CarHutAPICanNotGetFeaturesException {
+        List<Feature> features = carHutAPIService.getFeatures();
+        Assertions.assertNotNull(features);
+        Assertions.assertFalse(features.isEmpty());
     }
 
     @Test
-    void getFeatureById_FeatureIsInvalid() {
-        try {
-            Integer id = carHutAPIService.getFeatureIdByFeatureName("INVALID_FEATURE_NAME");
-            Assertions.assertNull(id);
-        } catch (CarHutAPICanNotGetFeaturesException e) {
-            System.out.println(e.getMessage());
-            System.out.println("THIS IS EXPECTED ENDING.");
-        }
+    void getFeatureById_FeatureIsInvalid() throws CarHutAPICanNotGetFeaturesException {
+        Integer id = carHutAPIService.getFeatureIdByFeatureName("INVALID_FEATURE_NAME");
+        Assertions.assertNull(id);
     }
 
     @Test
-    void getFeatureById_ValidFeatureName() {
-        try {
-            Integer id = carHutAPIService.getFeatureIdByFeatureName("Parking cameras");
-            Assertions.assertEquals(2, id);
-        } catch (CarHutAPICanNotGetFeaturesException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getFeatureById_ValidFeatureName() throws CarHutAPICanNotGetFeaturesException {
+        Integer id = carHutAPIService.getFeatureIdByFeatureName("Parking cameras");
+        Assertions.assertEquals(2, id);
     }
 
     @Test
-    void getColorStringNameFromColorId_InvalidId() {
-        try {
-            String colorName = carHutAPIService.getColorStringNameFromColorId("INVALID_ID");
-            Assertions.assertNull(colorName);
-        } catch (CarHutAPICanNotGetColorsException e) {
-            System.out.println(e.getMessage());
-            System.out.println("THIS IS ONE OF THE EXPECTED ENDINGS.");
-        }
+    void getColorStringNameFromColorId_InvalidId() throws CarHutAPICanNotGetColorsException {
+        String colorName = carHutAPIService.getColorStringNameFromColorId("INVALID_ID");
+        Assertions.assertNull(colorName);
     }
 
     @Test
-    void getColorStringNameFromColorId_ValidId() {
-        try {
-            String colorName = carHutAPIService.getColorStringNameFromColorId("1");
-            Assertions.assertEquals("red", colorName);
-        } catch (CarHutAPICanNotGetColorsException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getColorStringNameFromColorId_ValidId() throws CarHutAPICanNotGetColorsException {
+        String colorName = carHutAPIService.getColorStringNameFromColorId("1");
+        Assertions.assertEquals("red", colorName);
     }
 
     @Test
-    void getFeatureNameByFeatureId_InvalidId() {
-        try {
-            String featureName = carHutAPIService.getFeatureNameByFeatureId(-1);
-            Assertions.assertNull(featureName);
-        } catch (CarHutAPICanNotGetFeaturesException e) {
-            System.out.println(e.getMessage());
-            System.out.println("THIS IS ONE OF THE EXPECTED ENDINGS.");
-        }
+    void getFeatureNameByFeatureId_InvalidId() throws CarHutAPICanNotGetFeaturesException {
+        String featureName = carHutAPIService.getFeatureNameByFeatureId(-1);
+        Assertions.assertNull(featureName);
     }
 
     @Test
-    void getFeatureNameByFeatureId_ValidId() {
-        try {
-            String featureName = carHutAPIService.getFeatureNameByFeatureId(1);
-            Assertions.assertEquals("LED lights", featureName);
-        } catch (CarHutAPICanNotGetFeaturesException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void getFeatureNameByFeatureId_ValidId() throws CarHutAPICanNotGetFeaturesException {
+        String featureName = carHutAPIService.getFeatureNameByFeatureId(1);
+        Assertions.assertEquals("LED lights", featureName);
     }
 
     @Test
@@ -529,99 +386,39 @@ public class CarHutAPIServiceTests {
     }
 
     @Test
-    void getMyListing_UsernameIsNull() {
-        try {
-            List<CarHutCar> cars = carHutAPIService.getMyListings(null);
-            Assertions.assertNull(cars);
-        } catch (CarHutAPIException | CarHutAuthenticationException e) {
-            System.out.println(e.getMessage());
-            System.out.println("THIS IS ONE OF THE EXPECTED ENDINGS.");
-        }
+    void getMyListing_UsernameIsNull() throws CarHutAPIException, CarHutAuthenticationException {
+        List<CarHutCar> cars = carHutAPIService.getMyListings(null);
+        Assertions.assertNull(cars);
     }
 
     @Test
-    void getMyListing_UsernameIsInvalid() {
-        try {
-            List<CarHutCar> cars = carHutAPIService.getMyListings("INVALID_USERNAME");
-            Assertions.assertNull(cars);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("THIS IS ONE OF THE EXPECTED ENDINGS.");
-        }
+    void getMyListing_UsernameIsInvalid() throws CarHutAPIException, CarHutAuthenticationException {
+        List<CarHutCar> cars = carHutAPIService.getMyListings("INVALID_USERNAME");
+        Assertions.assertNull(cars);
     }
 
     @Test
-    void getMyListing_UsernameIsValid_UserIsNotLoggedIn() {
-        try {
-            List<CarHutCar> cars = carHutAPIService.getMyListings("user0");
-            Assertions.fail();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("THIS IS EXPECTED ENDING.");
-        }
+    void getMyListing_UsernameIsValid() throws CarHutAPIException, CarHutAuthenticationException {
+        List<CarHutCar> cars = carHutAPIService.getMyListings("admin");
+        Assertions.assertNotNull(cars);
+        Assertions.assertFalse(cars.isEmpty());
+        cars.forEach(car -> Assertions.assertEquals("user0", car.getSellerId()));
     }
 
     @Test
-    void getMyListing_UsernameIsValid_UserIsLoggedIn() {
-        try {
-            // Send request to getMyListings
-            URL url1 = new URL(NetworkPaths.publicIPAddress + ":8082/api/carhut/getMyListings?username=admin");
-            HttpURLConnection conn1 = (HttpURLConnection) url1.openConnection();
-            conn1.setRequestMethod("POST");
-            conn1.setRequestProperty("Content-Type", "application/json");
-            conn1.setRequestProperty("Authorization", "Bearer " + bearerToken);
-            conn1.setDoOutput(true);
-
-            int responseCode = conn1.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
-
-            List<CarHutCar> cars;
-
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn1.getInputStream(), StandardCharsets.UTF_8))) {
-                StringBuilder response = new StringBuilder();
-                String responseLine;
-                while ((responseLine = br.readLine()) != null) {
-                    response.append(responseLine.trim());
-                }
-                cars = carHutJSONConverter.deserializeListOfCarHutCars(response.toString());
-            }
-
-            Assertions.assertNotNull(cars);
-            Assertions.assertFalse(cars.isEmpty());
-            cars.forEach(car -> Assertions.assertEquals("user0", car.getSellerId()));
-
-            Thread.sleep(2000);
-
-        } catch (InterruptedException | IOException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void removeOffer_IdIsNull() throws CarHutAPIException, CarHutAuthenticationException {
+        RequestStatusEntity status = carHutAPIService.removeOffer(null);
+        Assertions.assertEquals(RequestStatusEntity.ERROR, status);
     }
 
     @Test
-    void removeOffer_IdIsNull() {
-        try {
-            RequestStatusEntity status = carHutAPIService.removeOffer(null);
-            Assertions.assertEquals(RequestStatusEntity.ERROR, status);
-        } catch (CarHutAPIException | CarHutAuthenticationException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+    void removeOffer_IdIsInvalid() throws CarHutAPIException, CarHutAuthenticationException {
+        RequestStatusEntity status = carHutAPIService.removeOffer("INVALID_ID");
+        Assertions.assertEquals(RequestStatusEntity.ERROR, status);
     }
 
     @Test
-    void removeOffer_IdIsInvalid() {
-        try {
-            RequestStatusEntity status = carHutAPIService.removeOffer("INVALID_ID");
-            Assertions.assertEquals(RequestStatusEntity.ERROR, status);
-        } catch (CarHutAPIException | CarHutAuthenticationException | NullPointerException e) {
-            System.out.println(e.getMessage());
-            System.out.println("THIS IS ONE OF THE EXPECTED ENDINGS.");
-        }
-    }
-
-    @Test
-    void removeOffer_IdIsValid() throws InterruptedException {
+    void removeOffer_IdIsValid() throws InterruptedException, CarHutAPIException, CarHutAuthenticationException {
         CarHutCar car = new CarHutCar(
                 "user0", // Please add seller name due to logic of adding car to database (id=user0,name=admin)
                 "Test address",
@@ -635,60 +432,12 @@ public class CarHutAPIServiceTests {
                 null, null, null, null, null
         );
 
-        String id = null;
-
-        try {
-            id = carHutAPIService.addCarToDatabase(car);
-            Assertions.assertNotNull(id);
-        } catch (CarHutAPICarCanNotBeSavedException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
-
+        String id = carHutAPIService.addCarToDatabase(car);
+        Assertions.assertNotNull(id);
         Thread.sleep(1000);
 
-        try {
-            // Send request to remove offer
-            URL url1 = new URL(NetworkPaths.publicIPAddress + ":8082/api/carhut/removeOffer?carId=" + id);
-            HttpURLConnection conn1 = (HttpURLConnection) url1.openConnection();
-            conn1.setRequestMethod("POST");
-            conn1.setRequestProperty("Content-Type", "application/json");
-            conn1.setRequestProperty("Authorization", "Bearer " + bearerToken);
-            conn1.setDoOutput(true);
-
-            int responseCode = conn1.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
-
-            List<CarHutCar> cars;
-
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn1.getInputStream(), StandardCharsets.UTF_8))) {
-                StringBuilder response = new StringBuilder();
-                String responseLine;
-                while ((responseLine = br.readLine()) != null) {
-                    response.append(responseLine.trim());
-                }
-                System.out.println(response);
-            }
-
-            Thread.sleep(2000);
-
-            CarHutCar addedCar = carHutCarRepository.getCarWithId(id);
-            Assertions.assertNotNull(addedCar);
-            Assertions.assertFalse(addedCar.isActive());
-
-            // Flush data
-            carHutCarRepository.delete(addedCar);
-
-            Thread.sleep(1000);
-
-            // Flushed data
-            CarHutCar deletedCar = carHutCarRepository.getCarWithId(id);
-            Assertions.assertNull(deletedCar);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
-
+        RequestStatusEntity status = carHutAPIService.removeOffer(id); // Remove offer
+        Assertions.assertEquals(RequestStatusEntity.SUCCESS, status);
     }
 
 }

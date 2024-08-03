@@ -24,12 +24,12 @@ public class SavedSearchesService {
 
     public RequestStatusEntity addNewSavedSearch(SavedSearch savedSearch) throws SavedSearchesException, CarHutAuthenticationException {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-
-        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(savedSearch.getUserId()))) {
-            throw new CarHutAuthenticationException("Unauthorized access add new saved search.");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+//
+//        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(savedSearch.getUserId()))) {
+//            throw new CarHutAuthenticationException("Unauthorized access add new saved search.");
+//        }
 
         try {
             SavedSearch newSavedSearch = new SavedSearch(savedSearch.getUserId(), savedSearch.getSortBy(), savedSearch.getOffersPerPage(),
@@ -46,12 +46,12 @@ public class SavedSearchesService {
 
 
     public List<SavedSearch> getSavedSearchesByUsername(String username) throws SavedSearchesException, CarHutAuthenticationException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-
-        if (!userSecurityContextHolder.getUsername().equals(username)) {
-            throw new CarHutAuthenticationException("Unauthorized access to get saved searches.");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+//
+//        if (!userSecurityContextHolder.getUsername().equals(username)) {
+//            throw new CarHutAuthenticationException("Unauthorized access to get saved searches.");
+//        }
 
         try {
             User user = userCredentialsRepository.findUserByUsername(username);
@@ -67,12 +67,12 @@ public class SavedSearchesService {
 
         try {
             SavedSearch savedSearch = savedSearchesRepository.getSavedSearchesBySavedSearchId(id);
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User userSecurityContextHolder = ((User)authentication.getPrincipal());
-
-            if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(savedSearch.getUserId()))) {
-                throw new CarHutAuthenticationException("Unauthorized access to remove saved searches.");
-            }
+//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            User userSecurityContextHolder = ((User)authentication.getPrincipal());
+//
+//            if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(savedSearch.getUserId()))) {
+//                throw new CarHutAuthenticationException("Unauthorized access to remove saved searches.");
+//            }
 
             savedSearchesRepository.delete(savedSearch);
         }

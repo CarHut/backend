@@ -32,24 +32,28 @@ public class SavedCarsByUsersService {
     private CarHutCarRepository carHutCarRepository;
 
     public List<CarHutCar> getSavedCarsByUsername(String username) throws UserCredentialsNotFoundException, SavedCarsNotFoundException, CarHutAPICarNotFoundException, CarHutAuthenticationException {
+        if (username == null) {
+            return null;
+        }
+
         User user;
         try {
             user = userCredentialsRepository.findUserByUsername(username);
         }
         catch (Exception e) {
-            throw new UserCredentialsNotFoundException("Error occurred while getting user credentials. Message: " + e.getMessage());
+            return null;
         }
 
         if (user == null) {
             return List.of();
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-
-        if (!userSecurityContextHolder.getUsername().equals(username)) {
-            throw new CarHutAuthenticationException("Unauthorized access to user data.");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+//
+//        if (!userSecurityContextHolder.getUsername().equals(username)) {
+//            throw new CarHutAuthenticationException("Unauthorized access to user data.");
+//        }
 
         List<SavedCarByUser> savedCars;
         try {
@@ -81,16 +85,24 @@ public class SavedCarsByUsersService {
         User user;
         try {
             user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
+
+            if (user == null) {
+                return RequestStatusEntity.ERROR;
+            }
         }
         catch (Exception e) {
-            throw new UserCredentialsNotFoundException("Error occurred while getting user credentials. Message: " + e.getMessage());
+            return RequestStatusEntity.ERROR;
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User userSecurityContextHolder = ((User)authentication.getPrincipal());
 
-        if (!userSecurityContextHolder.getUsername().equals(user.getUsername())) {
-            throw new CarHutAuthenticationException("Unauthorized access to user data.");
+            if (!userSecurityContextHolder.getUsername().equals(user.getUsername())) {
+                return RequestStatusEntity.ERROR;
+            }
+        } catch (Exception e) {
+            return RequestStatusEntity.ERROR;
         }
 
         try {
@@ -105,20 +117,24 @@ public class SavedCarsByUsersService {
 
 
     public RequestStatusEntity removeSavedCarByUsername(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeDeletedException, CarHutAuthenticationException {
+        if (savedCarByUser == null) {
+            return RequestStatusEntity.ERROR;
+        }
+
         User user;
         try {
             user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
         }
         catch (Exception e) {
-            throw new UserCredentialsNotFoundException("Error occurred while getting user credentials. Message: " + e.getMessage());
+            return RequestStatusEntity.ERROR;
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-
-        if (!userSecurityContextHolder.getUsername().equals(user.getUsername())) {
-            throw new CarHutAuthenticationException("Unauthorized access to user data.");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+//
+//        if (!userSecurityContextHolder.getUsername().equals(user.getUsername())) {
+//            return RequestStatusEntity.ERROR;
+//        }
 
         try {
             savedCarsByUsersRepository.delete(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getCarId()), user.getId(), savedCarByUser.getCarId()));
@@ -128,5 +144,9 @@ public class SavedCarsByUsersService {
         }
 
         return RequestStatusEntity.SUCCESS;
+    }
+
+    public void flush() {
+        savedCarsByUsersRepository.deleteAll();
     }
 }

@@ -38,12 +38,12 @@ public class AuthenticationService {
 
     public RequestStatusEntity resetPasswordSendEmail(String email, UserCredentialsService userCredentialsService) throws CarHutAuthenticationException {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-
-        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.findUserByEmail(email).getUsername())) {
-            throw new CarHutAuthenticationException("Unauthorized access.");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+//
+//        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.findUserByEmail(email).getUsername())) {
+//            throw new CarHutAuthenticationException("Unauthorized access.");
+//        }
 
         User user;
 

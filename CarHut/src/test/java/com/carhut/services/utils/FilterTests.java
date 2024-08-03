@@ -18,27 +18,15 @@ public class FilterTests {
 
     @Test // Checking whether the program will crash
     void filterCarBrands_ListIsNull() {
-        try {
-            filter.filterCarBrands(null, 3);
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.assertFalse(false);
-        }
+        filter.filterCarBrands(null, 3);
     }
 
     @Test // Checking whether the program will crash
     void filterCarBrands_BrandIntegerIsNull() {
         List<CarHutCar> cars = new ArrayList<>();
         cars.add(new CarHutCar());
-        try {
-            filter.filterCarBrands(cars, null);
-            Assertions.assertTrue(true);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.assertFalse(false);
-        }
+        filter.filterCarBrands(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -127,36 +115,22 @@ public class FilterTests {
 
     @Test // Checking whether the program will crash
     void filterCarModels_ListIsNull() {
-        try {
-            filter.filterCarModels(null, 3);
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarModels(null, 3);
     }
 
-    @Test // Checking whether the program will crash
+    @Test
     void filterCarModels_ModelIntegerIsNull() {
         List<CarHutCar> cars = new ArrayList<>();
         cars.add(new CarHutCar());
-        try {
-            filter.filterCarBrands(cars, null);
-            Assertions.assertTrue(true);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarModels(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
     void filterCarModels_ListIsEmptyButNotNull_IntegerIsValid_ArrayListShouldBeEmpty() {
         List<CarHutCar> cars = new ArrayList<>();
         Integer modelId = 1;
-
         filter.filterCarModels(cars, modelId);
-
         Assertions.assertEquals(0, cars.size());
     }
 
@@ -236,26 +210,15 @@ public class FilterTests {
 
     @Test
     void filterCarPriceTo_ListIsNull() {
-        try {
-            filter.filterCarPriceTo(null, "1000");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarPriceTo(null, "1000");
     }
 
     @Test
     void filterCarPriceTo_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarPriceTo(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarPriceTo(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -351,26 +314,15 @@ public class FilterTests {
 
     @Test
     void filterCarPriceFrom_ListIsNull() {
-        try {
-            filter.filterCarPriceFrom(null, "1000");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarPriceFrom(null, "1000");
     }
 
     @Test
     void filterCarPriceFrom_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarPriceFrom(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarPriceFrom(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -466,26 +418,15 @@ public class FilterTests {
 
     @Test
     void filterCarMileageFrom_ListIsNull() {
-        try {
-            filter.filterCarMileageFrom(null, "1000");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarMileageFrom(null, "1000");
     }
 
     @Test
     void filterCarMileageFrom_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarMileageFrom(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarMileageFrom(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -581,26 +522,15 @@ public class FilterTests {
 
     @Test
     void filterCarMileageTo_ListIsNull() {
-        try {
-            filter.filterCarMileageTo(null, "1000");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarMileageTo(null, "1000");
     }
 
     @Test
     void filterCarMileageTo_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarMileageTo(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarMileageTo(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -696,26 +626,15 @@ public class FilterTests {
 
     @Test
     void filterCarFuelType_ListIsNull() {
-        try {
-            filter.filterCarFuelType(null, "Petrol");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarFuelType(null, "Petrol");
     }
 
     @Test
     void filterCarFuelType_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarFuelType(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarFuelType(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -742,26 +661,15 @@ public class FilterTests {
 
     @Test
     void filterCarGearbox_ListIsNull() {
-        try {
-            filter.filterCarGearbox(null, "Automatic");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarGearbox(null, "Automatic");
     }
 
     @Test
     void filterCarGearbox_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarGearbox(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarGearbox(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -788,26 +696,15 @@ public class FilterTests {
 
     @Test
     void filterCarPowertrain_ListIsNull() {
-        try {
-            filter.filterCarPowertrain(null, "All-Wheel");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarPowertrain(null, "All-Wheel");
     }
 
     @Test
     void filterCarPowertrain_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarPowertrain(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarPowertrain(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -834,26 +731,15 @@ public class FilterTests {
 
     @Test
     void filterCarPowerFrom_ListIsNull() {
-        try {
-            filter.filterCarPowerFrom(null, "100");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarPowerFrom(null, "100");
     }
 
     @Test
     void filterCarPowerFrom_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarPowerFrom(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarPowerFrom(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -949,26 +835,15 @@ public class FilterTests {
 
     @Test
     void filterCarPowerTo_ListIsNull() {
-        try {
-            filter.filterCarPowerTo(null, "100");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarPowerTo(null, "100");
     }
 
     @Test
     void filterCarPowerTo_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarPowerTo(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarPowerTo(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -1064,26 +939,15 @@ public class FilterTests {
 
     @Test
     void filterCarTypes_ListIsNull() {
-        try {
-            filter.filterCarTypes(null, new ArrayList<>());
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarTypes(null, new ArrayList<>());
     }
 
     @Test
     void filterCarTypes_ListWithValuesIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarTypes(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarTypes(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -1113,26 +977,15 @@ public class FilterTests {
 
     @Test
     void filterCarRegistrationFrom_ListIsNull() {
-        try {
-            filter.filterCarRegistrationFrom(null, "2000");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarRegistrationFrom(null, "2000");
     }
 
     @Test
     void filterCarRegistrationFrom_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarRegistrationFrom(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarRegistrationFrom(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -1206,26 +1059,15 @@ public class FilterTests {
 
     @Test
     void filterCarRegistrationTo_ListIsNull() {
-        try {
-            filter.filterCarRegistrationTo(null, "2000");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarRegistrationTo(null, "2000");
     }
 
     @Test
     void filterCarRegistrationTo_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarRegistrationTo(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+         List<CarHutCar> cars = new ArrayList<>();
+         cars.add(new CarHutCar());
+         filter.filterCarRegistrationTo(cars, null);
+         Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -1299,26 +1141,15 @@ public class FilterTests {
 
     @Test
     void filterCarDisplacementFrom_ListIsNull() {
-        try {
-            filter.filterCarDisplacementFrom(null, "2000");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarDisplacementFrom(null, "2000");
     }
 
     @Test
     void filterCarDisplacementFrom_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarDisplacementFrom(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarDisplacementFrom(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -1392,26 +1223,15 @@ public class FilterTests {
 
     @Test
     void filterCarDisplacementTo_ListIsNull() {
-        try {
-            filter.filterCarDisplacementTo(null, "2000");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarDisplacementTo(null, "2000");
     }
 
     @Test
     void filterCarDisplacementTo_StringValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarDisplacementTo(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarDisplacementTo(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -1485,26 +1305,15 @@ public class FilterTests {
 
     @Test
     void filterCarSeatingConfig_ListIsNull() {
-        try {
-            filter.filterCarSeatingConfig(null, "7");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarSeatingConfig(null, "7");
     }
 
     @Test
     void filterCarSeatingConfig_ValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarSeatingConfig(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarSeatingConfig(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -1531,26 +1340,15 @@ public class FilterTests {
 
     @Test
     void filterCarDoors_ListIsNull() {
-        try {
-            filter.filterCarDoors(null, "5");
-            Assertions.assertTrue(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        filter.filterCarDoors(null, "5");
     }
 
     @Test
     void filterCarDoors_ValueIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            cars.add(new CarHutCar());
-            filter.filterCarDoors(cars, null);
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        cars.add(new CarHutCar());
+        filter.filterCarDoors(cars, null);
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test

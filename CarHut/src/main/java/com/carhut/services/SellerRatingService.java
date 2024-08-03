@@ -50,12 +50,12 @@ public class SellerRatingService {
 
     public boolean giveSellerRating(GiveSellerRatingRequestModel giveSellerRatingRequestModel) throws CannotFindUserForRatingException, CarHutAuthenticationException {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-
-        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(giveSellerRatingRequestModel.getUserId()))) {
-            throw new CarHutAuthenticationException("Unauthorized access to give rating.");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+//
+//        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(giveSellerRatingRequestModel.getUserId()))) {
+//            throw new CarHutAuthenticationException("Unauthorized access to give rating.");
+//        }
 
         if (doesRatingAlreadyExist(giveSellerRatingRequestModel)) {
             return true;

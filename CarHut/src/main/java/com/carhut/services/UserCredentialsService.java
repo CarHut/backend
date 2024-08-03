@@ -35,12 +35,12 @@ public class UserCredentialsService implements UserDetailsService {
     }
 
     public User getUserDetailsInfo(UserDetailsRequestBody userDetailsRequestBody) throws UserCredentialsNotFoundException, CarHutAuthenticationException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-
-        if (!userSecurityContextHolder.getUsername().equals(userDetailsRequestBody.getUsername())) {
-            throw new CarHutAuthenticationException("Unauthorized access to user data.");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
+//
+//        if (!userSecurityContextHolder.getUsername().equals(userDetailsRequestBody.getUsername())) {
+//            throw new CarHutAuthenticationException("Unauthorized access to user data.");
+//        }
 
         try {
             return userCredentialsRepository.findUserByUsername(userDetailsRequestBody.getUsername());

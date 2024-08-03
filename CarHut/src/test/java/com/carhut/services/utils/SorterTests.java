@@ -2,6 +2,7 @@ package com.carhut.services.utils;
 
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.services.util.Sorter;
+import io.jsonwebtoken.lang.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,24 +20,15 @@ public class SorterTests {
 
     @Test
     void sortCarsByPrice_ListIsNull() {
-        try {
-            List<CarHutCar> cars = sorter.sortCarsByPrice(null, "ASC");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = sorter.sortCarsByPrice(null, "ASC");
     }
 
     @Test
     void sortCarsByPrice_SortOrderIsNull() {
-        try {
-            List<CarHutCar> newArray = new ArrayList<>();
-            newArray.add(new CarHutCar());
-            List<CarHutCar> cars = sorter.sortCarsByPrice(newArray, null);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> newArray = new ArrayList<>();
+        newArray.add(new CarHutCar());
+        List<CarHutCar> cars = sorter.sortCarsByPrice(newArray, null);
+        Assertions.assertEquals(newArray, cars);
     }
 
     @Test
@@ -100,37 +92,23 @@ public class SorterTests {
 
     @Test
     void sortCarsByPower_ListIsNull() {
-        try {
-            List<CarHutCar> cars = sorter.sortCarsByPower(null, "ASC");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = sorter.sortCarsByPower(null, "ASC");
     }
 
     @Test
     void sortCarsByPower_SortOrderIsNull() {
-        try {
-            List<CarHutCar> newArray = new ArrayList<>();
-            newArray.add(new CarHutCar());
-            List<CarHutCar> cars = sorter.sortCarsByPower(newArray, null);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> newArray = new ArrayList<>();
+        newArray.add(new CarHutCar());
+        List<CarHutCar> cars = sorter.sortCarsByPower(newArray, null);
+        Assertions.assertEquals(newArray, cars);
     }
 
     @Test
     void sortCarsByPower_ListIsNotNull_SortOrderIsNotValid() {
-        try {
-            List<CarHutCar> newArray = new ArrayList<>();
-            newArray.add(new CarHutCar());
-            List<CarHutCar> cars = sorter.sortCarsByPower(newArray, "NOT_VALID_SORT_ORDER");
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> newArray = new ArrayList<>();
+        newArray.add(new CarHutCar());
+        List<CarHutCar> cars = sorter.sortCarsByPower(newArray, "NOT_VALID_SORT_ORDER");
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -179,37 +157,23 @@ public class SorterTests {
 
     @Test
     void sortCarsByMileage_ListIsNull() {
-        try {
-            List<CarHutCar> cars = sorter.sortCarsByMileage(null, "ASC");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = sorter.sortCarsByMileage(null, "ASC");
     }
 
     @Test
     void sortCarsByMileage_SortOrderIsNull() {
-        try {
-            List<CarHutCar> newArray = new ArrayList<>();
-            newArray.add(new CarHutCar());
-            List<CarHutCar> cars = sorter.sortCarsByMileage(newArray, null);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> newArray = new ArrayList<>();
+        newArray.add(new CarHutCar());
+        List<CarHutCar> cars = sorter.sortCarsByMileage(newArray, null);
+        Assertions.assertEquals(newArray, cars);
     }
 
     @Test
     void sortCarsByMileage_ListIsNotNull_SortOrderIsNotValid() {
-        try {
-            List<CarHutCar> newArray = new ArrayList<>();
-            newArray.add(new CarHutCar());
-            List<CarHutCar> cars = sorter.sortCarsByMileage(newArray, "NOT_VALID_SORT_ORDER");
-            Assertions.assertEquals(1, cars.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> newArray = new ArrayList<>();
+        newArray.add(new CarHutCar());
+        List<CarHutCar> cars = sorter.sortCarsByMileage(newArray, "NOT_VALID_SORT_ORDER");
+        Assertions.assertEquals(1, cars.size());
     }
 
     @Test
@@ -258,40 +222,25 @@ public class SorterTests {
 
     @Test
     void sortCarsByAlphabet_ListIsNull() {
-        try {
-            List<CarHutCar> cars = sorter.sortCarsByAlphabet(null, "ASC");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = sorter.sortCarsByAlphabet(null, "ASC");
     }
 
     @Test
     void sortCarsByAlphabet_SortOrderIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            CarHutCar car = new CarHutCar();
-            cars.add(car);
-            List<CarHutCar> newList = sorter.sortCarsByAlphabet(cars, null);
-            Assertions.assertEquals(1, newList.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar car = new CarHutCar();
+        cars.add(car);
+        List<CarHutCar> newList = sorter.sortCarsByAlphabet(cars, null);
+        Assertions.assertEquals(1, newList.size());
     }
 
     @Test
     void sortCarsByAlphabet_ListIsNotNull_SortOrderIsInvalid() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            CarHutCar car = new CarHutCar();
-            cars.add(car);
-            List<CarHutCar> newList = sorter.sortCarsByAlphabet(cars, "INVALID_SORT_ORDER");
-            Assertions.assertEquals(1, newList.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar car = new CarHutCar();
+        cars.add(car);
+        List<CarHutCar> newList = sorter.sortCarsByAlphabet(cars, "INVALID_SORT_ORDER");
+        Assertions.assertEquals(1, newList.size());
     }
 
     @Test
@@ -384,40 +333,25 @@ public class SorterTests {
 
     @Test
     void sortCarsByDateAdded_ListIsNull() {
-        try {
-            List<CarHutCar> cars = sorter.sortCarsByDateAdded(null, "ASC");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = sorter.sortCarsByDateAdded(null, "ASC");
     }
 
     @Test
     void sortCarsByDateAdded_SortOrderIsNull() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            CarHutCar car = new CarHutCar();
-            cars.add(car);
-            List<CarHutCar> newList = sorter.sortCarsByDateAdded(cars, null);
-            Assertions.assertEquals(1, newList.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar car = new CarHutCar();
+        cars.add(car);
+        List<CarHutCar> newList = sorter.sortCarsByDateAdded(cars, null);
+        Assertions.assertEquals(1, newList.size());
     }
 
     @Test
     void sortCarsByDateAdded_ListIsNotNull_SortOrderIsInvalid() {
-        try {
-            List<CarHutCar> cars = new ArrayList<>();
-            CarHutCar car = new CarHutCar();
-            cars.add(car);
-            List<CarHutCar> newList = sorter.sortCarsByDateAdded(cars, "INVALID_SORT_ORDER");
-            Assertions.assertEquals(1, newList.size());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            Assertions.fail();
-        }
+        List<CarHutCar> cars = new ArrayList<>();
+        CarHutCar car = new CarHutCar();
+        cars.add(car);
+        List<CarHutCar> newList = sorter.sortCarsByDateAdded(cars, "INVALID_SORT_ORDER");
+        Assertions.assertEquals(1, newList.size());
     }
 
     @Test
