@@ -7,13 +7,18 @@ import com.carhut.models.enums.BodyType;
 import com.carhut.models.enums.Fuel;
 import com.carhut.models.enums.Gearbox;
 import com.carhut.models.enums.Powertrain;
-import com.carhut.models.requestmodels.CarHutCarFilterModel;
-import com.carhut.models.requestmodels.ModelsPostModel;
-import com.carhut.models.security.User;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.requests.requestmodels.CarHutCarFilterModel;
+import com.carhut.requests.requestmodels.ModelsPostModel;
+import com.carhut.requests.requestmodels.RemoveCarRequestModel;
+import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
+import com.carhut.security.models.User;
+import com.carhut.security.annotations.UserAccessCheck;
 import com.carhut.services.util.Filter;
 import com.carhut.services.util.Sorter;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.*;
+import org.hibernate.type.descriptor.java.ObjectJavaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -287,7 +292,9 @@ public class CarHutAPIService {
      * @return Id of new Car
      * @throws CarHutAPICarCanNotBeSavedException
      */
-    public String addCarToDatabase(CarHutCar carHutCar) throws CarHutAPICarCanNotBeSavedException {
+    @UserAccessCheck
+    public String addCarToDatabase(PrincipalRequest<CarHutCar> carHutCar1) throws CarHutAPICarCanNotBeSavedException {
+        CarHutCar carHutCar = carHutCar1.getDto();
         CarHutCar newCar = new CarHutCar(carHutCar.getSellerId(), carHutCar.getSellerAddress(),
                 carHutCar.getBrandId(), carHutCar.getModelId(), carHutCar.getHeader(),
                 carHutCar.getPrice(), carHutCar.getMileage(), carHutCar.getRegistration(),
@@ -385,6 +392,7 @@ public class CarHutAPIService {
         return userCredentialsRepository.getFirstNameAndSurnameByUserId(userId);
     }
 
+
     public Integer getOffersNumByUserId(String userId) {
         if (userId == null) {
             return null;
@@ -401,19 +409,17 @@ public class CarHutAPIService {
         return userCredentialsRepository.getEmailByUserId(userId);
     }
 
-    public List<CarHutCar> getMyListings(String username) throws CarHutAPIException, CarHutAuthenticationException {
-        if (username == null) {
+    @UserAccessCheck
+    public List<CarHutCar> getMyListings(PrincipalRequest<SimpleUsernameRequestModel> simpleUsernameRequestModelPrincipalRequest) throws CarHutAPIException, CarHutAuthenticationException {
+        if (simpleUsernameRequestModelPrincipalRequest == null) {
             return null;
         }
 
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-//
-//        if (!userSecurityContextHolder.getUsername().equals(username)) {
-//            throw new CarHutAuthenticationException("Unauthorized access to user data.");
-//        }
+        if (simpleUsernameRequestModelPrincipalRequest.getDto().getUsername() == null) {
+            return null;
+        }
 
-        User user = userCredentialsRepository.findUserByUsername(username);
+        User user = userCredentialsRepository.findUserByUsername(simpleUsernameRequestModelPrincipalRequest.getDto().getUsername());
 
         if (user == null) {
             return null;
@@ -422,21 +428,18 @@ public class CarHutAPIService {
         return carHutCarRepository.getMyListings(user.getId());
     }
 
-    public RequestStatusEntity removeOffer(String carId) throws CarHutAPIException, CarHutAuthenticationException, NullPointerException{
-
-        if (carId == null) {
+    @UserAccessCheck
+    public RequestStatusEntity removeOffer(PrincipalRequest<RemoveCarRequestModel> removeCarRequestModelPrincipalRequest) throws CarHutAPIException, CarHutAuthenticationException, NullPointerException{
+        if (removeCarRequestModelPrincipalRequest == null) {
             return RequestStatusEntity.ERROR;
         }
 
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-//
-//        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(carHutCarRepository.getSellerIdByCarId(carId)))) {
-//            throw new CarHutAuthenticationException("Unauthorized access to remove car.");
-//        }
+        if (removeCarRequestModelPrincipalRequest.getDto().getCarId() == null) {
+            return RequestStatusEntity.ERROR;
+        }
 
         try {
-            CarHutCar car = carHutCarRepository.getCarWithId(carId);
+            CarHutCar car = carHutCarRepository.getCarWithId(removeCarRequestModelPrincipalRequest.getDto().getCarId());
             if (car == null) {
                 return RequestStatusEntity.ERROR;
             }

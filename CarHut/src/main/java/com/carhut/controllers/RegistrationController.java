@@ -1,8 +1,7 @@
 package com.carhut.controllers;
 
 import com.carhut.enums.RegistrationStatus;
-import com.carhut.enums.RequestStatusEntity;
-import com.carhut.models.security.RegisterUserBody;
+import com.carhut.security.models.RegisterUserBody;
 import com.carhut.services.RegistrationService;
 import com.carhut.util.exceptions.registration.RegistrationException;
 import com.carhut.util.loggers.ControllerLogger;

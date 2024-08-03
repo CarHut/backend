@@ -1,6 +1,6 @@
 package com.carhut.database.repository;
 
-import com.carhut.models.security.RegistrationToken;
+import com.carhut.security.models.RegistrationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

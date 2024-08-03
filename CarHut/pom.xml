@@ -15,6 +15,9 @@
 	<description>CarHut</description>
 	<properties>
 		<java.version>17</java.version>
+		<maven.compiler.compilerArgs>
+			<arg>-parameters</arg>
+		</maven.compiler.compilerArgs>
 	</properties>
 	<dependencies>
 

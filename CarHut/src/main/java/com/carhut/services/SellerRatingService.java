@@ -4,15 +4,15 @@ import com.carhut.database.repository.SellerRatingRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.dtos.SellerRatingDto;
 import com.carhut.models.carhut.SellerRating;
-import com.carhut.models.requestmodels.GiveSellerRatingRequestModel;
-import com.carhut.models.security.User;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.requests.requestmodels.GiveSellerRatingRequestModel;
+import com.carhut.security.models.User;
+import com.carhut.security.annotations.UserAccessCheck;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.rating.CannotFindUserForRatingException;
 import com.carhut.util.exceptions.rating.CannotGetAverageRatingException;
 import com.carhut.util.exceptions.rating.CannotGetRatingsException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,24 +48,17 @@ public class SellerRatingService {
         return new SellerRatingDto(sellerId, rating.getAsDouble(), numOfRatings);
     }
 
-    public boolean giveSellerRating(GiveSellerRatingRequestModel giveSellerRatingRequestModel) throws CannotFindUserForRatingException, CarHutAuthenticationException {
-
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-//
-//        if (!userSecurityContextHolder.getUsername().equals(userCredentialsRepository.getUsernameByUserId(giveSellerRatingRequestModel.getUserId()))) {
-//            throw new CarHutAuthenticationException("Unauthorized access to give rating.");
-//        }
-
-        if (doesRatingAlreadyExist(giveSellerRatingRequestModel)) {
+    @UserAccessCheck
+    public boolean giveSellerRating(PrincipalRequest<GiveSellerRatingRequestModel> giveSellerRatingRequestModel) throws CannotFindUserForRatingException, CarHutAuthenticationException {
+        if (doesRatingAlreadyExist(giveSellerRatingRequestModel.getDto())) {
             return true;
         }
 
-        boolean userCheck = checkUsers(giveSellerRatingRequestModel);
-        boolean ratingCheck = checkRating(giveSellerRatingRequestModel.getRating());
+        boolean userCheck = checkUsers(giveSellerRatingRequestModel.getDto());
+        boolean ratingCheck = checkRating(giveSellerRatingRequestModel.getDto().getRating());
 
         if (userCheck && ratingCheck) {
-            SellerRating sellerRating = new SellerRating(giveSellerRatingRequestModel.getRating(), giveSellerRatingRequestModel.getSellerId(), giveSellerRatingRequestModel.getUserId());
+            SellerRating sellerRating = new SellerRating(giveSellerRatingRequestModel.getDto().getRating(), giveSellerRatingRequestModel.getDto().getSellerId(), giveSellerRatingRequestModel.getDto().getUserId());
             sellerRatingRepository.save(sellerRating);
             return true;
         }

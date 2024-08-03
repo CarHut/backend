@@ -1,14 +1,13 @@
 package com.carhut.services;
 
 import com.carhut.database.repository.UserCredentialsRepository;
-import com.carhut.models.security.User;
-import com.carhut.models.requestmodels.UserDetailsRequestBody;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.security.models.User;
+import com.carhut.requests.requestmodels.UserDetailsRequestBody;
+import com.carhut.security.annotations.UserAccessCheck;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.usercredentials.UserCredentialsNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,16 +33,10 @@ public class UserCredentialsService implements UserDetailsService {
         }
     }
 
-    public User getUserDetailsInfo(UserDetailsRequestBody userDetailsRequestBody) throws UserCredentialsNotFoundException, CarHutAuthenticationException {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-//
-//        if (!userSecurityContextHolder.getUsername().equals(userDetailsRequestBody.getUsername())) {
-//            throw new CarHutAuthenticationException("Unauthorized access to user data.");
-//        }
-
+    @UserAccessCheck
+    public User getUserDetailsInfo(PrincipalRequest<UserDetailsRequestBody> userDetailsRequestBody) throws UserCredentialsNotFoundException, CarHutAuthenticationException {
         try {
-            return userCredentialsRepository.findUserByUsername(userDetailsRequestBody.getUsername());
+            return userCredentialsRepository.findUserByUsername(userDetailsRequestBody.getDto().getUsername());
         }
         catch (Exception e) {
             throw new UserCredentialsNotFoundException("Internal error while getting user from database. Message: " + e.getMessage());

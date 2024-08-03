@@ -4,10 +4,11 @@ import com.carhut.dtos.TokenDto;
 import com.carhut.dtos.UrlDto;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.jwt.utils.JwtUtil;
-import com.carhut.models.requestmodels.AuthenticationRequest;
-import com.carhut.models.requestmodels.PasswordResetRequestBody;
-import com.carhut.models.requestmodels.UserDetailsRequestBody;
-import com.carhut.models.security.*;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.requests.requestmodels.AuthenticationRequest;
+import com.carhut.requests.requestmodels.PasswordResetRequestBody;
+import com.carhut.requests.requestmodels.UserDetailsRequestBody;
+import com.carhut.security.models.User;
 import com.carhut.services.AuthenticationService;
 import com.carhut.services.GoogleOAuth2Service;
 import com.carhut.services.UserCredentialsService;
@@ -94,7 +95,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/getUserDetailsInfo")
-    public ResponseEntity<User> getUserDetailsInfo(@RequestBody UserDetailsRequestBody userDetailsRequestBody) {
+    public ResponseEntity<User> getUserDetailsInfo(@RequestBody PrincipalRequest<UserDetailsRequestBody> userDetailsRequestBody) {
         try {
             User user = userCredentialsService.getUserDetailsInfo(userDetailsRequestBody);
 

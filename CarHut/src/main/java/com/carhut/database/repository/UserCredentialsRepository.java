@@ -1,8 +1,7 @@
 package com.carhut.database.repository;
 
-import com.carhut.models.security.User;
+import com.carhut.security.models.User;
 import jakarta.transaction.Transactional;
-import org.hibernate.tool.schema.internal.SchemaTruncatorImpl;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

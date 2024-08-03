@@ -6,7 +6,11 @@ import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.SavedCarByUser;
-import com.carhut.models.security.User;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.requests.requestmodels.SaveCarRequestModel;
+import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
+import com.carhut.security.models.User;
+import com.carhut.security.annotations.UserAccessCheck;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.CarHutAPICarNotFoundException;
 import com.carhut.util.exceptions.savedcars.SavedCarsCanNotBeDeletedException;
@@ -31,14 +35,15 @@ public class SavedCarsByUsersService {
     @Autowired
     private CarHutCarRepository carHutCarRepository;
 
-    public List<CarHutCar> getSavedCarsByUsername(String username) throws UserCredentialsNotFoundException, SavedCarsNotFoundException, CarHutAPICarNotFoundException, CarHutAuthenticationException {
-        if (username == null) {
+    @UserAccessCheck
+    public List<CarHutCar> getSavedCarsByUsername(PrincipalRequest<SimpleUsernameRequestModel> principalRequest) throws UserCredentialsNotFoundException, SavedCarsNotFoundException, CarHutAPICarNotFoundException, CarHutAuthenticationException {
+        if (principalRequest.getDto().getUsername() == null) {
             return null;
         }
 
         User user;
         try {
-            user = userCredentialsRepository.findUserByUsername(username);
+            user = userCredentialsRepository.findUserByUsername(principalRequest.getDto().getUsername());
         }
         catch (Exception e) {
             return null;
@@ -47,13 +52,6 @@ public class SavedCarsByUsersService {
         if (user == null) {
             return List.of();
         }
-
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-//
-//        if (!userSecurityContextHolder.getUsername().equals(username)) {
-//            throw new CarHutAuthenticationException("Unauthorized access to user data.");
-//        }
 
         List<SavedCarByUser> savedCars;
         try {
@@ -77,14 +75,15 @@ public class SavedCarsByUsersService {
         return cars;
     }
 
-    public RequestStatusEntity addSavedCarByUser(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeSavedException, CarHutAuthenticationException {
+    @UserAccessCheck
+    public RequestStatusEntity addSavedCarByUser(PrincipalRequest<SaveCarRequestModel> savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeSavedException, CarHutAuthenticationException {
         if (savedCarByUser == null) {
             return RequestStatusEntity.ERROR;
         }
 
         User user;
         try {
-            user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
+            user = userCredentialsRepository.findUserByUsername(savedCarByUser.getDto().getUsername());
 
             if (user == null) {
                 return RequestStatusEntity.ERROR;
@@ -106,7 +105,7 @@ public class SavedCarsByUsersService {
         }
 
         try {
-            savedCarsByUsersRepository.save(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getCarId()), user.getId(), savedCarByUser.getCarId()));
+            savedCarsByUsersRepository.save(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getDto().getCarId()), user.getId(), savedCarByUser.getDto().getCarId()));
         }
         catch (Exception e) {
             throw new SavedCarsCanNotBeSavedException("Error occurred while saving car to database. Message: " + e.getMessage());
@@ -115,29 +114,22 @@ public class SavedCarsByUsersService {
         return RequestStatusEntity.SUCCESS;
     }
 
-
-    public RequestStatusEntity removeSavedCarByUsername(SavedCarByUser savedCarByUser) throws UserCredentialsNotFoundException, SavedCarsCanNotBeDeletedException, CarHutAuthenticationException {
-        if (savedCarByUser == null) {
+    @UserAccessCheck
+    public RequestStatusEntity removeSavedCarByUsername(PrincipalRequest<SaveCarRequestModel> saveCarRequestModelPrincipalRequest) throws UserCredentialsNotFoundException, SavedCarsCanNotBeDeletedException, CarHutAuthenticationException {
+        if (saveCarRequestModelPrincipalRequest.getDto().getUsername() == null) {
             return RequestStatusEntity.ERROR;
         }
 
         User user;
         try {
-            user = userCredentialsRepository.findUserByUsername(savedCarByUser.getUserId());
+            user = userCredentialsRepository.findUserByUsername(saveCarRequestModelPrincipalRequest.getDto().getUsername());
         }
         catch (Exception e) {
             return RequestStatusEntity.ERROR;
         }
 
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User userSecurityContextHolder = ((User)authentication.getPrincipal());
-//
-//        if (!userSecurityContextHolder.getUsername().equals(user.getUsername())) {
-//            return RequestStatusEntity.ERROR;
-//        }
-
         try {
-            savedCarsByUsersRepository.delete(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), savedCarByUser.getCarId()), user.getId(), savedCarByUser.getCarId()));
+            savedCarsByUsersRepository.delete(new SavedCarByUser(SavedCarByUser.generateId(user.getId(), saveCarRequestModelPrincipalRequest.getDto().getCarId()), user.getId(), saveCarRequestModelPrincipalRequest.getDto().getCarId()));
         }
         catch (Exception e) {
             throw new SavedCarsCanNotBeDeletedException("Error occurred while deleting saved car from database. Message: " + e.getMessage());

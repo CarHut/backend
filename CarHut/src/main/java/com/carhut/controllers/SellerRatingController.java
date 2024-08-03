@@ -1,7 +1,8 @@
 package com.carhut.controllers;
 
 import com.carhut.dtos.SellerRatingDto;
-import com.carhut.models.requestmodels.GiveSellerRatingRequestModel;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.requests.requestmodels.GiveSellerRatingRequestModel;
 import com.carhut.services.SellerRatingService;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.rating.RatingException;
@@ -23,26 +24,26 @@ public class SellerRatingController {
         try {
             SellerRatingDto sellerRatingDto = sellerRatingService.getSellerRating(sellerId);
             if (sellerRatingDto != null) {
-                controllerLogger.saveToFile("[SellerRatingController][OK] - /giveSellerRating - Successfully got seller rating.");
+                controllerLogger.saveToFile("[SellerRatingController][OK] - /getSellerRating - Successfully got seller rating.");
                 return ResponseEntity.ok(sellerRatingDto);
             } else {
-                controllerLogger.saveToFile("[SellerRatingController][WARN] - /giveSellerRating - Cannot get seller rating for sellerId: " + sellerId);
+                controllerLogger.saveToFile("[SellerRatingController][WARN] - /getSellerRating - Cannot get seller rating for sellerId: " + sellerId);
                 return ResponseEntity.status(404).body(null);
             }
         } catch (RatingException e) {
-            controllerLogger.saveToFile("[SellerRatingController][ERROR] - /giveSellerRating - Something went wrong while getting seller rating sellerId=" + sellerId +". Check post model. Also users might not exist. Error message: " + e.getMessage());
+            controllerLogger.saveToFile("[SellerRatingController][ERROR] - /getSellerRating - Something went wrong while getting seller rating sellerId=" + sellerId +". Check post model. Also users might not exist. Error message: " + e.getMessage());
             return ResponseEntity.internalServerError().body(null);
         }
     }
 
     @PostMapping("/giveSellerRating")
-    public ResponseEntity<String> giveSellerRating(@RequestBody GiveSellerRatingRequestModel giveSellerRatingRequestModel) {
+    public ResponseEntity<String> giveSellerRating(@RequestBody PrincipalRequest<GiveSellerRatingRequestModel> giveSellerRatingRequestModel) {
         try {
             boolean status = sellerRatingService.giveSellerRating(giveSellerRatingRequestModel);
 
             if (status) {
                 controllerLogger.saveToFile("[SellerRatingController][OK] - /giveSellerRating - Successfully given seller rating.");
-                return ResponseEntity.ok().body("Successfully added new rating for seller with id: " + giveSellerRatingRequestModel.getSellerId());
+                return ResponseEntity.ok().body("Successfully added new rating for seller with id: " + giveSellerRatingRequestModel.getDto().getSellerId());
             } else {
                 controllerLogger.saveToFile("[SellerRatingController][WARN] - /giveSellerRating - Something went wrong while adding new rating. Check post model. Also users might not exist.");
                 return ResponseEntity.status(404).body("Something went wrong while adding new rating. Check post model. Also users might not exist.");

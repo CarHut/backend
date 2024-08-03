@@ -2,6 +2,9 @@ package com.carhut.controllers;
 
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.SavedSearch;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.requests.requestmodels.SaveSearchRequestModel;
+import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
 import com.carhut.services.SavedSearchesService;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.savedsearches.SavedSearchesException;
@@ -23,7 +26,7 @@ public class SavedSearchesController {
 
     @PostMapping("/addNewSavedSearch")
     @ResponseBody
-    public ResponseEntity<String> addNewSavedSearch(@RequestBody SavedSearch savedSearch) {
+    public ResponseEntity<String> addNewSavedSearch(@RequestBody PrincipalRequest<SaveSearchRequestModel> savedSearch) {
         try {
             RequestStatusEntity status = savedSearchesService.addNewSavedSearch(savedSearch);
 
@@ -46,7 +49,7 @@ public class SavedSearchesController {
 
     @PostMapping("/getSavedSearchesByUsername")
     @ResponseBody
-    public ResponseEntity<List<SavedSearch>> getSavedSearchesByUsername(@RequestParam String username) {
+    public ResponseEntity<List<SavedSearch>> getSavedSearchesByUsername(@RequestParam PrincipalRequest<SimpleUsernameRequestModel> username) {
         try {
             List<SavedSearch> searches = savedSearchesService.getSavedSearchesByUsername(username);
 
@@ -69,9 +72,9 @@ public class SavedSearchesController {
 
     @GetMapping("/removeSavedSearch")
     @ResponseBody
-    public ResponseEntity<String> removeSavedSearch(@RequestParam String savedSearchId) {
+    public ResponseEntity<String> removeSavedSearch(@RequestParam PrincipalRequest<RemoveSavedSearchRequestModel> removeSavedSearchRequestModelPrincipalRequest) {
         try {
-            savedSearchesService.removeSavedSearch(savedSearchId);
+            savedSearchesService.removeSavedSearch(removeSavedSearchRequestModelPrincipalRequest);
             controllerLogger.saveToFile("[SavedSearchesController][OK]: /removeSavedSearch - Successfully removed saved search.");
             return ResponseEntity.ok().body("Successfully removed saved search.");
         }

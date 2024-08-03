@@ -1,7 +1,7 @@
 package com.carhut.models.carhut;
 
 import com.carhut.models.carhut.converters.BrandsAndModelsAttributeConverter;
-import com.carhut.models.requestmodels.ModelsPostModel;
+import com.carhut.requests.requestmodels.ModelsPostModel;
 import jakarta.persistence.*;
 
 import java.security.MessageDigest;

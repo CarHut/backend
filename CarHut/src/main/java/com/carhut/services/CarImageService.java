@@ -5,6 +5,8 @@ import com.carhut.database.repository.ColorRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.CarImage;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.security.annotations.UserAccessCheck;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -58,8 +60,13 @@ public class CarImageService {
         return Files.readAllBytes(file.toPath());
     }
 
-    public void addImagesToDatabase(CarHutCar carHutCar, List<MultipartFile> multipartFiles) throws Exception {
-        if (multipartFiles == null || carHutCar == null) {
+    @UserAccessCheck
+    public void addImagesToDatabase(PrincipalRequest<CarHutCar> carHutCar1, List<MultipartFile> multipartFiles) throws Exception {
+        if (carHutCar1 == null) {
+            return;
+        }
+
+        if (multipartFiles == null || carHutCar1.getDto() == null) {
             System.out.println("Cannot add images to database because carHutCar or multipartFiles is null.");
             return;
         }
@@ -69,6 +76,7 @@ public class CarImageService {
             return;
         }
 
+        CarHutCar carHutCar = carHutCar1.getDto();
         CarHutCar newCar = new CarHutCar(userCredentialsRepository.findUserIdByUsername(carHutCar.getSellerId()), carHutCar.getSellerAddress(),
                 carHutCar.getBrandId(), carHutCar.getModelId(), carHutCar.getHeader(),
                 carHutCar.getPrice(), carHutCar.getMileage(), carHutCar.getRegistration(),

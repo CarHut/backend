@@ -1,15 +1,13 @@
 package com.carhut.services;
 
 import com.carhut.database.repository.RegistrationTokenRepository;
-import com.carhut.database.repository.SellerRatingRepository;
 import com.carhut.database.repository.UserCredentialsRepository;
 import com.carhut.enums.RegistrationStatus;
 import com.carhut.mail.service.EmailService;
-import com.carhut.models.carhut.SellerRating;
-import com.carhut.models.security.Authority;
-import com.carhut.models.security.RegisterUserBody;
-import com.carhut.models.security.RegistrationToken;
-import com.carhut.models.security.User;
+import com.carhut.security.models.Authority;
+import com.carhut.security.models.RegisterUserBody;
+import com.carhut.security.models.RegistrationToken;
+import com.carhut.security.models.User;
 import com.carhut.paths.NetworkPaths;
 import com.carhut.util.exceptions.registration.RegistrationException;
 import org.springframework.beans.factory.annotation.Autowired;

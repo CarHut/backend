@@ -2,12 +2,12 @@ package com.carhut.controllers;
 
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.*;
-import com.carhut.models.deprecated.AutobazarEUCarObject;
-import com.carhut.models.requestmodels.CarHutCarFilterModel;
-import com.carhut.models.requestmodels.ModelsPostModel;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.requests.requestmodels.CarHutCarFilterModel;
+import com.carhut.requests.requestmodels.RemoveCarRequestModel;
+import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
 import com.carhut.services.CarHutAPIService;
 import com.carhut.services.CarImageService;
-import com.carhut.temputils.models.TempCarModel;
 import com.carhut.util.exceptions.CarHutException;
 import com.carhut.util.exceptions.carhutapi.*;
 import com.carhut.util.loggers.ControllerLogger;
@@ -52,9 +52,9 @@ public class CarHutAPIController {
 
     @PostMapping("/removeOffer")
     @ResponseBody
-    public ResponseEntity<String> removeOffer(@RequestParam String carId) {
+    public ResponseEntity<String> removeOffer(@RequestBody PrincipalRequest<RemoveCarRequestModel> removeCarRequestModelPrincipalRequest) {
         try {
-            RequestStatusEntity status = carHutAPIService.removeOffer(carId);
+            RequestStatusEntity status = carHutAPIService.removeOffer(removeCarRequestModelPrincipalRequest);
 
             if (status == RequestStatusEntity.SUCCESS) {
                 controllerLogger.saveToFile("[CarHutAPIController][OK]: /removeOffer - Successfully removed car offer.");
@@ -72,15 +72,15 @@ public class CarHutAPIController {
 
     @PostMapping("/getMyListings")
     @ResponseBody
-    public ResponseEntity<List<CarHutCar>> getMyListings(@RequestParam String username) {
+    public ResponseEntity<List<CarHutCar>> getMyListings(@RequestBody PrincipalRequest<SimpleUsernameRequestModel> simpleUsernameRequestModelPrincipalRequest) {
         try {
-            List<CarHutCar> cars = carHutAPIService.getMyListings(username);
+            List<CarHutCar> cars = carHutAPIService.getMyListings(simpleUsernameRequestModelPrincipalRequest);
 
             if (cars != null) {
-                controllerLogger.saveToFile("[CarHutAPIController][OK]: /getMyListings - Successfully retrieved listings for username: " + username);
+                controllerLogger.saveToFile("[CarHutAPIController][OK]: /getMyListings - Successfully retrieved listings for username: " + simpleUsernameRequestModelPrincipalRequest.getDto().getUsername());
                 return ResponseEntity.ok(cars);
             } else {
-                controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getMyListings - Something went wrong when retrieving listings for username: " + username);
+                controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getMyListings - Something went wrong when retrieving listings for username: " + simpleUsernameRequestModelPrincipalRequest.getDto().getUsername());
                 return ResponseEntity.internalServerError().body(null);
             }
         }
@@ -254,7 +254,7 @@ public class CarHutAPIController {
 
     @PostMapping(value = "/addCarToDatabase", consumes = "multipart/form-data")
     @ResponseBody
-    public ResponseEntity<String> addCarToDatabase(@RequestPart("carHutCar") CarHutCar carHutCar,
+    public ResponseEntity<String> addCarToDatabase(@RequestPart("carHutCar") PrincipalRequest<CarHutCar> carHutCar,
                                                    @RequestPart("multipartFiles") List<MultipartFile> multipartFiles) {
         try {
             String id = carHutAPIService.addCarToDatabase(carHutCar);

@@ -1,26 +1,25 @@
 package com.carhut.services;
 
-import com.carhut.CarHutApplication;
 import com.carhut.database.repository.CarHutCarRepository;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.*;
-import com.carhut.models.requestmodels.CarHutCarFilterModel;
-import com.carhut.models.requestmodels.ModelsPostModel;
-import com.carhut.paths.NetworkPaths;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.requests.requestmodels.CarHutCarFilterModel;
+import com.carhut.requests.requestmodels.ModelsPostModel;
+import com.carhut.requests.requestmodels.RemoveCarRequestModel;
+import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
+import com.carhut.security.models.AuthenticationPrincipal;
 import com.carhut.util.converters.CarHutJSONConverter;
-import com.carhut.util.exceptions.CarHutException;
 import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.exceptions.carhutapi.*;
-import com.carhut.utils.AuthLogger;
+import org.hibernate.Remove;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +89,8 @@ public class CarHutAPIServiceTests {
                 null, null, null, null, null
         );
 
-        String newId = carHutAPIService.addCarToDatabase(car);
+        PrincipalRequest<CarHutCar> carHutCarPrincipalRequest = new PrincipalRequest<>(new AuthenticationPrincipal(), car);
+        String newId = carHutAPIService.addCarToDatabase(carHutCarPrincipalRequest);
         Thread.sleep(1000);
 
         CarHutCar car1 = carHutAPIService.getCarWithId(newId);
@@ -119,8 +119,10 @@ public class CarHutAPIServiceTests {
                 null, null, null, null, null
         );
 
-        String id = carHutAPIService.addCarToDatabase(car);
-        Assertions.assertNull(id);
+
+        PrincipalRequest<CarHutCar> carHutCarPrincipalRequest = new PrincipalRequest<>(new AuthenticationPrincipal(), car);
+        String newId = carHutAPIService.addCarToDatabase(carHutCarPrincipalRequest);
+        Assertions.assertNull(newId);
     }
 
     @Test
@@ -393,13 +395,25 @@ public class CarHutAPIServiceTests {
 
     @Test
     void getMyListing_UsernameIsInvalid() throws CarHutAPIException, CarHutAuthenticationException {
-        List<CarHutCar> cars = carHutAPIService.getMyListings("INVALID_USERNAME");
+        AuthenticationPrincipal authenticationPrincipal = new AuthenticationPrincipal();
+        SimpleUsernameRequestModel simpleUsernameRequestModel = new SimpleUsernameRequestModel();
+        simpleUsernameRequestModel.setUsername("INVALID_USERNAME");
+        PrincipalRequest<SimpleUsernameRequestModel> request = new PrincipalRequest<>();
+        request.setDto(simpleUsernameRequestModel);
+        request.setAuthenticationPrincipal(authenticationPrincipal);
+        List<CarHutCar> cars = carHutAPIService.getMyListings(request);
         Assertions.assertNull(cars);
     }
 
     @Test
     void getMyListing_UsernameIsValid() throws CarHutAPIException, CarHutAuthenticationException {
-        List<CarHutCar> cars = carHutAPIService.getMyListings("admin");
+        AuthenticationPrincipal authenticationPrincipal = new AuthenticationPrincipal();
+        SimpleUsernameRequestModel simpleUsernameRequestModel = new SimpleUsernameRequestModel();
+        simpleUsernameRequestModel.setUsername("admin");
+        PrincipalRequest<SimpleUsernameRequestModel> request = new PrincipalRequest<>();
+        request.setDto(simpleUsernameRequestModel);
+        request.setAuthenticationPrincipal(authenticationPrincipal);
+        List<CarHutCar> cars = carHutAPIService.getMyListings(request);
         Assertions.assertNotNull(cars);
         Assertions.assertFalse(cars.isEmpty());
         cars.forEach(car -> Assertions.assertEquals("user0", car.getSellerId()));
@@ -413,7 +427,14 @@ public class CarHutAPIServiceTests {
 
     @Test
     void removeOffer_IdIsInvalid() throws CarHutAPIException, CarHutAuthenticationException {
-        RequestStatusEntity status = carHutAPIService.removeOffer("INVALID_ID");
+        AuthenticationPrincipal authenticationPrincipal = new AuthenticationPrincipal();
+        RemoveCarRequestModel removeCarRequestModel = new RemoveCarRequestModel();
+        removeCarRequestModel.setUsername("INVALID_USERNAME");
+        removeCarRequestModel.setCarId("INVALID_CAR_ID");
+        PrincipalRequest<RemoveCarRequestModel> request = new PrincipalRequest<>();
+        request.setDto(removeCarRequestModel);
+        request.setAuthenticationPrincipal(authenticationPrincipal);
+        RequestStatusEntity status = carHutAPIService.removeOffer(request);
         Assertions.assertEquals(RequestStatusEntity.ERROR, status);
     }
 
@@ -432,11 +453,23 @@ public class CarHutAPIServiceTests {
                 null, null, null, null, null
         );
 
-        String id = carHutAPIService.addCarToDatabase(car);
+        PrincipalRequest<CarHutCar> request = new PrincipalRequest<>();
+        request.setDto(car);
+        request.setAuthenticationPrincipal(new AuthenticationPrincipal());
+
+        String id = carHutAPIService.addCarToDatabase(request);
         Assertions.assertNotNull(id);
         Thread.sleep(1000);
 
-        RequestStatusEntity status = carHutAPIService.removeOffer(id); // Remove offer
+        AuthenticationPrincipal authenticationPrincipal = new AuthenticationPrincipal();
+        RemoveCarRequestModel removeCarRequestModel = new RemoveCarRequestModel();
+        removeCarRequestModel.setUsername("admin");
+        removeCarRequestModel.setCarId(id);
+        PrincipalRequest<RemoveCarRequestModel> request1 = new PrincipalRequest<>();
+        request1.setDto(removeCarRequestModel);
+        request1.setAuthenticationPrincipal(authenticationPrincipal);
+
+        RequestStatusEntity status = carHutAPIService.removeOffer(request1); // Remove offer
         Assertions.assertEquals(RequestStatusEntity.SUCCESS, status);
     }
 

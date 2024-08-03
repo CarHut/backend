@@ -3,12 +3,12 @@ package com.carhut.controllers;
 import com.carhut.enums.RequestStatusEntity;
 import com.carhut.models.carhut.CarHutCar;
 import com.carhut.models.carhut.SavedCarByUser;
+import com.carhut.requests.PrincipalRequest;
+import com.carhut.requests.requestmodels.SaveCarRequestModel;
+import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
 import com.carhut.services.SavedCarsByUsersService;
-import com.carhut.temputils.models.TempCarModel;
 import com.carhut.util.exceptions.CarHutException;
-import com.carhut.util.exceptions.authentication.CarHutAuthenticationException;
 import com.carhut.util.loggers.ControllerLogger;
-import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,7 +27,7 @@ public class SavedCarsByUsersController {
     private final ControllerLogger controllerLogger = ControllerLogger.getLogger();
 
     @PostMapping("/getSavedCarsByUsername")
-    public ResponseEntity<List<CarHutCar>> getSavedCarsByUsername(@RequestBody String username) {
+    public ResponseEntity<List<CarHutCar>> getSavedCarsByUsername(@RequestBody PrincipalRequest<SimpleUsernameRequestModel> username) {
         try {
             List<CarHutCar> savedCars = savedCarsByUsersService.getSavedCarsByUsername(username);
             if (savedCars != null) {
@@ -45,9 +45,9 @@ public class SavedCarsByUsersController {
     }
 
     @PostMapping("/addSavedCarByUsername")
-    public ResponseEntity<String> addSavedCarByUser(@RequestBody SavedCarByUser savedCarByUser) {
+    public ResponseEntity<String> addSavedCarByUser(@RequestBody PrincipalRequest<SaveCarRequestModel> saveCarRequestModelPrincipalRequest) {
         try {
-            RequestStatusEntity requestStatusEntity = savedCarsByUsersService.addSavedCarByUser(savedCarByUser);
+            RequestStatusEntity requestStatusEntity = savedCarsByUsersService.addSavedCarByUser(saveCarRequestModelPrincipalRequest);
             if (requestStatusEntity == RequestStatusEntity.SUCCESS) {
                 controllerLogger.saveToFile("[SavedCarsByUsersController][OK]: /addSavedCarByUsername - Successfully added car to saved entities.");
                 return ResponseEntity.ok("Car was saved to wishlist.");
@@ -63,9 +63,9 @@ public class SavedCarsByUsersController {
     }
 
     @PostMapping("/removeSavedCarByUsername")
-    public ResponseEntity<String> removeSavedCarByUsername(@RequestBody SavedCarByUser savedCarByUser) {
+    public ResponseEntity<String> removeSavedCarByUsername(@RequestBody PrincipalRequest<SaveCarRequestModel> saveCarRequestModelPrincipalRequest) {
         try {
-            RequestStatusEntity requestStatusEntity = savedCarsByUsersService.removeSavedCarByUsername(savedCarByUser);
+            RequestStatusEntity requestStatusEntity = savedCarsByUsersService.removeSavedCarByUsername(saveCarRequestModelPrincipalRequest);
             if (requestStatusEntity == RequestStatusEntity.SUCCESS) {
                 controllerLogger.saveToFile("[SavedCarsByUsersController][OK]: /removeSavedCarByUsername - Successfully removed car from saved entities.");
                 return ResponseEntity.ok("Car was saved to wishlist.");
