@@ -7,7 +7,6 @@ import com.carhut.requests.requestmodels.CarHutCarFilterModel;
 import com.carhut.requests.requestmodels.RemoveCarRequestModel;
 import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
 import com.carhut.services.carhutapi.CarHutAPIService;
-import com.carhut.services.carhutapi.CarImageService;
 import com.carhut.util.loggers.ControllerLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,8 +24,6 @@ public class CarHutAPIController {
 
     @Autowired
     private CarHutAPIService carHutAPIService;
-    @Autowired
-    private CarImageService carImageService;
     private ControllerLogger controllerLogger = ControllerLogger.getLogger();
 
     @GetMapping("/getUserIdByUsername")
@@ -163,20 +160,6 @@ public class CarHutAPIController {
         }
     }
 
-    @GetMapping(value = "/getImages")
-    @ResponseBody
-    public ResponseEntity<List<byte[]>> getImages(@RequestParam String carId) {
-        List<byte[]> images = null;
-        try {
-            images = carImageService.getImagesWithCarId(carId);
-            controllerLogger.saveToFile("[CarHutAPIController][OK]: /getImages successfully executed.");
-        } catch (Exception e) {
-            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getColorStringNameFromColorId something went wrong. Message: " + e.getMessage());
-        }
-        return images != null ? ResponseEntity.status(HttpStatus.OK).body(images) : ResponseEntity.internalServerError().body(null);
-    }
-
-
     @RequestMapping("/getFeatureIdByFeatureName")
     @ResponseBody
     public ResponseEntity<Integer> getFeatureIdByFeatureName(@RequestParam String feature) {
@@ -196,10 +179,10 @@ public class CarHutAPIController {
                                                    @RequestPart("multipartFiles") List<MultipartFile> multipartFiles) {
 
         String id = carHutAPIService.addCarToDatabase(carHutCar);
-        ServiceStatusEntity imageStatus = carImageService.addImagesToDatabase(carHutCar, multipartFiles);
-        if (imageStatus == ServiceStatusEntity.ERROR) {
-            return ResponseEntity.internalServerError().body("Could not save images to server database.");
-        }
+//        ServiceStatusEntity imageStatus = carImageService.addImagesToDatabase(carHutCar, multipartFiles);
+//        if (imageStatus == ServiceStatusEntity.ERROR) {
+//            return ResponseEntity.internalServerError().body("Could not save images to server database.");
+//        }
         controllerLogger.saveToFile("[CarHutAPIController][OK]: /addCarToDatabase - Successfully executed.");
         return ResponseEntity.ok("Car was successfully added to database.");
     }

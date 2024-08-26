@@ -17,6 +17,7 @@
 
     <modules>
         <module>rating-service</module>
+        <module>image-service</module>
     </modules>
 
 </project>

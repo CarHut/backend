@@ -2361,7 +2361,8 @@ INSERT INTO model (id, model, brand_id) VALUES
 --
 
 INSERT INTO users (id, username, password, email, is_active, authority_id, first_name, surname, date_registered, num_of_offered_cars, registration_type) VALUES
-    ('user0', 'admin', '$2a$05$cjCn9LxucuXNP61ZlRQvseLWHlsB9rU/O5YCJAB3e3C/vp/u1VHgG', 'admin@admin.com', true, 2, 'Johny', 'Johny', '2000-01-01', 111, 'standard');
+    ('user0', 'admin', '$2a$05$cjCn9LxucuXNP61ZlRQvseLWHlsB9rU/O5YCJAB3e3C/vp/u1VHgG', 'admin@admin.com', true, 2, 'Johny', 'Johny', '2000-01-01', 111, 'standard'),
+    ('user1', 'admin2', '$2a$05$cjCn9LxucuXNP61ZlRQvseLWHlsB9rU/O5YCJAB3e3C/vp/u1VHgG', 'admin2@admin2.com', true, 2, 'Johny2', 'Johny2', '2000-01-01', 111, 'standard');
 
 
 

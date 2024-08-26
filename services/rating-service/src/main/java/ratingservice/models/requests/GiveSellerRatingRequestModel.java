@@ -16,4 +16,9 @@ public class GiveSellerRatingRequestModel implements PrincipalRequestBody {
     public String getUsername() {
         return userId;
     }
+
+    @Override
+    public void setUsername(String username) {
+
+    }
 }

@@ -53,6 +53,7 @@ public class SellerRatingService {
         }
 
         boolean ratingCheck = checkRating(giveSellerRatingRequestModel.getDto().getRating());
+        boolean checkUsers = checkUsers(giveSellerRatingRequestModel);
 
         if (ratingCheck) {
             SellerRating sellerRating = new SellerRating(giveSellerRatingRequestModel.getDto().getRating(), giveSellerRatingRequestModel.getDto().getSellerId(), giveSellerRatingRequestModel.getDto().getUserId());
@@ -61,6 +62,10 @@ public class SellerRatingService {
         }
 
         return ServiceStatus.ERROR;
+    }
+
+    private boolean checkUsers(PrincipalRequest<GiveSellerRatingRequestModel> giveSellerRatingRequestModel) {
+        return !(giveSellerRatingRequestModel.getDto().getSellerId().equals(giveSellerRatingRequestModel.getDto().getUserId()));
     }
 
     private boolean doesRatingAlreadyExist(GiveSellerRatingRequestModel giveSellerRatingRequestModel) {

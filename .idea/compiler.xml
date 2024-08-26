@@ -11,6 +11,7 @@
         <module name="CarHutChat" />
         <module name="ratingservice" />
         <module name="eureka" />
+        <module name="image-service" />
         <module name="carhut" />
       </profile>
     </annotationProcessing>
@@ -20,6 +21,7 @@
       <module name="CarHutChat" options="" />
       <module name="carhut" options="" />
       <module name="eureka" options="" />
+      <module name="image-service" options="" />
       <module name="models" options="" />
       <module name="ratingservice" options="" />
       <module name="services" options="" />
