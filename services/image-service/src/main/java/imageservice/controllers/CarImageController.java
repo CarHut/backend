@@ -34,10 +34,12 @@ public class CarImageController {
 
         if (images != null) {
             return new ImageStatusResponse<>("SUCCESS",
+                    200,
                     "Messages successfully fetched for carId: " + carId + ".",
                     images);
         } else {
             return new ImageStatusResponse<>("ERROR",
+                    500,
                     "Cannot fetch images for carId: " + carId + ".",
                     null);
         }
@@ -48,11 +50,13 @@ public class CarImageController {
         ImageServiceStatusInterface imageStatus = carImageService.addImagesToDatabase(imagesDto);
         if (imageStatus instanceof ImageServiceErrors) {
             return new ImageStatusResponse<>(imageStatus.toString(),
+                    201,
                     "Cannot add images to to database.",
                     null);
         }
 
         return new ImageStatusResponse<>(imageStatus.toString(),
+                500,
                 "Successfully added images to database.",
                 null);
 

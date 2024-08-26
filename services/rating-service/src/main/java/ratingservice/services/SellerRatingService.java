@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ratingservice.dtos.SellerRatingDto;
 import ratingservice.models.SellerRating;
-import ratingservice.models.requests.GiveSellerRatingRequestModel;
+import ratingservice.dtos.requests.GiveSellerRatingRequestModel;
 import ratingservice.repositories.SellerRatingRepository;
-import ratingservice.status.ServiceStatus;
+import ratingservice.status.RatingServiceStatus;
 
 import java.util.List;
 import java.util.OptionalDouble;
@@ -22,46 +22,57 @@ public class SellerRatingService {
             return null;
         }
 
+        List<SellerRating> sellerRatings = getSellerRatings(sellerId);
+        if (sellerRatings == null) {
+            return null;
+        }
+
+        OptionalDouble rating = countAverageRating(sellerRatings);
+        if (rating.isEmpty()) {
+            return null;
+        }
+
+        int numOfRatings = sellerRatings.size();
+        return new SellerRatingDto(sellerId, rating.getAsDouble(), numOfRatings);
+    }
+
+    private OptionalDouble countAverageRating(List<SellerRating> sellerRatings) {
+        OptionalDouble rating = sellerRatings
+                .stream()
+                .mapToInt(SellerRating::getRating)
+                .average();
+        return rating;
+    }
+
+    private List<SellerRating> getSellerRatings(String sellerId) {
         List<SellerRating> sellerRatings;
         try {
             sellerRatings = sellerRatingRepository.getSellerRatingsBySellerId(sellerId);
         } catch (Exception e) {
             return null;
         }
-
-        OptionalDouble rating = sellerRatings
-                .stream()
-                .mapToInt(SellerRating::getRating)
-                .average();
-
-        if (rating.isEmpty()) {
-            return null;
-        }
-
-        int numOfRatings = sellerRatings.size();
-
-        return new SellerRatingDto(sellerId, rating.getAsDouble(), numOfRatings);
+        return sellerRatings;
     }
 
-    public ServiceStatus giveSellerRating(PrincipalRequest<GiveSellerRatingRequestModel> giveSellerRatingRequestModel) {
+    public RatingServiceStatus giveSellerRating(PrincipalRequest<GiveSellerRatingRequestModel> giveSellerRatingRequestModel) {
         if (giveSellerRatingRequestModel == null) {
-            return ServiceStatus.ERROR;
+            return RatingServiceStatus.OBJECT_IS_NULL;
         }
 
         if (doesRatingAlreadyExist(giveSellerRatingRequestModel.getDto())) {
-            return ServiceStatus.ERROR;
+            return RatingServiceStatus.RATING_ALREADY_EXISTS;
         }
 
         boolean ratingCheck = checkRating(giveSellerRatingRequestModel.getDto().getRating());
         boolean checkUsers = checkUsers(giveSellerRatingRequestModel);
 
-        if (ratingCheck) {
+        if (ratingCheck && checkUsers) {
             SellerRating sellerRating = new SellerRating(giveSellerRatingRequestModel.getDto().getRating(), giveSellerRatingRequestModel.getDto().getSellerId(), giveSellerRatingRequestModel.getDto().getUserId());
             sellerRatingRepository.save(sellerRating);
-            return ServiceStatus.SUCCESS;
+            return RatingServiceStatus.SUCCESS;
         }
 
-        return ServiceStatus.ERROR;
+        return RatingServiceStatus.ERROR;
     }
 
     private boolean checkUsers(PrincipalRequest<GiveSellerRatingRequestModel> giveSellerRatingRequestModel) {

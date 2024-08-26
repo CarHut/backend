@@ -1,4 +1,4 @@
-package ratingservice.models.requests;
+package ratingservice.dtos.requests;
 
 import lombok.Getter;
 import lombok.Setter;

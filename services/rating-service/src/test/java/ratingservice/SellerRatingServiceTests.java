@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import ratingservice.dtos.SellerRatingDto;
-import ratingservice.models.requests.GiveSellerRatingRequestModel;
+import ratingservice.dtos.requests.GiveSellerRatingRequestModel;
 import ratingservice.services.SellerRatingService;
-import ratingservice.status.ServiceStatus;
+import ratingservice.status.RatingServiceStatus;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -26,8 +26,8 @@ public class SellerRatingServiceTests {
 
     @Test
     public void giveSellerRating_requestIsNull() {
-        ServiceStatus status = sellerRatingService.giveSellerRating(null);
-        Assertions.assertEquals(ServiceStatus.ERROR, status);
+        RatingServiceStatus status = sellerRatingService.giveSellerRating(null);
+        Assertions.assertEquals(RatingServiceStatus.OBJECT_IS_NULL, status);
     }
 
     @Test
@@ -43,8 +43,8 @@ public class SellerRatingServiceTests {
         giveSellerRatingRequestModelPrincipalRequest.setAuthenticationPrincipal(authenticationPrincipal);
         giveSellerRatingRequestModelPrincipalRequest.setDto(giveSellerRatingRequestModel);
 
-        ServiceStatus status = sellerRatingService.giveSellerRating(giveSellerRatingRequestModelPrincipalRequest);
-        Assertions.assertEquals(ServiceStatus.ERROR, status);
+        RatingServiceStatus status = sellerRatingService.giveSellerRating(giveSellerRatingRequestModelPrincipalRequest);
+        Assertions.assertEquals(RatingServiceStatus.ERROR, status);
     }
 
     @Test
@@ -60,8 +60,8 @@ public class SellerRatingServiceTests {
         giveSellerRatingRequestModelPrincipalRequest.setAuthenticationPrincipal(authenticationPrincipal);
         giveSellerRatingRequestModelPrincipalRequest.setDto(giveSellerRatingRequestModel);
 
-        ServiceStatus status = sellerRatingService.giveSellerRating(giveSellerRatingRequestModelPrincipalRequest);
-        Assertions.assertEquals(ServiceStatus.SUCCESS, status);
+        RatingServiceStatus status = sellerRatingService.giveSellerRating(giveSellerRatingRequestModelPrincipalRequest);
+        Assertions.assertEquals(RatingServiceStatus.SUCCESS, status);
     }
 
     @Test
