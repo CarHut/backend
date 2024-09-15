@@ -1,5 +1,6 @@
 package com.carhut.requests.requestmodels;
 
+import com.carhut.requests.ModelsPostModel;
 import lombok.Getter;
 import lombok.Setter;
 

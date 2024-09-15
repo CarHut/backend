@@ -1,6 +1,7 @@
 package com.carhut.requests.requestmodels;
 
 
+import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
 import lombok.Getter;
 import lombok.Setter;
 

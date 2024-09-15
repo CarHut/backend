@@ -5,16 +5,15 @@ import com.carhut.enums.ServiceStatusEntity;
 import com.carhut.models.carhut.*;
 import com.carhut.requests.PrincipalRequest;
 import com.carhut.requests.requestmodels.CarHutCarFilterModel;
-import com.carhut.requests.requestmodels.ModelsPostModel;
 import com.carhut.requests.requestmodels.RemoveCarRequestModel;
 import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
 import com.carhut.security.models.AuthenticationPrincipal;
 import com.carhut.services.carhutapi.CarHutAPIService;
-import com.carhut.util.converters.CarHutJSONConverter;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import com.carhut.requests.ModelsPostModel;
 
 import java.util.ArrayList;
 import java.util.Collections;

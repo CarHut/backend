@@ -5,8 +5,12 @@
     <file url="file://$PROJECT_DIR$/carhutchat/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/eureka/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/models/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/proxy/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/image-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/services/mail-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/rating-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/services/saved-cars-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/services/saved-searches-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/src/main/java" charset="UTF-8" />
   </component>
 </project>

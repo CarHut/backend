@@ -18,6 +18,8 @@
     <modules>
         <module>rating-service</module>
         <module>image-service</module>
+        <module>saved-cars-service</module>
+        <module>saved-searches-service</module>
     </modules>
 
 </project>

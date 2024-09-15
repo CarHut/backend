@@ -10,6 +10,10 @@
         <option value="$PROJECT_DIR$/services/rating-service/pom.xml" />
         <option value="$PROJECT_DIR$/models/pom.xml" />
         <option value="$PROJECT_DIR$/services/image-service/pom.xml" />
+        <option value="$PROJECT_DIR$/services/saved-cars-service/pom.xml" />
+        <option value="$PROJECT_DIR$/services/saved-searches-service/pom.xml" />
+        <option value="$PROJECT_DIR$/services/mail-service/pom.xml" />
+        <option value="$PROJECT_DIR$/proxy/pom.xml" />
       </list>
     </option>
   </component>

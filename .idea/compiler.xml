@@ -8,10 +8,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="models" />
-        <module name="CarHutChat" />
+        <module name="proxy" />
+        <module name="saved-searches-service" />
         <module name="ratingservice" />
         <module name="eureka" />
+        <module name="CarHutChat" />
+        <module name="mail-service" />
         <module name="image-service" />
+        <module name="saved-cars-service" />
         <module name="carhut" />
       </profile>
     </annotationProcessing>
@@ -22,8 +26,12 @@
       <module name="carhut" options="" />
       <module name="eureka" options="" />
       <module name="image-service" options="" />
+      <module name="mail-service" options="-parameters" />
       <module name="models" options="" />
+      <module name="proxy" options="-parameters" />
       <module name="ratingservice" options="" />
+      <module name="saved-cars-service" options="" />
+      <module name="saved-searches-service" options="" />
       <module name="services" options="" />
     </option>
   </component>
