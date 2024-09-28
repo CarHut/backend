@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Controller
-@RequestMapping(path = "/api/carhut")
+@RequestMapping(path = "/carhut")
 public class CarHutAPIController {
 
     @Autowired
