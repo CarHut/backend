@@ -1,5 +1,6 @@
 package com.carhut.proxy.controller;
 
+import com.carhut.proxy.controller.ratelimit.RateLimitingProtection;
 import com.carhut.proxy.model.ResponseModel;
 import com.carhut.proxy.model.UnifiedRESTRequestModel;
 import com.carhut.proxy.processor.RequestTaskProcessor;
@@ -12,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 public class ProxyController {
     private RequestTaskProcessor processor = new RequestTaskProcessor();
 
+    @RateLimitingProtection
     @RequestMapping(
             value = "/**",
             method = {RequestMethod.GET, RequestMethod.POST}

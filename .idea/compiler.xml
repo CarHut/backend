@@ -7,18 +7,21 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="carhutchat" />
         <module name="models" />
         <module name="proxy" />
         <module name="saved-searches-service" />
         <module name="ratingservice" />
         <module name="eureka" />
-        <module name="CarHutChat" />
         <module name="mail-service" />
         <module name="image-service" />
         <module name="saved-cars-service" />
         <module name="carhut" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="CarHutChat" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

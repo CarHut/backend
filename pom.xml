@@ -10,7 +10,6 @@
 
     <modules>
         <module>carhut</module>
-        <module>carhutchat</module>
         <module>eureka</module>
         <module>services</module>
         <module>models</module>
