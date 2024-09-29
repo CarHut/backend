@@ -2,6 +2,7 @@ package com.carhut.proxy.builder;
 
 import static com.carhut.proxy.builder.enums.DestinationPrefix.*;
 
+import com.carhut.proxy.util.logger.ProxyLogger;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -10,7 +11,10 @@ import java.util.Arrays;
 // In future add mappings to database
 public class URLBuilder {
 
+    private static final ProxyLogger logger = ProxyLogger.getInstance();
+
     public static URI buildRequestUrl(HttpServletRequest request) throws URISyntaxException {
+        logger.logInfo("Building URI for request: " + request.toString());
         String servletPath = request.getServletPath();
         String address = getAddressFromServletPath(servletPath);
         String port = getPortFromServletPath(servletPath);
@@ -18,6 +22,7 @@ public class URLBuilder {
     }
 
     private static String getPortFromServletPath(String servletPath) {
+        logger.logInfo("Getting port from servlet path: " + servletPath);
         return assignPortToStringPrefix(
                 Arrays.stream(servletPath.split("/"))
                         .filter(str -> !str.isEmpty())
@@ -39,6 +44,7 @@ public class URLBuilder {
     }
 
     private static String getAddressFromServletPath(String servletPath) {
+        logger.logInfo("Getting address from servlet path: " + servletPath);
         return assignAddressToStringPrefix(
                 Arrays.stream(servletPath.split("/"))
                         .filter(str -> !str.isEmpty())

@@ -10,7 +10,6 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 public class ProxyController {
-
     private RequestTaskProcessor processor = new RequestTaskProcessor();
 
     @RequestMapping(

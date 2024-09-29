@@ -1,8 +1,10 @@
 package com.carhut.proxy.dispatcher.model;
 
 import com.carhut.proxy.dispatcher.WorkerThreadDispatcher;
+import com.carhut.proxy.util.logger.ProxyLogger;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 public class WorkerThread<INP, RES> extends Thread implements Runnable {
@@ -11,39 +13,39 @@ public class WorkerThread<INP, RES> extends Thread implements Runnable {
     private final INP input;
     private final CompletableFuture<RES> resultFuture;
     private final String threadId;
-    private int rank;
+    private AtomicInteger rank;
+    private WorkerThreadDispatcher workerThreadDispatcher = WorkerThreadDispatcher.getInstance();
+    private static final ProxyLogger logger = ProxyLogger.getInstance();
 
-    public WorkerThread(String threadId, Function<INP, CompletableFuture<RES>> runnableFunction, INP input, CompletableFuture<RES> resultFuture) {
+    public WorkerThread(String threadId, Function<INP, CompletableFuture<RES>> runnableFunction, INP input,
+                        CompletableFuture<RES> resultFuture) {
         this.runnableFunction = runnableFunction;
         this.input = input;
         this.resultFuture = resultFuture;
         this.threadId = threadId;
-        this.rank = 0;
+        this.rank = new AtomicInteger(0);
     }
 
     @Override
     public void run() {
+        logger.logInfo("Starting worker thread with ID: " + this.getThreadId());
         try {
-            // Execute the runnable function
             CompletableFuture<RES> future = runnableFunction.apply(input);
-
-            // Complete the resultFuture when the CompletableFuture from runnableFunction completes
             future.whenComplete((result, ex) -> {
                 if (ex != null) {
+                    logger.logError("Worker thread [ID: " + this.getThreadId() + "] completed task exceptionally. Exception: " + ex.getMessage());
                     resultFuture.completeExceptionally(ex);
                 } else {
+                    logger.logInfo("Worker thread [ID: " + this.getThreadId() + "] completed task successfully.");
                     resultFuture.complete(result);
                 }
-//                 Clean up the running thread list
-//                synchronized (WorkerThreadDispatcher.class) {
-//                    WorkerThreadDispatcher.getInstance().terminateThreadAndNotifyOthers(threadId);
-//                }
+                workerThreadDispatcher.removeThreadFromPool(threadId);
             });
-
         } catch (Exception e) {
             System.err.println("WorkerThread encountered an unexpected error: " + e.getMessage());
-            e.printStackTrace();
-            resultFuture.completeExceptionally(e); // Handle exception and complete the future
+            logger.logInfo("Worker thread [ID: " + this.getThreadId() + "] encountered an unexpected error. Exception: " + e.getMessage());
+            resultFuture.completeExceptionally(e);
+            workerThreadDispatcher.removeThreadFromPool(threadId);
         }
     }
 
@@ -52,10 +54,10 @@ public class WorkerThread<INP, RES> extends Thread implements Runnable {
     }
 
     public void increaseRank() {
-        this.rank++;
+        this.rank.incrementAndGet();
     }
 
     public int getRank() {
-        return this.rank;
+        return this.rank.get();
     }
 }

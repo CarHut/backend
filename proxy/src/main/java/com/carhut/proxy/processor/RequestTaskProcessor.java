@@ -5,6 +5,7 @@ import com.carhut.proxy.dispatcher.WorkerThreadDispatcher;
 import com.carhut.proxy.model.RequestModel;
 import com.carhut.proxy.model.ResponseModel;
 import com.carhut.proxy.model.UnifiedRESTResponseModel;
+import com.carhut.proxy.util.logger.ProxyLogger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,6 +17,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class RequestTaskProcessor implements TaskProcessor<RequestModel, CompletableFuture<ResponseModel>> {
+
+    public static final ProxyLogger logger = ProxyLogger.getInstance();
 
     public RequestTaskProcessor() {}
 
@@ -88,6 +91,7 @@ public class RequestTaskProcessor implements TaskProcessor<RequestModel, Complet
             return httpRequest.build();
 
         } catch (URISyntaxException e) {
+            logger.logWarn("Exception occurred while trying to build request. Exception: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
