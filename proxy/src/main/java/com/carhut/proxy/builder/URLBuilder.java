@@ -4,6 +4,8 @@ import static com.carhut.proxy.builder.enums.DestinationPrefix.*;
 
 import com.carhut.proxy.util.logger.ProxyLogger;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.context.annotation.Scope;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -14,10 +16,16 @@ public class URLBuilder {
     private static final ProxyLogger logger = ProxyLogger.getInstance();
 
     public static URI buildRequestUrl(HttpServletRequest request) throws URISyntaxException {
-        logger.logInfo("Building URI for request: " + request.toString());
+        if (request == null) {
+            return null;
+        }
         String servletPath = request.getServletPath();
         String address = getAddressFromServletPath(servletPath);
         String port = getPortFromServletPath(servletPath);
+        if (address == null || port == null) {
+            logger.logError("One of the URI parts is null. Cannot build URI.");
+            throw new URISyntaxException("One of the URI parts is null.", "Invalid URI.");
+        }
         return new URI(address + ":" + port + servletPath);
     }
 

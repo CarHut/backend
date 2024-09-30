@@ -6,6 +6,7 @@ import com.carhut.proxy.util.logger.ProxyLogger;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 public final class WorkerThreadDispatcher<T, R> implements ThreadDispatcher<Function<T, CompletableFuture<R>>, CompletableFuture<R>> {
@@ -24,6 +25,12 @@ public final class WorkerThreadDispatcher<T, R> implements ThreadDispatcher<Func
 
     @Override
     public synchronized CompletableFuture<R> dispatchThread(Function<T, CompletableFuture<R>> function) {
+        if (function == null) {
+            CompletableFuture<R> future = new CompletableFuture<>();
+            logger.logError("Thread dispatcher cannot dispatch thread due to passing bad function as a parameter.");
+            future.completeExceptionally(new ExecutionException("Passed invalid function thread dispatcher.", new RuntimeException()));
+            return future;
+        }
         final String threadId = generateThreadId();
         logger.logInfo("Dispatching new worker thread [ID: " + threadId + "]");
         CompletableFuture<R> resultFuture = new CompletableFuture<>();
