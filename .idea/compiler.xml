@@ -7,16 +7,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="carhutchat" />
         <module name="models" />
-        <module name="proxy" />
-        <module name="saved-searches-service" />
-        <module name="ratingservice" />
         <module name="eureka" />
-        <module name="mail-service" />
+        <module name="user-service" />
         <module name="image-service" />
         <module name="saved-cars-service" />
         <module name="carhut" />
+        <module name="carhutchat" />
+        <module name="proxy" />
+        <module name="saved-searches-service" />
+        <module name="ratingservice" />
+        <module name="security-service" />
+        <module name="mail-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -27,6 +29,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="CarHutChat" options="" />
       <module name="carhut" options="" />
+      <module name="commons" options="" />
       <module name="eureka" options="" />
       <module name="image-service" options="" />
       <module name="mail-service" options="-parameters" />
@@ -35,7 +38,9 @@
       <module name="ratingservice" options="" />
       <module name="saved-cars-service" options="" />
       <module name="saved-searches-service" options="" />
+      <module name="security-service" options="" />
       <module name="services" options="" />
+      <module name="user-service" options="" />
     </option>
   </component>
 </project>

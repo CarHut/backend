@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/carhut/carhut.iml" filepath="$PROJECT_DIR$/carhut/carhut.iml" />
+      <module fileurl="file://$PROJECT_DIR$/services/carhut/carhut.iml" filepath="$PROJECT_DIR$/services/carhut/carhut.iml" />
+      <module fileurl="file://$PROJECT_DIR$/services/user-service/user-service.iml" filepath="$PROJECT_DIR$/services/user-service/user-service.iml" />
     </modules>
   </component>
 </project>

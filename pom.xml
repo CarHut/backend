@@ -9,11 +9,11 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>carhut</module>
         <module>eureka</module>
         <module>services</module>
         <module>models</module>
         <module>proxy</module>
+        <module>commons</module>
     </modules>
 
     <properties>
