@@ -4,7 +4,6 @@ import com.carhut.userservice.repository.resourceprovider.DatabaseResourceProvid
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 public class ResourceHolderThread<RESOURCEOBJECT> extends Thread implements Runnable {
@@ -13,25 +12,20 @@ public class ResourceHolderThread<RESOURCEOBJECT> extends Thread implements Runn
     private final Void input;
     private final CompletableFuture<RESOURCEOBJECT> resultFuture;
     private final String threadId;
-    private AtomicInteger rank;
     private DatabaseResourceProviderManager databaseResourceProviderManager = DatabaseResourceProviderManager.getInstance();
-    private final ReentrantLock lock;
 
     public ResourceHolderThread(String threadId, Function<Void, RESOURCEOBJECT> runnableFunction,
-                                Void input, CompletableFuture<RESOURCEOBJECT> resultFuture, ReentrantLock lock) {
+                                Void input, CompletableFuture<RESOURCEOBJECT> resultFuture) {
         this.runnableFunction = runnableFunction;
         this.input = input;
         this.resultFuture = resultFuture;
         this.threadId = threadId;
-        this.rank = new AtomicInteger(0);
-        this.lock = lock;
         this.setName("ResourceHolderThread #" + threadId);
     }
 
     @Override
     public void run() {
         try {
-            lock.lock();
             RESOURCEOBJECT resourceobject = runnableFunction.apply(input);
             resultFuture.complete(resourceobject);
         }
@@ -45,11 +39,7 @@ public class ResourceHolderThread<RESOURCEOBJECT> extends Thread implements Runn
         return threadId;
     }
 
-    public void increaseRank() {
-        this.rank.incrementAndGet();
-    }
-
-    public int getRank() {
-        return this.rank.get();
+    public CompletableFuture<RESOURCEOBJECT> getResultFuture() {
+        return resultFuture;
     }
 }
