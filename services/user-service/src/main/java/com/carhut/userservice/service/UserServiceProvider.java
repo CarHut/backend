@@ -22,17 +22,8 @@ public class UserServiceProvider implements UserDetailsService {
     private static DatabaseResourceProviderManager databaseResourceProviderManager =
             DatabaseResourceProviderManager.getInstance();
 
-    public CompletableFuture<GenericResponse<User>> getUserCredentialsForSecurityService(String username) {
-        Function<Void, GenericResponse<User>> fun = (unused) -> {
-            User user = userRepository.getUserByUsername(username);
-            if (user == null) {
-                return new GenericResponse<>("Error.", HttpStatus.NOT_FOUND.value(),
-                        "User credentials for user " + username + " were not found.", null);
-            }
-            return new GenericResponse<>("Success.", HttpStatus.OK.value(),
-                    "User credentials were found.", user);
-        };
-
+    public CompletableFuture<User> getUserCredentialsForSecurityService(String username) {
+        Function<Void, User> fun = (unused) -> userRepository.getUserByUsername(username);
         return databaseResourceProviderManager.acquireDatabaseResource(fun);
     }
 

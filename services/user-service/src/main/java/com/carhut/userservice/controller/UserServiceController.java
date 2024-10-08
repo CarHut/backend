@@ -4,7 +4,10 @@ import com.carhut.userservice.repository.model.User;
 import com.carhut.userservice.service.UserServiceProvider;
 import models.responses.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.http.HttpResponse;
 import java.util.concurrent.ExecutionException;
 
 
@@ -16,9 +19,10 @@ public class UserServiceController {
     private UserServiceProvider userServiceProvider;
 
     @GetMapping(value = "/security-get-user-credentials")
-    public GenericResponse<User> getUserCredentialsForSecurityService(@RequestParam("username") String username)
+    public ResponseEntity<User> getUserCredentialsForSecurityService(@RequestParam("username") String username)
             throws ExecutionException, InterruptedException {
-        return userServiceProvider.getUserCredentialsForSecurityService(username).get();
+        User user = userServiceProvider.getUserCredentialsForSecurityService(username).get();
+        return user == null ? ResponseEntity.status(404).body(null) : ResponseEntity.ok(user);
     }
 
 }

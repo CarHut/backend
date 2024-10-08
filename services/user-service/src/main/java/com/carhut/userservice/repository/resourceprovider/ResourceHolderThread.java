@@ -1,9 +1,6 @@
-package com.carhut.userservice.repository.resourceprovider.model;
-
-import com.carhut.userservice.repository.resourceprovider.DatabaseResourceProviderManager;
+package com.carhut.userservice.repository.resourceprovider;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 public class ResourceHolderThread<RESOURCEOBJECT> extends Thread implements Runnable {

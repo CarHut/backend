@@ -1,10 +1,10 @@
-package com.carhut.securityservice.security;
+package com.carhut.securityservice.security.util;
 
+import com.carhut.securityservice.security.model.RawUser;
+import com.carhut.securityservice.repository.AuthorityRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.UnsupportedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -15,21 +15,28 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    private static final SecretKey key = Jwts.SIG.HS256.key().build();
+    @Autowired
+    private AuthorityRepository authorityRepository;
+    private SecretKey key = Jwts.SIG.HS256.key().build();
 
-    public String generateToken(UserDetails userDetails, Map<String, Object> claims) {
-        return createToken(userDetails, claims);
+    @Autowired
+    public JwtUtil(AuthorityRepository authorityRepository) {
+        this.authorityRepository = authorityRepository;
     }
 
-    private String createToken(UserDetails userDetails, Map<String, Object> claims) {
+    public String generateToken(RawUser rawUser, Map<String, Object> claims) {
+        return createToken(rawUser, claims);
+    }
+
+    private String createToken(RawUser rawUser, Map<String, Object> claims) {
 
         Date dateCreated = new Date(System.currentTimeMillis());
         Date expirationDate = new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24));
 
         String token = Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
-                .claim("authorities", userDetails.getAuthorities())
+                .setSubject(rawUser.getUsername())
+                .claim("authorities", authorityRepository.getAuthorityById(rawUser.getAuthorityId()))
                 .setIssuedAt(dateCreated)
                 .setExpiration(expirationDate)
                 .signWith(key)
@@ -38,8 +45,11 @@ public class JwtUtil {
         return token;
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        return extractUsername(token).equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public boolean isTokenValid(String token, String username) {
+        if (username == null || token == null) {
+            return false;
+        }
+        return extractUsername(token).equals(username) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
@@ -58,7 +68,7 @@ public class JwtUtil {
     public <T> T extractClaim(String token, Function<Claims, T> claimsTFunction) {
         try {
             return claimsTFunction.apply(extractAllClaims(token));
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             return null;
         }
     }
@@ -66,7 +76,7 @@ public class JwtUtil {
     private Claims extractAllClaims(String token) {
         try {
             return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
-        } catch (UnsupportedJwtException e) {
+        } catch (Exception e) {
             return null;
         }
     }

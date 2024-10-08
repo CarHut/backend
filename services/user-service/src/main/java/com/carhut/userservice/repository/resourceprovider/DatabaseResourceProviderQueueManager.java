@@ -1,15 +1,16 @@
 package com.carhut.userservice.repository.resourceprovider;
 
-import com.carhut.userservice.repository.resourceprovider.model.ResourceHolderThread;
-
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DatabaseResourceProviderQueueManager<RESOURCEOBJECT> extends Thread {
 
+    private final Long MAX_RESOURCE_HOLD_TIME = 10000L;
     private final LinkedBlockingQueue<ResourceHolderThread<RESOURCEOBJECT>> queue;
     private volatile Boolean running;
     private final AtomicBoolean holdsResource;
+    private long startTime;
+    private ResourceHolderThread<RESOURCEOBJECT> resourceHolderThread = null;
 
     public DatabaseResourceProviderQueueManager(LinkedBlockingQueue<ResourceHolderThread<RESOURCEOBJECT>> queue) {
         this.queue = queue;
@@ -19,22 +20,34 @@ public class DatabaseResourceProviderQueueManager<RESOURCEOBJECT> extends Thread
 
     @Override
     public void run() {
-        System.out.println("Resource Queue Manager is up and running.");
         while (running) {
             if (!queue.isEmpty() && !holdsResource.get()) {
                 prepareAndStartWorker();
+            } else if (System.currentTimeMillis() - startTime > MAX_RESOURCE_HOLD_TIME
+                    && resourceHolderThread != null) {
+                unlockBlockingResource();
             }
         }
     }
 
+    private void unlockBlockingResource() {
+        holdsResource.set(false);
+        resourceHolderThread.interrupt();
+        resourceHolderThread = null;
+    }
+
     private void prepareAndStartWorker() {
         ResourceHolderThread<RESOURCEOBJECT> resourceHolder = queue.poll();
+        System.out.println("Starting new thread [" + resourceHolder.getThreadId() + "]");
         if (resourceHolder != null) {
+            resourceHolderThread = resourceHolder;
             resourceHolder.getResultFuture().whenComplete((res, ex) -> {
+                System.out.println("Stopping thread [" + resourceHolder.getThreadId() + "]");
                 holdsResource.set(false);
             });
             holdsResource.set(true);
             resourceHolder.start();
+            startTime = System.currentTimeMillis();
         }
     }
 

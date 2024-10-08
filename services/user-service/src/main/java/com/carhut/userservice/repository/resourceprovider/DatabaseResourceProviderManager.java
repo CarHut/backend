@@ -1,7 +1,5 @@
 package com.carhut.userservice.repository.resourceprovider;
 
-import com.carhut.userservice.repository.resourceprovider.model.ResourceHolderThread;
-
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
