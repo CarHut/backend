@@ -1,12 +1,11 @@
 package com.carhut.requests.requestmodels;
 
-
-import com.carhut.requests.requestmodels.SimpleUsernameRequestModel;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RemoveCarRequestModel extends SimpleUsernameRequestModel {
+public class RemoveCarRequestModel {
     private String carId;
+    private String userId;
 }

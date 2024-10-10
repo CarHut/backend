@@ -12,4 +12,9 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query(value = "SELECT * FROM users WHERE username = :username", nativeQuery = true)
     User getUserByUsername(@Param("username") String username);
 
+    @Query(value = "SELECT * FROM users WHERE id = :userId", nativeQuery = true)
+    User getUserByUserId(@Param("userId") String userId);
+
+    @Query(value = "UPDATE users SET num_of_offered_cars = num_of_offered_cars + 1 WHERE id = :userId", nativeQuery = true)
+    void updateCarCountByUserId(@Param("userId") String userId);
 }

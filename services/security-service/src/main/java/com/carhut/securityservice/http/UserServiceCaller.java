@@ -18,8 +18,8 @@ public class UserServiceCaller {
         this.rawUserResponseSerializer = new ResponseSerializer<>();
     }
 
-    public RawUser getUserCredentials(String username) throws URISyntaxException, IOException, InterruptedException {
-        HttpResponse<String> response = sendRequestForUserCredentials(username);
+    public RawUser getUserCredentialsWithUsername(String username) throws URISyntaxException, IOException, InterruptedException {
+        HttpResponse<String> response = sendRequestForUserCredentialsWithUsernameParam(username);
 
         if (response.statusCode() != 200) {
             System.out.println("Cannot fetch user credentials.");
@@ -29,9 +29,32 @@ public class UserServiceCaller {
         return rawUserResponseSerializer.deserialize(response.body(), RawUser.class);
     }
 
-    private HttpResponse<String> sendRequestForUserCredentials(String username) throws URISyntaxException, IOException, InterruptedException {
+    public RawUser getUserCredentialsWithUserId(String userId) throws URISyntaxException, IOException, InterruptedException {
+        HttpResponse<String> response = sendRequestForUserCredentialsWithUserIdParam(userId);
+
+        if (response.statusCode() != 200) {
+            System.out.println("Cannot fetch user credentials.");
+            return null;
+        }
+
+        return rawUserResponseSerializer.deserialize(response.body(), RawUser.class);
+    }
+
+    private HttpResponse<String> sendRequestForUserCredentialsWithUsernameParam(String username) throws URISyntaxException, IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI("http://localhost:8001/user-service/security-get-user-credentials?username=" + username))
+                .timeout(Duration.ofSeconds(3))
+                .GET()
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response;
+    }
+
+    private HttpResponse<String> sendRequestForUserCredentialsWithUserIdParam(String userId) throws URISyntaxException, IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI("http://localhost:8001/user-service/security-get-user-credentials?user-id=" + userId))
                 .timeout(Duration.ofSeconds(3))
                 .GET()
                 .build();

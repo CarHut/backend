@@ -24,4 +24,12 @@
         <module>carhut</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.carhut</groupId>
+            <artifactId>commons</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
 </project>

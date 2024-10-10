@@ -3,9 +3,10 @@ package imageservice.services;
 import imageservice.dtos.request.ImagesDto;
 import imageservice.models.CarImage;
 import imageservice.repositories.CarImageRepository;
-import imageservice.status.ImageServiceErrors;
+import imageservice.repositories.resourceprovider.ImageDatabaseResourceManager;
+import imageservice.status.ImageServiceError;
+import imageservice.status.ImageServiceResultInterface;
 import imageservice.status.ImageServiceStatus;
-import imageservice.status.ImageServiceStatusInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,72 +20,100 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
 @Service
 public class CarImageService {
 
     @Autowired
     private CarImageRepository carImageRepository;
+    private ImageDatabaseResourceManager imageDatabaseResourceManager = ImageDatabaseResourceManager.getInstance();
 
     @Value("${images.path}")
     private String basePath;
 
-    public List<byte[]> getImagesWithCarId(String carId) throws IOException {
+    public CompletableFuture<List<Byte[]>> getImagesWithCarId(String carId) throws IOException {
+        CompletableFuture<List<Byte[]>> cf = new CompletableFuture<>();
         if (carId == null || carId.isEmpty()) {
-            return null;
+            cf.complete(null);
+            return cf;
         }
 
-        List<byte[]> resources = new ArrayList<>();
-        List<CarImage> images = carImageRepository.getImagesByCarId(carId);
-
-        for (CarImage image : images) {    
-            File file = new File(image.getPath());
-            if (file.isFile()) {
-                byte[] imageResource = convertToResource(file);
-                if (imageResource != null) {
-                    resources.add(imageResource);
+        Function<Void, List<Byte[]>> function = (unused) -> {
+            try {
+                List<Byte[]> resources = new ArrayList<>();
+                List<CarImage> images = carImageRepository.getImagesByCarId(carId);
+                for (CarImage image : images) {
+                    File file = new File(image.getPath());
+                    if (file.isFile()) {
+                        byte[] imageResource = convertToResource(file);
+                        if (imageResource != null) {
+                            // Convert byte[] to Byte[]
+                            Byte[] imageResourceBoxed = new Byte[imageResource.length];
+                            for (int i = 0; i < imageResource.length; i++) {
+                                imageResourceBoxed[i] = imageResource[i];
+                            }
+                            resources.add(imageResourceBoxed);
+                        }
+                    }
                 }
-            }
-        }
 
-        return resources;
+                return resources;
+            } catch (Exception e) {
+                return null;
+            }
+        };
+
+        return imageDatabaseResourceManager.acquireDatabaseResource(function);
     }
 
     public byte[] convertToResource(File file) throws IOException {
         return Files.readAllBytes(file.toPath());
     }
 
-    public ImageServiceStatusInterface addImagesToDatabase(ImagesDto imagesDto) {
+    public CompletableFuture<ImageServiceResultInterface> addImagesToDatabase(ImagesDto imagesDto)
+            throws ExecutionException, InterruptedException {
+        CompletableFuture<ImageServiceResultInterface> cf = new CompletableFuture<>();
         if (imagesDto == null) {
-            return ImageServiceErrors.ERROR_OBJECT_IS_NULL;
+            cf.complete(ImageServiceError.ERROR_OBJECT_IS_NULL);
+            return cf;
         }
 
         if (imagesDto.carHutCarInfoDto() == null) {
-            return ImageServiceErrors.ERROR_OBJECT_IS_NULL;
+            cf.complete(ImageServiceError.ERROR_OBJECT_IS_NULL);
+            return cf;
         }
 
         if (imagesDto.carHutCarInfoDto().newCarId() == null || imagesDto.carHutCarInfoDto().sellerId() == null) {
-            return ImageServiceErrors.ERROR_OBJECT_IS_NULL;
+            cf.complete(ImageServiceError.ERROR_OBJECT_IS_NULL);
+            return cf;
         }
 
         if (imagesDto.multipartFiles() == null) {
             System.out.println("Cannot add images to database because multipartFiles is null.");
-            return ImageServiceErrors.ERROR_OBJECT_IS_NULL;
+            cf.complete(ImageServiceError.ERROR_OBJECT_IS_NULL);
+            return cf;
         }
 
         if (imagesDto.multipartFiles().isEmpty()) {
             System.out.println("List of images is empty. Nothing will be added to database.");
-            return ImageServiceErrors.IMAGE_LIST_IS_EMPTY;
+            cf.complete(ImageServiceError.IMAGE_LIST_IS_EMPTY);
+            return cf;
         }
 
         Path path = createRepositoryForNewCarImages(imagesDto);
         if (path == null) {
-            return ImageServiceErrors.ERROR_CREATING_DIRECTORY;
+            cf.complete(ImageServiceError.ERROR_CREATING_DIRECTORY);
+            return cf;
         }
 
-        ImageServiceErrors errorUploadingImageToFileSystem = saveImages(imagesDto, path);
-        return Objects.requireNonNullElse(errorUploadingImageToFileSystem, ImageServiceStatus.SUCCESS);
+        ImageServiceError errorUploadingImageToFileSystem = saveImages(imagesDto, path).get();
+        cf.complete(errorUploadingImageToFileSystem != null
+                ? errorUploadingImageToFileSystem
+                : ImageServiceStatus.SUCCESS);
+        return cf;
     }
 
     private Path createRepositoryForNewCarImages(ImagesDto imagesDto) {
@@ -98,18 +127,26 @@ public class CarImageService {
         return path;
     }
 
-    private ImageServiceErrors saveImages(ImagesDto imagesDto, Path path) {
-        for (MultipartFile image : imagesDto.multipartFiles()) {
-            if (image != null) {
-                CarImage carImage = saveImageToFileSystem(imagesDto, path, image);
-                if (carImage == null) {
-                    // Create fallback to remove existing images from database
-                    return ImageServiceErrors.ERROR_UPLOADING_IMAGE_TO_FILE_SYSTEM;
+    private CompletableFuture<ImageServiceError> saveImages(ImagesDto imagesDto, Path path) {
+        Function<Void, ImageServiceError> function = (unused) -> {
+            for (MultipartFile image : imagesDto.multipartFiles()) {
+                if (image != null) {
+                    CarImage carImage = saveImageToFileSystem(imagesDto, path, image);
+                    if (carImage == null) {
+                        // Create fallback to remove existing images from database
+                        return ImageServiceError.ERROR_UPLOADING_IMAGE_TO_FILE_SYSTEM;
+                    }
+                    try {
+                        carImageRepository.save(carImage);
+                    } catch (Exception e) {
+                        return ImageServiceError.ERROR_UPLOADING_IMAGE_TO_DATABASE;
+                    }
                 }
-                carImageRepository.save(carImage);
             }
-        }
-        return null;
+            return null;
+        };
+
+        return imageDatabaseResourceManager.acquireDatabaseResource(function);
     }
 
     private CarImage saveImageToFileSystem(ImagesDto imagesDto, Path path, MultipartFile image) {

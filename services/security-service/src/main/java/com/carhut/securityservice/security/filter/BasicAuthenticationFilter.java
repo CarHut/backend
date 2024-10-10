@@ -47,7 +47,7 @@ public class BasicAuthenticationFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             final RawUser userCredentials;
             try {
-                userCredentials = userServiceCaller.getUserCredentials(username);
+                userCredentials = userServiceCaller.getUserCredentialsWithUsername(username);
             } catch (URISyntaxException | InterruptedException e) {
                 throw new RuntimeException(e);
             }

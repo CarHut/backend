@@ -1,8 +1,6 @@
 package ratingservice.controllers;
 
-import models.requests.PrincipalRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ratingservice.dtos.SellerRatingDto;
 import ratingservice.dtos.requests.GiveSellerRatingRequestModel;
@@ -10,6 +8,8 @@ import ratingservice.dtos.responses.SellerRatingResponse;
 import ratingservice.services.SellerRatingService;
 import ratingservice.status.RatingServiceStatus;
 import ratingservice.utils.loggers.ControllerLogger;
+
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/rating")
@@ -20,8 +20,10 @@ public class SellerRatingController {
     private final ControllerLogger controllerLogger = ControllerLogger.getLogger();
 
     @GetMapping("/getSellerRating")
-    public SellerRatingResponse<SellerRatingDto> getSellerRating(@RequestParam String sellerId) {
-        SellerRatingDto sellerRatingDto = sellerRatingService.getSellerRating(sellerId);
+    public SellerRatingResponse<SellerRatingDto> getSellerRating(@RequestParam String sellerId)
+            throws ExecutionException, InterruptedException {
+
+        SellerRatingDto sellerRatingDto = sellerRatingService.getSellerRating(sellerId).get();
         if (sellerRatingDto != null) {
             controllerLogger.saveToFile("[SellerRatingController][OK] - /getSellerRating - Successfully got seller rating.");
             return new SellerRatingResponse<>("SUCCESS",
@@ -38,8 +40,12 @@ public class SellerRatingController {
     }
 
     @PostMapping("/giveSellerRating")
-    public SellerRatingResponse<Object> giveSellerRating(@RequestBody PrincipalRequest<GiveSellerRatingRequestModel> giveSellerRatingRequestModel) {
-        RatingServiceStatus ratingServiceStatusEntity = sellerRatingService.giveSellerRating(giveSellerRatingRequestModel);
+    public SellerRatingResponse<Object> giveSellerRating(
+            @RequestBody GiveSellerRatingRequestModel giveSellerRatingRequestModel)
+            throws ExecutionException, InterruptedException {
+
+        RatingServiceStatus ratingServiceStatusEntity = sellerRatingService
+                .giveSellerRating(giveSellerRatingRequestModel).get();
 
         if (ratingServiceStatusEntity == RatingServiceStatus.SUCCESS) {
             controllerLogger.saveToFile("[SellerRatingController][OK] - /giveSellerRating - Successfully given seller rating.");

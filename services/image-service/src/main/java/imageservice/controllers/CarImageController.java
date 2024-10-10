@@ -1,16 +1,17 @@
 package imageservice.controllers;
 
 import imageservice.dtos.request.ImagesDto;
-import imageservice.dtos.response.ImageStatusResponse;
 import imageservice.services.CarImageService;
-import imageservice.status.ImageServiceErrors;
-import imageservice.status.ImageServiceStatusInterface;
+import imageservice.status.ImageServiceError;
+import imageservice.status.ImageServiceResultInterface;
 import imageservice.utils.ControllerLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 @RequestMapping(path = "/api/carhut")
@@ -22,44 +23,32 @@ public class CarImageController {
 
     @GetMapping(value = "/getImages")
     @ResponseBody
-    public ImageStatusResponse<List<byte[]>> getImages(@RequestParam String carId) {
-        List<byte[]> images = null;
+    public ResponseEntity<List<Byte[]>> getImages(@RequestParam String carId) {
+        List<Byte[]> images = null;
 
         try {
-            images = carImageService.getImagesWithCarId(carId);
+            images = carImageService.getImagesWithCarId(carId).get();
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /getImages successfully executed.");
         } catch (Exception e) {
             controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /getColorStringNameFromColorId something went wrong. Message: " + e.getMessage());
         }
 
         if (images != null) {
-            return new ImageStatusResponse<>("SUCCESS",
-                    200,
-                    "Messages successfully fetched for carId: " + carId + ".",
-                    images);
+            return ResponseEntity.ok(images);
         } else {
-            return new ImageStatusResponse<>("ERROR",
-                    500,
-                    "Cannot fetch images for carId: " + carId + ".",
-                    null);
+            return ResponseEntity.internalServerError().body(null);
         }
     }
 
     @PostMapping(value = "/addImagesToDatabase")
-    public ImageStatusResponse<String> addImagesToDatabase(@RequestBody ImagesDto imagesDto) {
-        ImageServiceStatusInterface imageStatus = carImageService.addImagesToDatabase(imagesDto);
-        if (imageStatus instanceof ImageServiceErrors) {
-            return new ImageStatusResponse<>(imageStatus.toString(),
-                    201,
-                    "Cannot add images to to database.",
-                    null);
+    public ResponseEntity<String> addImagesToDatabase(@RequestBody ImagesDto imagesDto)
+            throws ExecutionException, InterruptedException {
+        ImageServiceResultInterface imageStatus = carImageService.addImagesToDatabase(imagesDto).get();
+        if (imageStatus instanceof ImageServiceError) {
+            return ResponseEntity.internalServerError().body("Cannot add images to database. Please try again later.");
         }
 
-        return new ImageStatusResponse<>(imageStatus.toString(),
-                500,
-                "Successfully added images to database.",
-                null);
-
+        return ResponseEntity.ok("Successfully added images to database.");
     }
 
 }

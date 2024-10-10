@@ -25,19 +25,28 @@ public class SecurityService {
     }
 
     public String generateJwtTokenForAuthenticatedUser(final UserCredentialsDto userCredentialsDto) {
-        RawUser rawUser = getUserInformation(userCredentialsDto.username());
+        RawUser rawUser = getUserInformationWithName(userCredentialsDto.username());
         return jwtUtil.generateToken(rawUser, new HashMap<>());
     }
 
-    private RawUser getUserInformation(String username) {
+    private RawUser getUserInformationWithName(String username) {
         try {
-            return userServiceCaller.getUserCredentials(username);
+            return userServiceCaller.getUserCredentialsWithUsername(username);
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Boolean isAuthenticated(String username, String bearerToken) {
-        return jwtUtil.isTokenValid(bearerToken, username);
+    private RawUser getUserInformationWithUserId(String userId) {
+        try {
+            return userServiceCaller.getUserCredentialsWithUserId(userId);
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Boolean isAuthenticated(String userId, String bearerToken) {
+        RawUser rawUser = getUserInformationWithUserId(userId);
+        return jwtUtil.isTokenValid(bearerToken, rawUser.getUsername());
     }
 }

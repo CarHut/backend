@@ -18,6 +18,7 @@ public class SecurityController {
     private SecurityService securityService;
 
     @PostMapping("/authenticate-with-credentials")
+    @ResponseBody
     public ResponseEntity<String> authenticateWithCredentials(@RequestBody UserCredentialsDto userCredentials) {
         if (!securityService.isAuthenticationWithCredentialsValid(userCredentials)) {
             return ResponseEntity.status(400).body(null);
@@ -28,12 +29,14 @@ public class SecurityController {
     }
 
     @PostMapping("/authenticated")
+    @ResponseBody
     public ResponseEntity<Boolean> isAuthenticated(@RequestBody AuthRequest authRequest) {
-        return ResponseEntity.ok(securityService.isAuthenticated(authRequest.getUsername(),
+        return ResponseEntity.ok(securityService.isAuthenticated(authRequest.getUserId(),
                 authRequest.getBearerToken()));
     }
 
     @GetMapping("/test-jwt")
+    @ResponseBody
     public ResponseEntity<String> testJwt() {
         return ResponseEntity.ok("Hurray!");
     }

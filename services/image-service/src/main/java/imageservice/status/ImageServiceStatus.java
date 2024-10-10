@@ -1,5 +1,5 @@
 package imageservice.status;
 
-public enum ImageServiceStatus implements ImageServiceStatusInterface{
+public enum ImageServiceStatus implements ImageServiceResultInterface {
     SUCCESS
 }

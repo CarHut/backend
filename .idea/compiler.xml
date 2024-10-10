@@ -12,6 +12,7 @@
         <module name="user-service" />
         <module name="image-service" />
         <module name="saved-cars-service" />
+        <module name="commons" />
         <module name="carhut" />
         <module name="carhutchat" />
         <module name="proxy" />

@@ -74,7 +74,7 @@ public class SavedSearch {
     private String generateId(String userId, String sortBy, Integer offersPerPage, List<ModelsPostModel> brandsAndModels,
                               String priceFrom, String priceTo, String mileageFrom, String mileageTo, String fuelType,
                               String gearboxType, String powertrainType, String powerFrom, String powerTo) {
-        String input = userId + sortBy + offersPerPage + brandsAndModels.toString() + priceFrom + priceTo + mileageFrom
+        String input = userId + sortBy + offersPerPage + priceFrom + priceTo + mileageFrom
                 + mileageTo + fuelType + gearboxType + powertrainType + powerFrom + powerTo;
 
         try {
