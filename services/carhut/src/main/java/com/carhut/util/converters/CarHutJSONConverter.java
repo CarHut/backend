@@ -1,6 +1,6 @@
 package com.carhut.util.converters;
 
-import com.carhut.models.carhut.CarHutCar;
+import com.carhut.commons.model.CarHutCar;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

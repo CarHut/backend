@@ -20,6 +20,7 @@
         <module name="ratingservice" />
         <module name="security-service" />
         <module name="mail-service" />
+        <module name="carhut-api-sr" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -41,6 +42,7 @@
       <module name="saved-searches-service" options="" />
       <module name="security-service" options="" />
       <module name="services" options="" />
+      <module name="shared-resources" options="" />
       <module name="user-service" options="" />
     </option>
   </component>

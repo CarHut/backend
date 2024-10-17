@@ -1,6 +1,8 @@
 package com.carhut.requests.requestmodels;
 
 import com.carhut.requests.ModelsPostModel;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -56,6 +58,15 @@ public class CarHutCarFilterModel {
         this.gearbox = gearbox;
         this.powertrain = powertrain;
         this.models = models;
+    }
+
+    public String toJson() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
     }
 
 }

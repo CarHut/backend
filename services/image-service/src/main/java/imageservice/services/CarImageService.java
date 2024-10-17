@@ -1,6 +1,5 @@
 package imageservice.services;
 
-import imageservice.dtos.request.ImagesDto;
 import imageservice.models.CarImage;
 import imageservice.repositories.CarImageRepository;
 import imageservice.repositories.resourceprovider.ImageDatabaseResourceManager;
@@ -73,51 +72,47 @@ public class CarImageService {
         return Files.readAllBytes(file.toPath());
     }
 
-    public CompletableFuture<ImageServiceResultInterface> addImagesToDatabase(ImagesDto imagesDto)
+    public CompletableFuture<ImageServiceResultInterface> addImagesToDatabase(String sellerId, String carId,
+                                                                              List<MultipartFile> images)
             throws ExecutionException, InterruptedException {
         CompletableFuture<ImageServiceResultInterface> cf = new CompletableFuture<>();
-        if (imagesDto == null) {
+        if (images == null) {
             cf.complete(ImageServiceError.ERROR_OBJECT_IS_NULL);
             return cf;
         }
 
-        if (imagesDto.carHutCarInfoDto() == null) {
+        if (sellerId == null) {
             cf.complete(ImageServiceError.ERROR_OBJECT_IS_NULL);
             return cf;
         }
 
-        if (imagesDto.carHutCarInfoDto().newCarId() == null || imagesDto.carHutCarInfoDto().sellerId() == null) {
+        if (carId == null) {
             cf.complete(ImageServiceError.ERROR_OBJECT_IS_NULL);
             return cf;
         }
 
-        if (imagesDto.multipartFiles() == null) {
-            System.out.println("Cannot add images to database because multipartFiles is null.");
-            cf.complete(ImageServiceError.ERROR_OBJECT_IS_NULL);
-            return cf;
-        }
 
-        if (imagesDto.multipartFiles().isEmpty()) {
+        if (images.isEmpty()) {
             System.out.println("List of images is empty. Nothing will be added to database.");
             cf.complete(ImageServiceError.IMAGE_LIST_IS_EMPTY);
             return cf;
         }
 
-        Path path = createRepositoryForNewCarImages(imagesDto);
+        Path path = createRepositoryForNewCarImages(carId);
         if (path == null) {
             cf.complete(ImageServiceError.ERROR_CREATING_DIRECTORY);
             return cf;
         }
 
-        ImageServiceError errorUploadingImageToFileSystem = saveImages(imagesDto, path).get();
+        ImageServiceError errorUploadingImageToFileSystem = saveImages(sellerId, carId, images, path).get();
         cf.complete(errorUploadingImageToFileSystem != null
                 ? errorUploadingImageToFileSystem
                 : ImageServiceStatus.SUCCESS);
         return cf;
     }
 
-    private Path createRepositoryForNewCarImages(ImagesDto imagesDto) {
-        String locationPath = basePath + imagesDto.carHutCarInfoDto().newCarId();
+    private Path createRepositoryForNewCarImages(String carId) {
+        String locationPath = basePath + "/" + carId;
         Path path = null;
         try {
             path = Files.createDirectory(Path.of(locationPath));
@@ -127,11 +122,12 @@ public class CarImageService {
         return path;
     }
 
-    private CompletableFuture<ImageServiceError> saveImages(ImagesDto imagesDto, Path path) {
+    private CompletableFuture<ImageServiceError> saveImages(String sellerId, String carId,
+                                                            List<MultipartFile> images, Path path) {
         Function<Void, ImageServiceError> function = (unused) -> {
-            for (MultipartFile image : imagesDto.multipartFiles()) {
+            for (MultipartFile image : images) {
                 if (image != null) {
-                    CarImage carImage = saveImageToFileSystem(imagesDto, path, image);
+                    CarImage carImage = saveImageToFileSystem(sellerId, carId, path, image);
                     if (carImage == null) {
                         // Create fallback to remove existing images from database
                         return ImageServiceError.ERROR_UPLOADING_IMAGE_TO_FILE_SYSTEM;
@@ -149,7 +145,7 @@ public class CarImageService {
         return imageDatabaseResourceManager.acquireDatabaseResource(function);
     }
 
-    private CarImage saveImageToFileSystem(ImagesDto imagesDto, Path path, MultipartFile image) {
+    private CarImage saveImageToFileSystem(String sellerId, String carId, Path path, MultipartFile image) {
         String postfix = switch (image.getContentType()) {
             case "image/jpg" -> ".jpg";
             case "image/jpeg" -> ".jpeg";
@@ -158,7 +154,7 @@ public class CarImageService {
 
         String id = generateNewImageId(image);
         File file = new File(path + "/" + id + postfix);
-        CarImage carImage = new CarImage(id, file.getPath(), imagesDto.carHutCarInfoDto().newCarId(), imagesDto.carHutCarInfoDto().sellerId(), true);
+        CarImage carImage = new CarImage(id, file.getPath(), carId, sellerId, true);
         try {
             image.transferTo(file);
         } catch (IOException e) {

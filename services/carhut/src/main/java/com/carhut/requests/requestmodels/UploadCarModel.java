@@ -1,6 +1,5 @@
 package com.carhut.requests.requestmodels;
-import com.carhut.models.carhut.CarHutCar;
-import com.carhut.requests.PrincipalRequest;
+import com.carhut.commons.model.CarHutCar;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;

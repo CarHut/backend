@@ -1,6 +1,9 @@
 package com.carhut.services;
 
 import com.carhut.commons.http.caller.RequestAuthenticationCaller;
+import com.carhut.commons.model.CarHutCar;
+import com.carhut.http.CarHutApiSRCaller;
+import com.carhut.http.ImageServiceCaller;
 import com.carhut.http.UserServiceCaller;
 import com.carhut.repository.*;
 import com.carhut.enums.ServiceStatusEntity;
@@ -9,18 +12,20 @@ import com.carhut.models.enums.BodyType;
 import com.carhut.models.enums.Fuel;
 import com.carhut.models.enums.Gearbox;
 import com.carhut.models.enums.Powertrain;
-import com.carhut.requests.ModelsPostModel;
-import com.carhut.requests.PrincipalRequest;
 import com.carhut.requests.requestmodels.CarHutCarFilterModel;
 import com.carhut.requests.requestmodels.RemoveCarRequestModel;
-import com.carhut.services.util.Filter;
-import com.carhut.services.util.Sorter;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.sql.Date;
 import java.util.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -31,8 +36,6 @@ public class CarHutAPIService {
     @Autowired
     private ModelRepository modelRepository;
     @Autowired
-    private CarHutCarRepository carHutCarRepository;
-    @Autowired
     private ColorRepository colorRepository;
     @Autowired
     private FeatureRepository featureRepository;
@@ -40,13 +43,12 @@ public class CarHutAPIService {
     private final Gearbox gearbox = new Gearbox();
     private final Powertrain powertrain = new Powertrain();
     private final Fuel fuel = new Fuel();
-    private Sorter sorter;
     private final RequestAuthenticationCaller requestAuthenticationCaller = new RequestAuthenticationCaller();
+    private final CarHutApiSRCaller carHutApiSRCaller = new CarHutApiSRCaller();
     private final UserServiceCaller userServiceCaller = new UserServiceCaller();
+    private final ImageServiceCaller imageServiceCaller = new ImageServiceCaller();
 
-    public CarHutAPIService() {
-        this.sorter = new Sorter();
-    }
+    public CarHutAPIService() {}
 
     public List<Brand> getAllBrands() {
         try {
@@ -86,162 +88,18 @@ public class CarHutAPIService {
         }
     }
 
-    public CarHutCar getCarWithId(String carId) {
-        try {
-            return carHutCarRepository.getCarWithId(carId);
-        }
-        catch (Exception e) {
-            return null;
-        }
+    public CompletableFuture<CarHutCar> getCarWithId(String carId) throws URISyntaxException {
+        return carHutApiSRCaller.getCarWithId(carId);
     }
 
-    public List<CarHutCar> getAllCars() {
-        try {
-            return carHutCarRepository.getAllCars();
-        }
-        catch (Exception e) {
-            return null;
-        }
+    public CompletableFuture<List<CarHutCar>> getCarsWithFilter(CarHutCarFilterModel carHutCarFilterModel,
+                                                                String sortBy, String sortOrder, Integer offersPerPage,
+                                                                Integer currentPage) throws URISyntaxException {
+        return carHutApiSRCaller.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, currentPage);
     }
 
-    public List<CarHutCar> getCarsWithFilter(CarHutCarFilterModel carHutCarFilterModel, String sortBy, String sortOrder, Integer offersPerPage, Integer currentPage) {
-        if (carHutCarFilterModel.getModels() != null && !carHutCarFilterModel.getModels().isEmpty()) {
-            List<CarHutCar> resultList = new ArrayList<>();
-            for (ModelsPostModel car : carHutCarFilterModel.getModels()) {
-                List<CarHutCar> filteredList = getAllCars();
-                resultList.addAll(filterCarModels(car.getBrand(), car.getModel(), carHutCarFilterModel, filteredList));
-            }
-            return stripCarHutCarList(sortCars(sortBy, sortOrder, resultList), offersPerPage, currentPage);
-        }
-
-        return stripCarHutCarList(sortCars(sortBy, sortOrder, filterCarModels(carHutCarFilterModel.getBrand(), carHutCarFilterModel.getModel(), carHutCarFilterModel, getAllCars())), offersPerPage, currentPage);
-    }
-
-    private List<CarHutCar> stripCarHutCarList(List<CarHutCar> list, Integer offersPerPage, Integer currentPage) {
-        int startIndex = (currentPage - 1) * offersPerPage;
-        int endIndex = Math.min(startIndex + offersPerPage, list.isEmpty() ? 0 : list.size()) ;
-
-        return list.subList(startIndex, endIndex);
-    }
-
-    private boolean isStringNullOrEmpty(String string) {
-        return string == null || string.isEmpty();
-    }
-
-    // Firstly, it filters more obscure search params, so it filters faster
-    private List<CarHutCar> filterCarModels(String brand, String model, CarHutCarFilterModel carHutCarFilterModel, List<CarHutCar> filteredList) {
-        Filter filter = new Filter();
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getSeatingConfig())) {
-            filter.filterCarSeatingConfig(filteredList, carHutCarFilterModel.getSeatingConfig());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getDoors())) {
-            filter.filterCarDoors(filteredList, carHutCarFilterModel.getDoors());
-        }
-
-        if (carHutCarFilterModel.getCarTypes() != null) {
-            if (!carHutCarFilterModel.getCarTypes().isEmpty()) {
-                filter.filterCarTypes(filteredList, carHutCarFilterModel.getCarTypes());
-            }
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getRegistrationFrom())) {
-            filter.filterCarRegistrationFrom(filteredList, carHutCarFilterModel.getRegistrationFrom());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getRegistrationTo())) {
-            filter.filterCarRegistrationTo(filteredList, carHutCarFilterModel.getRegistrationTo());
-        }
-
-        // There might be a multiple models so check brand of models list first
-        if (!isStringNullOrEmpty(brand)) {
-            Integer brandId = getBrandIdFromBrandName(brand);
-            filter.filterCarBrands(filteredList, brandId);
-        } else if (!isStringNullOrEmpty(carHutCarFilterModel.getBrand())) {
-            Integer brandId = getBrandIdFromBrandName(carHutCarFilterModel.getBrand());
-            filter.filterCarBrands(filteredList, brandId);
-        }
-
-        // Same as with brand, check model of models list first
-        if (!isStringNullOrEmpty(model)) {
-            Integer modelId = getModelIdFromModelName(model, getBrandIdFromBrandName(brand)); // -> brand is certainly not null
-            filter.filterCarModels(filteredList, modelId);
-        } else if (!isStringNullOrEmpty(carHutCarFilterModel.getModel())) {
-            Integer modelId = getModelIdFromModelName(carHutCarFilterModel.getModel(), getBrandIdFromBrandName(carHutCarFilterModel.getBrand()));
-            filter.filterCarModels(filteredList, modelId);
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getPriceFrom())) {
-            filter.filterCarPriceFrom(filteredList, carHutCarFilterModel.getPriceFrom());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getPriceTo())) {
-            filter.filterCarPriceTo(filteredList, carHutCarFilterModel.getPriceTo());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getMileageFrom())) {
-            filter.filterCarMileageFrom(filteredList, carHutCarFilterModel.getMileageFrom());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getMileageTo())) {
-            filter.filterCarMileageTo(filteredList, carHutCarFilterModel.getMileageTo());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getFuelType())) {
-            filter.filterCarFuelType(filteredList, carHutCarFilterModel.getFuelType());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getGearbox())) {
-            filter.filterCarGearbox(filteredList, carHutCarFilterModel.getGearbox());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getPowertrain())) {
-            filter.filterCarPowertrain(filteredList, carHutCarFilterModel.getPowertrain());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getPowerFrom())) {
-            filter.filterCarPowerFrom(filteredList, carHutCarFilterModel.getPowerFrom());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getPowerTo())) {
-            filter.filterCarPowerTo(filteredList, carHutCarFilterModel.getPowerTo());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getDisplacementFrom())) {
-            filter.filterCarDisplacementFrom(filteredList, carHutCarFilterModel.getDisplacementFrom());
-        }
-
-        if (!isStringNullOrEmpty(carHutCarFilterModel.getDisplacementTo())) {
-            filter.filterCarDisplacementTo(filteredList, carHutCarFilterModel.getDisplacementTo());
-        }
-
-        return filteredList;
-    }
-
-    private List<CarHutCar> sortCars(String sortBy, String sortOrder, List<CarHutCar> filteredList) {
-        if (sortBy == null || sortOrder == null || filteredList == null) {
-            return filteredList;
-        }
-
-        List<CarHutCar> sortedList = filteredList;
-
-        if (!sortBy.isEmpty() && !sortOrder.isEmpty()) {
-            sortedList = switch (sortBy) {
-                case "PFL", "PFH" -> sorter.sortCarsByPrice(filteredList, sortOrder);
-                case "MFL", "MFH" -> sorter.sortCarsByMileage(filteredList, sortOrder);
-                case "AFL", "AFH" -> sorter.sortCarsByAlphabet(filteredList, sortOrder);
-                case "SFL", "SFH" -> sorter.sortCarsByPower(filteredList, sortOrder);
-                case "DAO", "DAN" -> sorter.sortCarsByDateAdded(filteredList, sortOrder);
-                default -> sortedList;
-            };
-        }
-
-        return sortedList;
-    }
-
-    public int getNumberOfFilteredCars(CarHutCarFilterModel carHutCarFilterModel) {
-        return getCarsWithFilter(carHutCarFilterModel, null, null, Integer.MAX_VALUE, 1).size();
+    public CompletableFuture<Integer> getNumberOfFilteredCars(CarHutCarFilterModel carHutCarFilterModel) throws URISyntaxException {
+        return carHutApiSRCaller.getNumberOfFilteredCars(carHutCarFilterModel);
     }
 
     public List<String> getBodyTypes() {
@@ -278,7 +136,7 @@ public class CarHutAPIService {
         }
     }
 
-    public String addCarToDatabase(CarHutCar carHutCar, String bearerToken) {
+    public CompletableFuture<String> addCarToDatabase(CarHutCar carHutCar, List<MultipartFile> images, String bearerToken) {
         CarHutCar newCar = new CarHutCar(carHutCar.getSellerId(), carHutCar.getSellerAddress(),
                 carHutCar.getBrandId(), carHutCar.getModelId(), carHutCar.getHeader(),
                 carHutCar.getPrice(), carHutCar.getMileage(), carHutCar.getRegistration(),
@@ -290,15 +148,97 @@ public class CarHutAPIService {
                 carHutCar.getDoors(), carHutCar.getEmissionClass(), colorRepository.getColorIdByColorName(carHutCar.getExteriorColorId()),
                 colorRepository.getColorIdByColorName(carHutCar.getInteriorColorId()), carHutCar.getDamageStatus(),
                 carHutCar.isParkingSensors(), carHutCar.isParkingCameras(), carHutCar.getCountryOfOrigin(),
-                carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures(), new Date(System.currentTimeMillis()));
+                carHutCar.getTechnicalInspectionDate(), carHutCar.getEmissionInspectionDate(), carHutCar.getFeatures(),
+                new Date(System.currentTimeMillis()));
+
+        CompletableFuture<String> resultCf = new CompletableFuture<>();
 
         try {
-            Boolean updated = userServiceCaller.updateOffersCountForUserWithId(newCar.getSellerId(), bearerToken);
-            if (updated == null || !updated) {
-                return null;
-            }
-            carHutCarRepository.save(newCar);
-            return newCar.getId();
+            CompletableFuture<HttpResponse<String>> authenticationCf =
+                    isRequestAuthenticatedAsync(carHutCar.getSellerId(), bearerToken, resultCf);
+
+            CompletableFuture<HttpResponse<String>> addCarToDatabaseCf =
+                    authenticationCf.thenCompose(authResponse -> {
+                        CompletableFuture<HttpResponse<String>> failedFuture = new CompletableFuture<>();
+                        if (authResponse != null && authResponse.statusCode() == 200) {
+                            try {
+                                return carHutApiSRCaller.addCarToDatabaseAsync(newCar);
+                            } catch (Exception e) {
+                                resultCf.complete(null);
+                                failedFuture.completeExceptionally(new RuntimeException("Exception occurred while saving CarHutCar model to database."));
+                                return failedFuture;
+                            }
+                        } else {
+                            resultCf.complete(null);
+                            failedFuture.completeExceptionally(new RuntimeException("Authentication failed"));
+                            return failedFuture;
+                        }
+                    });
+
+            addCarToDatabaseCf.whenComplete((result, ex) -> {
+                if (ex != null) {
+                    resultCf.complete(null);
+                } else if (result.statusCode() < 200 || result.statusCode() > 299) {
+                    resultCf.complete(null);
+                }
+            });
+
+            CompletableFuture<HttpResponse<String>> userServiceUpdateOffersCf =
+                    addCarToDatabaseCf.thenCompose(carHutApiResponse -> {
+                        CompletableFuture<HttpResponse<String>> failedFuture = new CompletableFuture<>();
+                        if (carHutApiResponse != null && carHutApiResponse.statusCode() == 200) {
+                            try {
+                                return userServiceCaller.updateOffersCountForUserWithId(newCar.getSellerId(),
+                                        bearerToken);
+                            } catch (Exception e) {
+                                resultCf.complete(null);
+                                failedFuture.completeExceptionally(new RuntimeException("User service could not update number of offers."));
+                                return failedFuture;
+                            }
+                        } else {
+                            resultCf.complete(null);
+                            failedFuture.completeExceptionally(new RuntimeException("CarHutApi did not add new car."));
+                            return failedFuture;
+                        }
+            });
+
+            userServiceUpdateOffersCf.whenComplete((result, ex) -> {
+                if (ex != null) {
+                    resultCf.complete(null);
+                } else if (result.statusCode() < 200 || result.statusCode() > 299) {
+                    resultCf.complete(null);
+                }
+            });
+
+            CompletableFuture<HttpResponse<String>> saveImagesCf = userServiceUpdateOffersCf
+                    .thenCompose(userServiceResponse -> {
+                        CompletableFuture<HttpResponse<String>> failedFuture = new CompletableFuture<>();
+                        if (userServiceResponse != null && userServiceResponse.statusCode() == 200) {
+                            try {
+                                return imageServiceCaller.saveImages(newCar, images);
+                            } catch (Exception e) {
+                                resultCf.complete(null);
+                                failedFuture.completeExceptionally(new RuntimeException("Image service could not save images."));
+                                return failedFuture;
+                            }
+                        } else {
+                            resultCf.complete(null);
+                            failedFuture.completeExceptionally(new RuntimeException("User service could not update car offers number for user."));
+                            return failedFuture;
+                        }
+                    });
+
+            saveImagesCf.whenComplete((result, ex) -> {
+                if (ex != null) {
+                    resultCf.complete(null);
+                } else if (result.statusCode() < 200 || result.statusCode() > 299) {
+                    resultCf.complete(null);
+                } else {
+                    resultCf.complete(newCar.getId());
+                }
+            });
+
+            return resultCf;
         }
         catch (Exception e) {
             return null;
@@ -351,7 +291,7 @@ public class CarHutAPIService {
 
         List<String> featureNames = new ArrayList<>();
         for (Integer id : featureIds) {
-            String featureName = null;
+            String featureName;
             try {
                 featureName = getFeatureNameByFeatureId(id);
                 if (featureName != null) {
@@ -364,63 +304,117 @@ public class CarHutAPIService {
         return featureNames;
     }
 
-    public List<CarHutCar> getMyListings(String userId, String bearerToken) throws IOException, InterruptedException {
-        if (userId == null) {
+    public CompletableFuture<List<CarHutCar>> getMyListings(String userId, String bearerToken) {
+        if (userId == null || bearerToken == null) {
             return null;
         }
 
-        if (!isRequestAuthenticated(userId, bearerToken)) {
-            return null;
-        }
+        CompletableFuture<List<CarHutCar>> resultCf = new CompletableFuture<>();
 
-        return carHutCarRepository.getListingsByUserId(userId);
+        CompletableFuture<HttpResponse<String>> authResponse = isRequestAuthenticatedAsync(userId, bearerToken,
+                resultCf);
+
+        CompletableFuture<HttpResponse<String>> carHutApiResponse =
+                authResponse.thenCompose(response -> {
+                    CompletableFuture<HttpResponse<String>> failedFuture = new CompletableFuture<>();
+                    if (response != null && response.statusCode() == 200) {
+                        try {
+                            return carHutApiSRCaller.getListingsWithUserId(userId);
+                        } catch (Exception e) {
+                            resultCf.complete(null);
+                            failedFuture.completeExceptionally(new RuntimeException("CarHutApi could not get listings with user id."));
+                            return failedFuture;
+                        }
+                    } else {
+                        resultCf.complete(null);
+                        failedFuture.completeExceptionally(new RuntimeException("User not authenticated."));
+                        return failedFuture;
+                    }
+                });
+
+        carHutApiResponse.whenComplete((result, ex) -> {
+            if (ex != null) {
+                resultCf.complete(null);
+            } else if (result.statusCode() < 200 || result.statusCode() > 299) {
+                resultCf.complete(null);
+            } else {
+                try {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    List<CarHutCar> carListings = objectMapper.readValue(result.body(), new TypeReference<>() {});
+                    resultCf.complete(carListings);
+                } catch (Exception e) {
+                    resultCf.complete(null);
+                }
+            }
+        });
+
+        return resultCf;
     }
 
-    public ServiceStatusEntity removeOffer(RemoveCarRequestModel removeCarRequestModel, String bearerToken)
-            throws IOException, InterruptedException {
+    public CompletableFuture<ServiceStatusEntity> removeOffer(RemoveCarRequestModel removeCarRequestModel, String bearerToken) {
+
+        CompletableFuture<ServiceStatusEntity> cf = new CompletableFuture<>();
+
         if (removeCarRequestModel == null) {
-            return ServiceStatusEntity.ERROR;
+            cf.complete(ServiceStatusEntity.ERROR);
+            return cf;
         }
 
         if (removeCarRequestModel.getCarId() == null) {
-            return ServiceStatusEntity.ERROR;
+            cf.complete(ServiceStatusEntity.ERROR);
+            return cf;
         }
 
-        if (!isRequestAuthenticated(removeCarRequestModel.getUserId(), bearerToken)) {
-            return ServiceStatusEntity.USER_NOT_AUTHENTICATED;
-        }
+        CompletableFuture<ServiceStatusEntity> resultCf = new CompletableFuture<>();
 
-        try {
-            CarHutCar car = carHutCarRepository.getCarWithId(removeCarRequestModel.getCarId());
-            if (car == null) {
-                return ServiceStatusEntity.OBJECT_NOT_FOUND;
+        CompletableFuture<HttpResponse<String>> authResponse = isRequestAuthenticatedAsync(removeCarRequestModel.getUserId(),
+                bearerToken, resultCf);
+
+        CompletableFuture<HttpResponse<String>> carHutApiResponse =
+                authResponse.thenCompose(response -> {
+                    CompletableFuture<HttpResponse<String>> failedFuture = new CompletableFuture<>();
+                    if (response != null && response.statusCode() == 200) {
+                        try {
+                            return carHutApiSRCaller.removeOffer(removeCarRequestModel);
+                        } catch (Exception e) {
+                            resultCf.complete(null);
+                            failedFuture.completeExceptionally(new RuntimeException("CarHutApi cannot remove car offer."));
+                            return failedFuture;
+                        }
+                    } else {
+                        resultCf.complete(null);
+                        failedFuture.completeExceptionally(new RuntimeException("User not authenticated."));
+                        return failedFuture;
+                    }
+                });
+
+        carHutApiResponse.whenComplete((result, ex) -> {
+            if (ex != null) {
+                resultCf.complete(null);
+            } else if (result.statusCode() < 200 || result.statusCode() > 299) {
+                resultCf.complete(null);
+            } else {
+                resultCf.complete(ServiceStatusEntity.SUCCESS);
             }
+        });
 
-            car.setActive(false);
-            carHutCarRepository.save(car);
-            return ServiceStatusEntity.SUCCESS;
-        }
-        catch (Exception e) {
-            return ServiceStatusEntity.ERROR;
-        }
+        return resultCf;
     }
 
-    private boolean isRequestAuthenticated(String userId, String bearerToken) throws IOException, InterruptedException {
-        return requestAuthenticationCaller.isRequestAuthenticated(userId, bearerToken);
-    }
+    private <T> CompletableFuture<HttpResponse<String>> isRequestAuthenticatedAsync(String userId, String bearerToken,
+                                                                                CompletableFuture<T> finalizable) {
+        CompletableFuture<HttpResponse<String>> response = requestAuthenticationCaller
+                .isRequestAuthenticatedAsync(userId, bearerToken);
 
-    /*
-     * FOR TESTING PURPOSES ONLY
-     */
-    public void save(CarHutCar car) {
-        carHutCarRepository.save(car);
-    }
+        response.whenComplete((result, ex) -> {
+           if (ex != null) {
+               finalizable.complete(null);
+           } else if (result.statusCode() < 200 || result.statusCode() > 299){
+               finalizable.complete(null);
+           }
+        });
 
-    /*
-     * FOR TESTING PURPOSES ONLY
-     */
-    public void delete(CarHutCar car) {
-        carHutCarRepository.delete(car);
+        return response;
     }
 
 }

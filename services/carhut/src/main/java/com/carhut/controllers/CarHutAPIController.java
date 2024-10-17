@@ -1,18 +1,21 @@
 package com.carhut.controllers;
 
+import com.carhut.commons.model.CarHutCar;
 import com.carhut.enums.ServiceStatusEntity;
 import com.carhut.models.carhut.*;
 import com.carhut.requests.requestmodels.CarHutCarFilterModel;
 import com.carhut.requests.requestmodels.RemoveCarRequestModel;
 import com.carhut.services.CarHutAPIService;
 import com.carhut.util.loggers.ControllerLogger;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/carhut-api")
@@ -26,8 +29,9 @@ public class CarHutAPIController {
     @ResponseBody
     public ResponseEntity<String> removeOffer(
             @RequestHeader("Authorization") String bearerToken,
-            @RequestBody RemoveCarRequestModel removeCarRequestModel) throws IOException, InterruptedException {
-        ServiceStatusEntity status = carHutAPIService.removeOffer(removeCarRequestModel, bearerToken);
+            @RequestBody RemoveCarRequestModel removeCarRequestModel)
+            throws InterruptedException, ExecutionException {
+        ServiceStatusEntity status = carHutAPIService.removeOffer(removeCarRequestModel, bearerToken).get();
 
         if (status == ServiceStatusEntity.SUCCESS) {
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /removeOffer - Successfully removed car offer.");
@@ -38,12 +42,12 @@ public class CarHutAPIController {
         }
     }
 
-    @PostMapping("/get-listings")
+    @GetMapping("/get-listings")
     @ResponseBody
     public ResponseEntity<List<CarHutCar>> getListings(
             @RequestHeader("Authorization") String bearerToken,
-            @RequestBody String userId) throws IOException, InterruptedException {
-        List<CarHutCar> cars = carHutAPIService.getMyListings(userId, bearerToken);
+            @RequestParam("user-id") String userId) throws InterruptedException, ExecutionException {
+        List<CarHutCar> cars = carHutAPIService.getMyListings(userId, bearerToken).get();
 
         if (cars != null) {
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /getMyListings - Successfully retrieved listings for user id: " + userId);
@@ -69,7 +73,7 @@ public class CarHutAPIController {
 
     @GetMapping("/get-feature-name-by-feature-id")
     @ResponseBody
-    public ResponseEntity<String> getFeatureNameByFeatureId(@RequestParam Integer featureId) {
+    public ResponseEntity<String> getFeatureNameByFeatureId(@RequestParam(name = "feature-id") Integer featureId) {
         String feature = carHutAPIService.getFeatureNameByFeatureId(featureId);
         if (feature != null) {
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /getFeatureNameByFeatureId - Successfully retrieved data.");
@@ -82,7 +86,7 @@ public class CarHutAPIController {
 
     @GetMapping("/get-color-name-from-color-id")
     @ResponseBody
-    public ResponseEntity<String> getColorNameFromColorId(@RequestParam String colorId) {
+    public ResponseEntity<String> getColorNameFromColorId(@RequestParam(name = "color-id") String colorId) {
         String color = carHutAPIService.getColorStringNameFromColorId(colorId);
 
         if (color != null) {
@@ -96,7 +100,7 @@ public class CarHutAPIController {
 
     @GetMapping("/get-feature-id-by-feature-name")
     @ResponseBody
-    public ResponseEntity<Integer> getFeatureIdByFeatureName(@RequestParam String feature) {
+    public ResponseEntity<Integer> getFeatureIdByFeatureName(@RequestParam(name = "feature") String feature) {
         Integer id = carHutAPIService.getFeatureIdByFeatureName(feature);
         if (id != null) {
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /getFeatureIdByFeatureName - Successfully retrieved data.");
@@ -107,19 +111,23 @@ public class CarHutAPIController {
         }
     }
 
-    @PostMapping(value = "/addCarToDatabase", consumes = "multipart/form-data")
+    @PostMapping(value = "/add-car", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public ResponseEntity<String> addCarToDatabase(@RequestHeader("Authorization") String bearerToken,
-                                                   @RequestPart("carHutCar") CarHutCar carHutCar,
-                                                   @RequestPart("multipartFiles") List<MultipartFile> multipartFiles) {
+                                                   @RequestPart(value = "carHutCar") CarHutCar carHutCar,
+                                                   @RequestPart(value = "multipartFiles", required = false)
+                                                       List<MultipartFile> multipartFiles)
+            throws ExecutionException, InterruptedException {
 
-        String id = carHutAPIService.addCarToDatabase(carHutCar, bearerToken);
-//        ServiceStatusEntity imageStatus = carImageService.addImagesToDatabase(carHutCar, multipartFiles);
-//        if (imageStatus == ServiceStatusEntity.ERROR) {
-//            return ResponseEntity.internalServerError().body("Could not save images to server database.");
-//        }
-        controllerLogger.saveToFile("[CarHutAPIController][OK]: /addCarToDatabase - Successfully executed.");
-        return ResponseEntity.ok("Car was successfully added to database.");
+        String id = carHutAPIService.addCarToDatabase(carHutCar, multipartFiles, bearerToken).get();
+
+        if (id != null) {
+            controllerLogger.saveToFile("[CarHutAPIController][OK]: /addCarToDatabase - Successfully executed.");
+            return ResponseEntity.ok("Car was successfully added to database.");
+        } else {
+            controllerLogger.saveToFile("[CarHutAPIController][ERROR]: /addCarToDatabase - Cannot save car to database.");
+            return ResponseEntity.internalServerError().body("Cannot save car to database.");
+        }
     }
 
     @GetMapping("/get-features")
@@ -222,7 +230,7 @@ public class CarHutAPIController {
 
     @GetMapping("/get-brand-id-from-brand-name")
     @ResponseBody
-    public ResponseEntity<Integer> getBrandIdFromModelName(@RequestParam String brand) {
+    public ResponseEntity<Integer> getBrandIdFromModelName(@RequestParam(name = "brand") String brand) {
             Integer brandId = carHutAPIService.getBrandIdFromBrandName(brand);
             if (brandId != null) {
                 controllerLogger.saveToFile("[CarHutAPIController][OK]: /getBrandIdFromBrandName - Successfully retrieved data.");
@@ -235,7 +243,8 @@ public class CarHutAPIController {
 
     @GetMapping("/get-model-id-from-model-name")
     @ResponseBody
-    public ResponseEntity<Integer> getModelIdFromModelName(@RequestParam String model, @RequestParam int brandId) {
+    public ResponseEntity<Integer> getModelIdFromModelName(@RequestParam(name = "model") String model,
+                                                           @RequestParam(name = "brand-id") int brandId) {
         Integer modelId = carHutAPIService.getModelIdFromModelName(model, brandId);
 
         if (modelId != null) {
@@ -249,7 +258,7 @@ public class CarHutAPIController {
 
     @GetMapping("/get-models-by-brand-name")
     @ResponseBody
-    public ResponseEntity<List<Model>> getModelsByBrandName(@RequestParam String brandName) {
+    public ResponseEntity<List<Model>> getModelsByBrandName(@RequestParam(name = "brand-name") String brandName) {
         List<Model> models = carHutAPIService.getModelsByBrandName(brandName);
         if (models != null) {
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /getModelsByBrandName - Successfully retrieved data.");
@@ -262,8 +271,9 @@ public class CarHutAPIController {
 
     @GetMapping("/get-car-with-id")
     @ResponseBody
-    public ResponseEntity<CarHutCar> getCarWithId(@RequestParam String carId) {
-        CarHutCar carHutCar = carHutAPIService.getCarWithId(carId);
+    public ResponseEntity<CarHutCar> getCarWithId(@RequestParam("car-id") String carId)
+            throws URISyntaxException, ExecutionException, InterruptedException {
+        CarHutCar carHutCar = carHutAPIService.getCarWithId(carId).get();
         if (carHutCar != null) {
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /getCarWithId - Successfully retrieved data.");
             return ResponseEntity.ok(carHutCar);
@@ -277,26 +287,28 @@ public class CarHutAPIController {
     @ResponseBody
     public ResponseEntity<List<CarHutCar>> getCarsWithFilters(
             @RequestBody CarHutCarFilterModel carHutCarFilterModel,
-            @RequestParam(required = false) String sortBy,
-            @RequestParam(required = false) String sortOrder,
-            @RequestParam(required = false) Integer offersPerPage,
-            @RequestParam(required = false) Integer currentPage
-    ) {
-        List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder, offersPerPage, currentPage);
+            @RequestParam(name = "sort-by", required = false) String sortBy,
+            @RequestParam(name = "sort-order", required = false) String sortOrder,
+            @RequestParam(name = "offers-per-page", required = false) Integer offersPerPage,
+            @RequestParam(name = "current-page", required = false) Integer currentPage
+    ) throws ExecutionException, InterruptedException, URISyntaxException {
+        List<CarHutCar> cars = carHutAPIService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder,
+                offersPerPage, currentPage).get();
 
         if (cars != null) {
             controllerLogger.saveToFile("[CarHutAPIController][OK]: /getCarsWithFilters - Successfully retrieved data.");
             return ResponseEntity.ok(cars);
         } else {
             controllerLogger.saveToFile("[CarHutAPIController][WARN]: /getCarsWithFilters - Couldn't retrieve data");
-            return ResponseEntity.status(404).body(null);
+            return ResponseEntity.internalServerError().body(null);
         }
     }
 
     @PostMapping("/get-number-of-filtered-cars")
     @ResponseBody
-    public ResponseEntity<Integer> getNumberOfFilteredCars(@RequestBody CarHutCarFilterModel carHutCarFilterModel) {
-        Integer size = carHutAPIService.getNumberOfFilteredCars(carHutCarFilterModel);
+    public ResponseEntity<Integer> getNumberOfFilteredCars(@RequestBody CarHutCarFilterModel carHutCarFilterModel)
+            throws URISyntaxException, ExecutionException, InterruptedException {
+        Integer size = carHutAPIService.getNumberOfFilteredCars(carHutCarFilterModel).get();
         controllerLogger.saveToFile("[CarHutAPIController][OK]: /getNumberOfFilteredCars - Successfully retrieved data.");
         return ResponseEntity.ok(size);
     }

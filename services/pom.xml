@@ -22,6 +22,7 @@
         <module>saved-searches-service</module>
         <module>carhutchat</module>
         <module>carhut</module>
+        <module>shared-resources</module>
     </modules>
 
     <dependencies>

@@ -12,7 +12,7 @@
     <artifactId>security-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>security-service</name>
-    <description>security-service</description>
+    <description>security-service</description>=
 
     <dependencies>
         <dependency>
@@ -53,6 +53,11 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.12.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
         </dependency>
 
         <dependency>
