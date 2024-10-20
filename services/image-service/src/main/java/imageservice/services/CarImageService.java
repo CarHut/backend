@@ -33,7 +33,7 @@ public class CarImageService {
     @Value("${images.path}")
     private String basePath;
 
-    public CompletableFuture<List<Byte[]>> getImagesWithCarId(String carId) throws IOException {
+    public CompletableFuture<List<Byte[]>> getImagesWithCarId(String carId) {
         CompletableFuture<List<Byte[]>> cf = new CompletableFuture<>();
         if (carId == null || carId.isEmpty()) {
             cf.complete(null);
@@ -180,12 +180,5 @@ public class CarImageService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /*
-        For testing only
-     */
-    public void deleteAll() {
-        carImageRepository.deleteAll();
     }
 }

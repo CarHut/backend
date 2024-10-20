@@ -3,14 +3,10 @@ package imageservice.models;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "car_images")
 public class CarImage {
@@ -38,6 +34,46 @@ public class CarImage {
         this.carId = carId;
         this.userId = userId;
         this.isActive = isActive;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getCarId() {
+        return carId;
+    }
+
+    public void setCarId(String carId) {
+        this.carId = carId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     private String generateId(String path, String carId, String userId) {

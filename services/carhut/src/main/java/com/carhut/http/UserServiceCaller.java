@@ -1,6 +1,5 @@
 package com.carhut.http;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -10,6 +9,8 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 public class UserServiceCaller {
+
+    private final String baseAddress = "http://localhost:8091/user-service";
 
     public UserServiceCaller() {}
 
@@ -22,12 +23,11 @@ public class UserServiceCaller {
                                                                                                 String bearerToken)
             throws URISyntaxException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8001/user-service/update-car-count-for-user-id?user-id=" + userId))
+                .uri(new URI( baseAddress + "/update-car-count-for-user-id?user-id=" + userId))
                 .setHeader("Authorization", bearerToken)
                 .timeout(Duration.ofSeconds(3))
                 .GET()
                 .build();
-
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }

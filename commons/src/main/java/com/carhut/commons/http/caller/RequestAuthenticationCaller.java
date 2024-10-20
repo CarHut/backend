@@ -9,6 +9,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class RequestAuthenticationCaller {
 
+    private final String securityOrigin = "http://localhost:8081/security-service";
+
     public Boolean isRequestAuthenticated(String userId, String bearerToken) throws IOException, InterruptedException {
         HttpRequest request = prepareRequest(userId, bearerToken);
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
@@ -33,7 +35,7 @@ public class RequestAuthenticationCaller {
             }
             """, userId, bearerToken.substring(7));
         return HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8002/security-service/authenticated"))
+                .uri(URI.create(securityOrigin + "/authenticated"))
                 .setHeader("Authorization", bearerToken)
                 .setHeader("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(body))

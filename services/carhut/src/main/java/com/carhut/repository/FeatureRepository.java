@@ -9,13 +9,22 @@ import java.util.List;
 
 public interface FeatureRepository extends JpaRepository<Feature, String> {
 
-    @Query(value = "SELECT * FROM feature ORDER BY feature ASC;", nativeQuery = true)
+    @Query(value = """
+                    SELECT * FROM feature
+                    ORDER BY feature ASC;
+                    """, nativeQuery = true)
     List<Feature> getFeaturesAsc();
 
-    @Query(value = "SELECT f.id FROM feature f WHERE f.feature = :feature", nativeQuery = true)
+    @Query(value = """
+                    SELECT f.id FROM feature f
+                    WHERE f.feature = :feature
+                    """, nativeQuery = true)
     Integer getFeatureIdByFeatureName(@Param("feature") String feature);
 
-    @Query(value = "SELECT f.feature FROM feature f WHERE f.id = :featureId", nativeQuery = true)
+    @Query(value = """
+                    SELECT f.feature FROM feature f
+                    WHERE f.id = :featureId
+                    """, nativeQuery = true)
     String getFeatureNameByFeatureId(@Param("featureId") Integer featureId);
 
 }

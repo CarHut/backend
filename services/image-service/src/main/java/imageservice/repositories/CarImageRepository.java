@@ -11,6 +11,9 @@ import java.util.List;
 @Repository
 public interface CarImageRepository extends JpaRepository<CarImage, String> {
 
-    @Query(value = "SELECT * FROM car_images WHERE car_id = :carId", nativeQuery = true)
+    @Query(value = """
+                    SELECT * FROM car_images
+                    WHERE car_id = :carId
+                    """, nativeQuery = true)
     List<CarImage> getImagesByCarId(@Param("carId") String carId);
 }

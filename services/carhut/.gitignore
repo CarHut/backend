@@ -1,4 +1,3 @@
-HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -32,12 +31,9 @@ build/
 ### VS Code ###
 .vscode/
 
-#logs
+### LOGS ###
 /src/main/resources/logs/
 /logs
-#Secret
+
+### SECRET ###
 /src/main/resources/env.properties
-#images
-/src/main/resources/carhutimages/
-/image-props
-/carhutimages

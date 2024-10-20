@@ -1,7 +1,6 @@
 package com.carhut.http;
 
 import com.carhut.commons.model.CarHutCar;
-import com.carhut.enums.ServiceStatusEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ImageServiceCaller {
 
-    private final String basePath = "http://localhost:8051/image-service";
+    private final String basePath = "http://localhost:8011/image-service";
 
     public CompletableFuture<HttpResponse<String>> saveImages(CarHutCar car, List<MultipartFile> images)
             throws IOException, URISyntaxException {
@@ -27,29 +26,34 @@ public class ImageServiceCaller {
     private CompletableFuture<HttpResponse<String>> sendRequestToSaveImages(CarHutCar car, List<MultipartFile> images)
             throws IOException, URISyntaxException {
         String boundary = "Boundary-" + System.currentTimeMillis();
+        String multipartBody = prepareMultipartBody(images, boundary);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(basePath + "/add-images-to-database?seller-id=" + car.getSellerId()
+                        + "&car-id=" + car.getId()))
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .timeout(Duration.ofSeconds(15))
+                .POST(HttpRequest.BodyPublishers.ofString(multipartBody))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private String prepareMultipartBody(List<MultipartFile> images, String boundary) throws IOException {
         StringBuilder multipartBody = new StringBuilder();
 
         for (MultipartFile image : images) {
             String fileName = image.getOriginalFilename();
             multipartBody.append("--").append(boundary).append("\r\n");
-            multipartBody.append("Content-Disposition: form-data; name=\"images\"; filename=\"").append(fileName).append("\"\r\n");
+            multipartBody.append("Content-Disposition: form-data; name=\"images\"; filename=\"").append(fileName)
+                    .append("\"\r\n");
             multipartBody.append("Content-Type: ").append(image.getContentType()).append("\r\n\r\n");
 
             // Append image data as raw bytes
             multipartBody.append(new String(image.getBytes(), StandardCharsets.ISO_8859_1)).append("\r\n");
         }
         multipartBody.append("--").append(boundary).append("--\r\n");
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(basePath + "/add-images-to-database?seller-id=" + car.getSellerId()
-                        + "&car-id=" + car.getId()))
-                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-                .timeout(Duration.ofSeconds(30))  // Increase timeout if necessary
-                .POST(HttpRequest.BodyPublishers.ofString(multipartBody.toString()))
-                .build();
-
-        HttpClient client = HttpClient.newHttpClient();
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        return multipartBody.toString();
     }
 
 }

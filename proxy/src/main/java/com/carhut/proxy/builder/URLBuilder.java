@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Map;
 
 // In future add mappings to database
 public class URLBuilder {
@@ -26,7 +27,8 @@ public class URLBuilder {
             logger.logError("One of the URI parts is null. Cannot build URI.");
             throw new URISyntaxException("One of the URI parts is null.", "Invalid URI.");
         }
-        return new URI(address + ":" + port + servletPath);
+        String params = request.getQueryString();
+        return new URI(address + ":" + port + servletPath + (params != null ? "?" + params : ""));
     }
 
     private static String getPortFromServletPath(String servletPath) {
@@ -41,12 +43,12 @@ public class URLBuilder {
 
     private static String assignPortToStringPrefix(String prefix) {
         return switch (prefix) {
-            case IMAGE_SERVICE          -> "8006";
-            case MAIL_SERVICE           -> "8007";
-            case RATING_SERVICE         -> "8002";
-            case SAVED_CARS_SERVICE     -> "8003";
-            case SAVED_SEARCHES_SERVICE -> "8004";
             case CARHUT                 -> "8001";
+            case IMAGE_SERVICE          -> "8011";
+            case MAIL_SERVICE           -> "8021";
+            case RATING_SERVICE         -> "8031";
+            case SAVED_CARS_SERVICE     -> "8041";
+            case SAVED_SEARCHES_SERVICE -> "8051";
             default -> null;
         };
     }

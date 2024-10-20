@@ -12,8 +12,8 @@ import com.carhut.models.enums.BodyType;
 import com.carhut.models.enums.Fuel;
 import com.carhut.models.enums.Gearbox;
 import com.carhut.models.enums.Powertrain;
-import com.carhut.requests.requestmodels.CarHutCarFilterModel;
-import com.carhut.requests.requestmodels.RemoveCarRequestModel;
+import com.carhut.requests.CarHutCarFilterModel;
+import com.carhut.requests.RemoveCarRequestModel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.http.HttpResponse;
 import java.sql.Date;
 import java.util.*;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.concurrent.CompletableFuture;
-
 
 @Service
 public class CarHutAPIService {

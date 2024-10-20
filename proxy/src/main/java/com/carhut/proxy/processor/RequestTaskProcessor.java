@@ -6,13 +6,18 @@ import com.carhut.proxy.model.RequestModel;
 import com.carhut.proxy.model.ResponseModel;
 import com.carhut.proxy.model.UnifiedRESTResponseModel;
 import com.carhut.proxy.util.logger.ProxyLogger;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -66,21 +71,22 @@ public class RequestTaskProcessor implements TaskProcessor<RequestModel, Complet
                 httpRequest.header("Authorization", request.getBearerToken());
             }
 
-            if (request.getContentType() != null) {
-                httpRequest.header("Content-Type", request.getContentType());
-            } else {
-                httpRequest.header("Content-Type", "application/json");
-            }
-
             switch (request.getRequest().getMethod()) {
                 case "GET":
                     httpRequest.GET();
                     break;
                 case "POST":
-                    if (request.getBody() == null || request.getBody().isBlank()) {
+                    if (request.getMultipartFiles() != null && request.getMultipartJson() != null) {
+                        String boundary = "-------------------------WebKitFormBoundary7MA4YWxkTrZu0gW";
+                        httpRequest.header("Content-Type", "multipart/form-data; boundary=" + boundary);
+                        httpRequest.POST(buildMultipartBody(request, boundary));
+                    } else if (request.getBody() != null && !request.getBody().isBlank()) {
+                        httpRequest.header("Content-Type",
+                                request.getContentType() == null ? "application/json" : request.getContentType());
+                        httpRequest.POST(HttpRequest.BodyPublishers.ofString(request.getBody()));
+                    } else {
                         return null;
                     }
-                    httpRequest.POST(HttpRequest.BodyPublishers.ofString(request.getBody()));
                     break;
                 default:
                     return null;
@@ -90,10 +96,38 @@ public class RequestTaskProcessor implements TaskProcessor<RequestModel, Complet
 
             return httpRequest.build();
 
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             logger.logWarn("Exception occurred while trying to build request. Exception: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
+
+    private HttpRequest.BodyPublisher buildMultipartBody(RequestModel request, String boundary) {
+        try {
+            StringBuilder multipartBody = new StringBuilder();
+            multipartBody.append("--").append(boundary).append("\r\n");
+            multipartBody.append("Content-Disposition: form-data; name=\"json\"\r\n");
+            multipartBody.append("Content-Type: application/json\r\n\r\n");
+            multipartBody.append(request.getMultipartJson()).append("\r\n");
+            List<MultipartFile> files = request.getMultipartFiles();
+            if (files != null) {
+                for (MultipartFile file : files) {
+                    multipartBody.append("--").append(boundary).append("\r\n");
+                    multipartBody.append("Content-Disposition: form-data; name=\"files\"; filename=\"")
+                            .append(file.getOriginalFilename()).append("\"\r\n");
+                    multipartBody.append("Content-Type: ").append(file.getContentType()).append("\r\n\r\n");
+                    multipartBody.append(new String(file.getBytes(), StandardCharsets.UTF_8)).append("\r\n");
+                }
+            }
+
+            multipartBody.append("--").append(boundary).append("--").append("\r\n");
+            return HttpRequest.BodyPublishers.ofString(multipartBody.toString());
+
+        } catch (IOException e) {
+            logger.logWarn("Exception occurred while trying to build request. Exception: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

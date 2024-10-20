@@ -42,7 +42,7 @@ public class UserServiceCaller {
 
     private HttpResponse<String> sendRequestForUserCredentialsWithUsernameParam(String username) throws URISyntaxException, IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8001/user-service/security-get-user-credentials?username=" + username))
+                .uri(new URI("http://localhost:8091/user-service/security-get-user-credentials?username=" + username))
                 .timeout(Duration.ofSeconds(3))
                 .GET()
                 .build();
@@ -54,7 +54,7 @@ public class UserServiceCaller {
 
     private HttpResponse<String> sendRequestForUserCredentialsWithUserIdParam(String userId) throws URISyntaxException, IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://localhost:8001/user-service/security-get-user-credentials?user-id=" + userId))
+                .uri(new URI("http://localhost:8091/user-service/security-get-user-credentials?user-id=" + userId))
                 .timeout(Duration.ofSeconds(3))
                 .GET()
                 .build();

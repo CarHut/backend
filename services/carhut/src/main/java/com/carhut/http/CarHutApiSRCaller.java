@@ -1,13 +1,12 @@
 package com.carhut.http;
 
-import com.carhut.enums.ServiceStatusEntity;
 import com.carhut.commons.model.CarHutCar;
-import com.carhut.requests.requestmodels.CarHutCarFilterModel;
-import com.carhut.requests.requestmodels.RemoveCarRequestModel;
+import com.carhut.requests.CarHutCarFilterModel;
+import com.carhut.requests.RemoveCarRequestModel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
+import org.antlr.v4.runtime.misc.Pair;
+import org.springframework.web.bind.annotation.RequestMethod;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -19,7 +18,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class CarHutApiSRCaller {
 
-    private final String basePath = "http://localhost:8000/carhut-api-sr";
+    // Will need to be changed automatically to specific running microservice address
+    private final String basePath = "http://localhost:8100/carhut-api-sr";
 
     public CompletableFuture<CarHutCar> getCarWithId(String carId) throws URISyntaxException {
         CompletableFuture<HttpResponse<String>> response = sendRequestToGetCarWithId(carId);
@@ -45,11 +45,8 @@ public class CarHutApiSRCaller {
     }
 
     private CompletableFuture<HttpResponse<String>> sendRequestToGetCarWithId(String carId) throws URISyntaxException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(basePath + "/get-car-with-id?car-id=" + carId))
-                .GET()
-                .build();
-
+        HttpRequest request = buildRequest(new URI(basePath + "/get-car-with-id?car-id=" + carId), null, null,
+                RequestMethod.GET, null);
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
@@ -61,11 +58,8 @@ public class CarHutApiSRCaller {
 
     private CompletableFuture<HttpResponse<String>> sendRequestToRemoveOffer(String carId)
             throws URISyntaxException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(basePath + "/remove-offer?car-id=" + carId))
-                .GET()
-                .build();
-
+        HttpRequest request = buildRequest(new URI(basePath + "/remove-offer?car-id=" + carId), null, null,
+                RequestMethod.GET, null);
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
@@ -76,11 +70,8 @@ public class CarHutApiSRCaller {
 
     private CompletableFuture<HttpResponse<String>> sendRequestToGetListingsWithUserId(String userId)
             throws URISyntaxException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(basePath + "/get-listings?user-id=" + userId))
-                .GET()
-                .build();
-
+        HttpRequest request = buildRequest(new URI(basePath + "/get-listings?user-id=" + userId), null, null,
+                RequestMethod.GET, null);
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
@@ -92,6 +83,7 @@ public class CarHutApiSRCaller {
         CompletableFuture<HttpResponse<String>> response = sendRequestToGetCarsWithFilter(carHutCarFilterModel, sortBy,
                 sortOrder, offersPerPage, currentPage);
         CompletableFuture<List<CarHutCar>> statusCf = new CompletableFuture<>();
+
         response.whenComplete((result, ex) -> {
             if (ex != null) {
                 statusCf.completeExceptionally(ex);
@@ -109,6 +101,7 @@ public class CarHutApiSRCaller {
 
             statusCf.complete(null);
         });
+
         return statusCf;
     }
 
@@ -117,20 +110,19 @@ public class CarHutApiSRCaller {
                                                                                    Integer offersPerPage,
                                                                                    Integer currentPage)
             throws URISyntaxException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(basePath + "/get-cars-with-filters?sort-by=" + sortBy + "&sort-order=" + sortOrder
-                + "&offers-per-page=" + offersPerPage + "&current-page=" + currentPage))
-                .POST(HttpRequest.BodyPublishers.ofString(filterModel.toJson()))
-                .setHeader("Content-Type", "application/json")
-                .build();
-
+        URI path = new URI(basePath + "/get-cars-with-filters?sort-by=" + sortBy + "&sort-order=" + sortOrder
+                + "&offers-per-page=" + offersPerPage + "&current-page=" + currentPage);
+        HttpRequest request = buildRequest(path, new Pair<>("Content-Type", "application/json"), null,
+                RequestMethod.POST, filterModel.toJson());
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public CompletableFuture<Integer> getNumberOfFilteredCars(CarHutCarFilterModel carHutCarFilterModel) throws URISyntaxException {
+    public CompletableFuture<Integer> getNumberOfFilteredCars(CarHutCarFilterModel carHutCarFilterModel)
+            throws URISyntaxException {
         CompletableFuture<HttpResponse<String>> response = sendRequestToGetNumberOfFilteredCars(carHutCarFilterModel);
         CompletableFuture<Integer> statusCf = new CompletableFuture<>();
+
         response.whenComplete((result, ex) -> {
             if (result.statusCode() == 200) {
                 try {
@@ -139,41 +131,70 @@ public class CarHutApiSRCaller {
                     statusCf.complete(null);
                 }
             } else {
-
+                statusCf.complete(null);
             }
-            statusCf.complete(null);
         });
+
         return statusCf;
     }
 
     private CompletableFuture<HttpResponse<String>> sendRequestToGetNumberOfFilteredCars(CarHutCarFilterModel filter)
             throws URISyntaxException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(basePath + "/get-number-of-filtered-cars"))
-                .setHeader("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(filter.toJson()))
-                .build();
-
+        HttpRequest request = buildRequest(new URI(basePath + "/get-number-of-filtered-cars"),
+                new Pair<>("Content-Type", "application/json"), null, RequestMethod.POST,
+                filter.toJson());
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public CompletableFuture<HttpResponse<String>> addCarToDatabaseAsync(CarHutCar car)
-            throws URISyntaxException {
+    public CompletableFuture<HttpResponse<String>> addCarToDatabaseAsync(CarHutCar car) throws URISyntaxException {
         return sendRequestToAddCarToDatabase(car);
     }
 
-    public CompletableFuture<HttpResponse<String>> sendRequestToAddCarToDatabase(CarHutCar car)
+    private CompletableFuture<HttpResponse<String>> sendRequestToAddCarToDatabase(CarHutCar car)
             throws URISyntaxException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(basePath + "/add-car"))
-                .setHeader("Content-Type", "application/json")
-                .timeout(Duration.ofSeconds(10))
-                .POST(HttpRequest.BodyPublishers.ofString(car.toJson()))
-                .build();
-
+        HttpRequest request = buildRequest(new URI(basePath + "/add-car"),
+                new Pair<>("Content-Type", "application/json"), Duration.ofSeconds(10), RequestMethod.POST,
+                car.toJson());
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    }
 
+    private HttpRequest buildRequest(URI uri, Pair<String, String> header, Duration timeout, RequestMethod method,
+                                     String body) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder();
+
+        if (uri == null) {
+            return null;
+        }
+        builder.uri(uri);
+
+        if (header != null) {
+            builder.setHeader(header.a, header.b);
+        }
+
+        if (timeout != null) {
+            builder.timeout(timeout);
+        }
+
+        if (method == null) {
+            return null;
+        }
+
+        if (method == RequestMethod.POST && body == null) {
+            return null;
+        }
+
+        if (method == RequestMethod.POST) {
+            builder.POST(HttpRequest.BodyPublishers.ofString(body));
+            return builder.build();
+        }
+
+        if (method == RequestMethod.GET) {
+            builder.GET();
+            return builder.build();
+        }
+
+        return null;
     }
 }

@@ -34,10 +34,4 @@ public class SecurityController {
         return ResponseEntity.ok(securityService.isAuthenticated(authRequest.getUserId(),
                 authRequest.getBearerToken()));
     }
-
-    @GetMapping("/test-jwt")
-    @ResponseBody
-    public ResponseEntity<String> testJwt() {
-        return ResponseEntity.ok("Hurray!");
-    }
 }
