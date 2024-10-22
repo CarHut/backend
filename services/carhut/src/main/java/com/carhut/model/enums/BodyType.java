@@ -1,4 +1,4 @@
-package com.carhut.models.enums;
+package com.carhut.model.enums;
 
 import java.util.ArrayList;
 import java.util.List;

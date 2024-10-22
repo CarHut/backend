@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Transactional
 public interface UserRepository extends JpaRepository<User, String> {
 
     @Query(value = "SELECT * FROM users WHERE username = :username", nativeQuery = true)
@@ -18,7 +19,10 @@ public interface UserRepository extends JpaRepository<User, String> {
     User getUserByUserId(@Param("userId") String userId);
 
     @Modifying
-    @Transactional
     @Query(value = "UPDATE users SET num_of_offered_cars = num_of_offered_cars + 1 WHERE id = :userId", nativeQuery = true)
     void updateCarCountByUserId(@Param("userId") String userId);
+
+    @Modifying
+    @Query(value = "UPDATE users SET num_of_offered_cars = num_of_offered_cars - 1 WHERE id = :userId", nativeQuery = true)
+    void decrementOfferCountByUserId(@Param("userId") String userId);
 }

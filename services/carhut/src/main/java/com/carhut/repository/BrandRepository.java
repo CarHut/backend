@@ -1,6 +1,6 @@
 package com.carhut.repository;
 
-import com.carhut.models.carhut.Brand;
+import com.carhut.model.carhut.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

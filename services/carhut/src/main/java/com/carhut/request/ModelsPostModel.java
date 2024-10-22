@@ -1,4 +1,4 @@
-package com.carhut.requests;
+package com.carhut.request;
 
 public class ModelsPostModel {
 

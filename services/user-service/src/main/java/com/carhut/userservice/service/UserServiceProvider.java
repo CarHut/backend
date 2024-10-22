@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -64,5 +65,30 @@ public class UserServiceProvider {
 
     private boolean isRequestAuthenticated(String userId, String bearerToken) throws IOException, InterruptedException {
         return caller.isRequestAuthenticated(userId, bearerToken);
+    }
+
+    public CompletableFuture<Boolean> decrementOfferCountByUserId(String userId, String bearerToken)
+            throws IOException, InterruptedException {
+        CompletableFuture<Boolean> cf = new CompletableFuture<>();
+        if (userId == null || bearerToken == null) {
+            cf.complete(false);
+            return cf;
+        }
+
+        if (!isRequestAuthenticated(userId, bearerToken)) {
+            cf.complete(false);
+            return cf;
+        }
+
+        Function<Void, Boolean> function = (unused) -> {
+            try {
+                userRepository.decrementOfferCountByUserId(userId);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        };
+
+        return userDatabaseResourceManager.acquireDatabaseResource(function);
     }
 }

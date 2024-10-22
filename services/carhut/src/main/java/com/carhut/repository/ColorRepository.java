@@ -1,6 +1,6 @@
 package com.carhut.repository;
 
-import com.carhut.models.carhut.Color;
+import com.carhut.model.carhut.Color;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

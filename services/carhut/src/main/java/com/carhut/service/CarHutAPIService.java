@@ -1,4 +1,4 @@
-package com.carhut.services;
+package com.carhut.service;
 
 import com.carhut.commons.http.caller.RequestAuthenticationCaller;
 import com.carhut.commons.model.CarHutCar;
@@ -7,13 +7,15 @@ import com.carhut.http.ImageServiceCaller;
 import com.carhut.http.UserServiceCaller;
 import com.carhut.repository.*;
 import com.carhut.enums.ServiceStatusEntity;
-import com.carhut.models.carhut.*;
-import com.carhut.models.enums.BodyType;
-import com.carhut.models.enums.Fuel;
-import com.carhut.models.enums.Gearbox;
-import com.carhut.models.enums.Powertrain;
-import com.carhut.requests.CarHutCarFilterModel;
-import com.carhut.requests.RemoveCarRequestModel;
+import com.carhut.model.carhut.*;
+import com.carhut.model.enums.BodyType;
+import com.carhut.model.enums.Fuel;
+import com.carhut.model.enums.Gearbox;
+import com.carhut.model.enums.Powertrain;
+import com.carhut.request.CarHutCarFilterModel;
+import com.carhut.request.RemoveCarRequestModel;
+import com.carhut.service.fallback.CarHutCarFallbackService;
+import com.carhut.service.fallback.FallbackStage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class CarHutAPIService {
-
     @Autowired
     private BrandRepository brandRepository;
     @Autowired
@@ -135,6 +136,7 @@ public class CarHutAPIService {
     }
 
     public CompletableFuture<String> addCarToDatabase(CarHutCar carHutCar, List<MultipartFile> images, String bearerToken) {
+        final CarHutCarFallbackService fallbackService = new CarHutCarFallbackService(carHutCar, images, bearerToken);
         CarHutCar newCar = new CarHutCar(carHutCar.getSellerId(), carHutCar.getSellerAddress(),
                 carHutCar.getBrandId(), carHutCar.getModelId(), carHutCar.getHeader(),
                 carHutCar.getPrice(), carHutCar.getMileage(), carHutCar.getRegistration(),
@@ -158,26 +160,40 @@ public class CarHutAPIService {
             CompletableFuture<HttpResponse<String>> addCarToDatabaseCf =
                     authenticationCf.thenCompose(authResponse -> {
                         CompletableFuture<HttpResponse<String>> failedFuture = new CompletableFuture<>();
-                        if (authResponse != null && authResponse.statusCode() == 200) {
-                            try {
-                                return carHutApiSRCaller.addCarToDatabaseAsync(newCar);
-                            } catch (Exception e) {
-                                resultCf.complete(null);
-                                failedFuture.completeExceptionally(new RuntimeException("Exception occurred while saving CarHutCar model to database."));
-                                return failedFuture;
-                            }
-                        } else {
+                        try {
+                            return carHutApiSRCaller.addCarToDatabaseAsync(newCar);
+                        } catch (Exception e) {
                             resultCf.complete(null);
-                            failedFuture.completeExceptionally(new RuntimeException("Authentication failed"));
+                            failedFuture.completeExceptionally(new RuntimeException("Exception occurred while saving CarHutCar model to database."));
                             return failedFuture;
                         }
                     });
 
             addCarToDatabaseCf.whenComplete((result, ex) -> {
+                CompletableFuture<ServiceStatusEntity> fallbackCf = null;
                 if (ex != null) {
+                    try {
+                        fallbackCf = fallbackService.invokeFallback(FallbackStage.STAGE_1);
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
                     resultCf.complete(null);
                 } else if (result.statusCode() < 200 || result.statusCode() > 299) {
+                    try {
+                        fallbackCf = fallbackService.invokeFallback(FallbackStage.STAGE_1);
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
                     resultCf.complete(null);
+                }
+
+                // fallback initiated
+                if (fallbackCf != null) {
+                    fallbackCf.whenComplete((res, ex1) -> {
+                        if (ex1 != null || !res.equals(ServiceStatusEntity.SUCCESS)) {
+                            System.err.println("Fallback for CarHut car failed at Stage 1. Message: "+ex1.getMessage());
+                        }
+                    });
                 }
             });
 
@@ -201,10 +217,30 @@ public class CarHutAPIService {
             });
 
             userServiceUpdateOffersCf.whenComplete((result, ex) -> {
+                CompletableFuture<ServiceStatusEntity> fallbackCf = null;
                 if (ex != null) {
+                    try {
+                        fallbackCf = fallbackService.invokeFallback(FallbackStage.STAGE_2);
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
                     resultCf.complete(null);
                 } else if (result.statusCode() < 200 || result.statusCode() > 299) {
+                    try {
+                        fallbackCf = fallbackService.invokeFallback(FallbackStage.STAGE_2);
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
                     resultCf.complete(null);
+                }
+
+                // fallback initiated
+                if (fallbackCf != null) {
+                    fallbackCf.whenComplete((res, ex1) -> {
+                        if (ex1 != null || !res.equals(ServiceStatusEntity.SUCCESS)) {
+                            System.err.println("Fallback for CarHut car failed at Stage 2. Message: "+ex1.getMessage());
+                        }
+                    });
                 }
             });
 
@@ -227,12 +263,32 @@ public class CarHutAPIService {
                     });
 
             saveImagesCf.whenComplete((result, ex) -> {
+                CompletableFuture<ServiceStatusEntity> fallbackCf = null;
                 if (ex != null) {
+                    try {
+                        fallbackCf = fallbackService.invokeFallback(FallbackStage.STAGE_3);
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
                     resultCf.complete(null);
                 } else if (result.statusCode() < 200 || result.statusCode() > 299) {
+                    try {
+                        fallbackCf = fallbackService.invokeFallback(FallbackStage.STAGE_3);
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
                     resultCf.complete(null);
                 } else {
                     resultCf.complete(newCar.getId());
+                }
+
+                // fallback initiated
+                if (fallbackCf != null) {
+                    fallbackCf.whenComplete((res, ex1) -> {
+                        if (ex1 != null || !res.equals(ServiceStatusEntity.SUCCESS)) {
+                            System.err.println("Fallback for CarHut car failed at Stage 3. Message: "+ex1.getMessage());
+                        }
+                    });
                 }
             });
 

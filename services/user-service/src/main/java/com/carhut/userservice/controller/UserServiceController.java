@@ -36,4 +36,14 @@ public class UserServiceController {
                 : ResponseEntity.internalServerError().body("Couldn't update offers count for user with id: " + userId + ". Please try again later.");
     }
 
+    @GetMapping(value = "/decrement-offer-count-by-user-id")
+    public ResponseEntity<String> decrementOfferCountByUserId(@RequestHeader("Authorization") String bearerToken,
+                                                              @RequestParam("user-id") String userId)
+            throws IOException, InterruptedException, ExecutionException {
+        Boolean updated = userServiceProvider.decrementOfferCountByUserId(userId, bearerToken).get();
+        return updated
+                ? ResponseEntity.ok("Successfully updated offers count.")
+                : ResponseEntity.internalServerError().body("Couldn't update offers count for user with id: " + userId + ". Please try again later.");
+    }
+
 }

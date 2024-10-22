@@ -1,4 +1,4 @@
-package com.carhut.models.carhut;
+package com.carhut.model.carhut;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -1,6 +1,5 @@
-package com.carhut.requests;
+package com.carhut.request;
 
-import com.carhut.requests.ModelsPostModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

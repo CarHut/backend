@@ -1,8 +1,8 @@
 package com.carhut.http;
 
 import com.carhut.commons.model.CarHutCar;
-import com.carhut.requests.CarHutCarFilterModel;
-import com.carhut.requests.RemoveCarRequestModel;
+import com.carhut.request.CarHutCarFilterModel;
+import com.carhut.request.RemoveCarRequestModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

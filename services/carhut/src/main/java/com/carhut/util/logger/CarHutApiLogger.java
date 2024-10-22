@@ -1,4 +1,4 @@
-package com.carhut.util.loggers;
+package com.carhut.util.logger;
 
 import java.io.BufferedWriter;
 import java.io.File;

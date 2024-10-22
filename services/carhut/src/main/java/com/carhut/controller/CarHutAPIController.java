@@ -1,18 +1,17 @@
-package com.carhut.controllers;
+package com.carhut.controller;
 
 import com.carhut.commons.model.CarHutCar;
 import com.carhut.enums.ServiceStatusEntity;
-import com.carhut.models.carhut.*;
-import com.carhut.requests.CarHutCarFilterModel;
-import com.carhut.requests.RemoveCarRequestModel;
-import com.carhut.services.CarHutAPIService;
+import com.carhut.model.carhut.*;
+import com.carhut.request.CarHutCarFilterModel;
+import com.carhut.request.RemoveCarRequestModel;
+import com.carhut.service.CarHutAPIService;
 
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import com.carhut.util.loggers.CarHutApiLogger;
-import jakarta.servlet.http.HttpServletRequest;
+import com.carhut.util.logger.CarHutApiLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

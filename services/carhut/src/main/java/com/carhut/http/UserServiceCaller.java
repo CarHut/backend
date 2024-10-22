@@ -33,4 +33,22 @@ public class UserServiceCaller {
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
+
+    public CompletionStage<HttpResponse<String>> decrementOfferCount(String sellerId, String bearerToken)
+            throws URISyntaxException {
+        return sendRequestToDecrementOfferCountForUserId(sellerId, bearerToken);
+    }
+
+    private CompletableFuture<HttpResponse<String>> sendRequestToDecrementOfferCountForUserId(String userId,
+                                                                                              String bearerToken)
+            throws URISyntaxException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI( baseAddress + "/decrement-offer-count-by-user-id?user-id=" + userId))
+                .setHeader("Authorization", bearerToken)
+                .timeout(Duration.ofSeconds(3))
+                .GET()
+                .build();
+        HttpClient client = HttpClient.newHttpClient();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    }
 }
