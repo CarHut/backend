@@ -7,7 +7,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="models" />
         <module name="eureka" />
         <module name="user-service" />
         <module name="image-service" />
@@ -25,6 +24,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="CarHutChat" target="21" />
+      <module name="models" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

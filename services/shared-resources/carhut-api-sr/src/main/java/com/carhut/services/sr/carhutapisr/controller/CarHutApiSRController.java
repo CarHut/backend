@@ -108,4 +108,19 @@ public class CarHutApiSRController {
         return ResponseEntity.ok(size);
     }
 
+    @PostMapping("/get-cars-by-ids")
+    @ResponseBody
+    public ResponseEntity<List<CarHutCar>> getCarsByIds(@RequestBody List<String> ids)
+            throws ExecutionException, InterruptedException {
+        List<CarHutCar> cars = carHutApiSRService.getCarsByIds(ids).get();
+
+        if (cars != null) {
+            controllerLogger.saveToFile("[CarHutApiSRController][OK]: /get-cars-by-ids - Successfully retrieved data.");
+            return ResponseEntity.ok(cars);
+        } else {
+            controllerLogger.saveToFile("[CarHutApiSRController][WARN]: /get-cars-by-ids - Couldn't retrieve data");
+            return ResponseEntity.status(404).body(null);
+        }
+    }
+
 }

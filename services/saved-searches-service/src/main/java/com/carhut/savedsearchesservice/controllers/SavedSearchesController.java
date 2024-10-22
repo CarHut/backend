@@ -4,7 +4,7 @@ import com.carhut.savedsearchesservice.models.SavedSearch;
 import com.carhut.savedsearchesservice.requests.RemoveSavedSearchRequestModel;
 import com.carhut.savedsearchesservice.services.SavedSearchesService;
 import com.carhut.savedsearchesservice.status.SavedSearchesServiceStatus;
-import com.carhut.savedsearchesservice.util.loggers.ControllerLogger;
+import com.carhut.savedsearchesservice.util.loggers.SavedSearchesServiceLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/saved-searches")
+@RequestMapping("/saved-searches-service")
 public class SavedSearchesController {
 
     @Autowired
     private SavedSearchesService savedSearchesService;
-    private static final ControllerLogger controllerLogger = ControllerLogger.getLogger();
+    private static final SavedSearchesServiceLogger logger = SavedSearchesServiceLogger.getInstance();
 
     @PostMapping("/add-new-saved-search")
     @ResponseBody
@@ -29,29 +29,29 @@ public class SavedSearchesController {
         SavedSearchesServiceStatus status = savedSearchesService.addNewSavedSearch(savedSearch, bearerToken).get();
 
         if (status == SavedSearchesServiceStatus.SUCCESS) {
-            controllerLogger.saveToFile("[SavedSearchesController][OK]: /addNewSavedSearch - Successfully saved search to database.");
+            logger.logInfo("[SavedSearchesController][OK]: /addNewSavedSearch - Successfully saved search to database.");
             return ResponseEntity.status(201).body("Successfully saved search.");
         } else if (status == SavedSearchesServiceStatus.USER_IS_NOT_AUTHENTICATED) {
-            controllerLogger.saveToFile("[SavedSearchesController][WARN]: /addNewSavedSearch - User is not authenticated. " + savedSearch.toString());
+            logger.logWarn("[SavedSearchesController][WARN]: /addNewSavedSearch - User is not authenticated. " + savedSearch.toString());
             return ResponseEntity.status(403).body("User is not authenticated.");
         } else {
-            controllerLogger.saveToFile("[SavedSearchesController][WARN]: /addNewSavedSearch - Something went wrong while trying to save search.");
+            logger.logWarn("[SavedSearchesController][WARN]: /addNewSavedSearch - Something went wrong while trying to save search.");
             return ResponseEntity.internalServerError().body("Something went wrong while trying to save search.");
         }
     }
 
-    @PostMapping("/get-saved-searches-by-user-id")
+    @GetMapping("/get-saved-searches-by-user-id")
     @ResponseBody
     public ResponseEntity<List<SavedSearch>> getSavedSearchesByUserId(
             @RequestHeader("Authorization") String bearerToken,
-            @RequestBody String userId) throws ExecutionException, InterruptedException, IOException {
+            @RequestParam("user-id") String userId) throws ExecutionException, InterruptedException, IOException {
         List<SavedSearch> searches = savedSearchesService.getSavedSearchesByUsername(userId, bearerToken).get();
 
         if (searches != null) {
-            controllerLogger.saveToFile("[SavedSearchesController][OK]: /getSavedSearchesByUsername - Successfully retrieved searches.");
+            logger.logInfo("[SavedSearchesController][OK]: /getSavedSearchesByUsername - Successfully retrieved searches.");
             return ResponseEntity.ok().body(searches);
         } else {
-            controllerLogger.saveToFile("[SavedSearchesController][WARN]: /getSavedSearchesByUsername - Something went wrong while trying to retrieve searches.");
+            logger.logWarn("[SavedSearchesController][WARN]: /getSavedSearchesByUsername - Something went wrong while trying to retrieve searches.");
             return ResponseEntity.internalServerError().body(null);
         }
     }
@@ -66,13 +66,13 @@ public class SavedSearchesController {
         SavedSearchesServiceStatus status = savedSearchesService
                 .removeSavedSearch(removeSavedSearchRequestModel, bearerToken).get();
         if (status == SavedSearchesServiceStatus.SUCCESS) {
-            controllerLogger.saveToFile("[SavedSearchesController][OK]: /removeSavedSearch - Successfully removed saved search.");
+            logger.logInfo("[SavedSearchesController][OK]: /removeSavedSearch - Successfully removed saved search.");
             return ResponseEntity.ok().body("Successfully removed saved search.");
         } else if (status == SavedSearchesServiceStatus.USER_IS_NOT_AUTHENTICATED) {
-            controllerLogger.saveToFile("[SavedSearchesController][ERROR]: /removeSavedSearch - User is not authenticated.");
+            logger.logError("[SavedSearchesController][ERROR]: /removeSavedSearch - User is not authenticated.");
             return ResponseEntity.status(403).body("User not authenticated.");
         } else {
-            controllerLogger.saveToFile("[SavedSearchesController][ERROR]: /removeSavedSearch - could not remove saved search.");
+            logger.logError("[SavedSearchesController][ERROR]: /removeSavedSearch - could not remove saved search.");
             return ResponseEntity.internalServerError().body("Internal error. Please try again later.");
         }
     }

@@ -314,5 +314,21 @@ public class CarHutAPIController {
         logger.logInfo("[CarHutAPIController][OK]: /getNumberOfFilteredCars - Successfully retrieved data.");
         return ResponseEntity.ok(size);
     }
-    
+
+    @PostMapping("/get-cars-by-car-ids")
+    @ResponseBody
+    public ResponseEntity<List<CarHutCar>> getCarsByCarIds(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestBody List<String> ids,
+            @RequestParam("user-id") String userId) throws ExecutionException, InterruptedException {
+        List<CarHutCar> cars = carHutAPIService.getCarsByCarIds(ids, bearerToken, userId).get();
+
+        if (cars != null) {
+            logger.logInfo("[CarHutAPIController][OK]: /get-cars-by-car-ids - Successfully retrieved data.");
+            return ResponseEntity.ok(cars);
+        } else {
+            logger.logWarn("[CarHutAPIController][WARN]: /get-cars-by-car-ids - Couldn't retrieve data");
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
 }

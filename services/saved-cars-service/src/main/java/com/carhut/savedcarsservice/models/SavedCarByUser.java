@@ -11,11 +11,7 @@ public class SavedCarByUser {
 
     @Id
     private String id;
-
-    @JoinColumn(table = "users", name = "id")
     private String userId;
-
-    @JoinColumn(table = "carhut_cars", name = "id")
     private String carId;
 
     public SavedCarByUser() {}

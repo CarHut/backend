@@ -89,4 +89,9 @@ public interface CarHutCarRepository extends JpaRepository<CarHutCar, String> {
                                     @Param("displacementTo") Integer displacementTo, @Param("gearbox") String gearbox,
                                     @Param("powertrain") String powertrain/**, @Param("carTypes") List<String> carTypes**/);
 
+    @Query(value = """
+    SELECT c.* FROM carhut_cars c
+    WHERE c.id IN :ids
+    """, nativeQuery = true)
+    List<CarHutCar> getCarsWithIds(@Param("ids") List<String> ids);
 }

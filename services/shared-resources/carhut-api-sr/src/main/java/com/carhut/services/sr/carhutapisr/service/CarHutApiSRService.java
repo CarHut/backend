@@ -112,4 +112,15 @@ public class CarHutApiSRService {
         };
         return carHutApiDatabaseResourceManager.acquireDatabaseResource(function);
     }
+
+    public CompletableFuture<List<CarHutCar>> getCarsByIds(List<String> ids) {
+        Function<Void, List<CarHutCar>> function = (unused) -> {
+            try {
+                return carHutCarRepository.getCarsWithIds(ids);
+            } catch (Exception e) {
+                return null;
+            }
+        };
+        return carHutApiDatabaseResourceManager.acquireDatabaseResource(function);
+    }
 }

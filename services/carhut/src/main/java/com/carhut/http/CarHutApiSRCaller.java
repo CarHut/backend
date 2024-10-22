@@ -3,8 +3,10 @@ package com.carhut.http;
 import com.carhut.commons.model.CarHutCar;
 import com.carhut.requests.CarHutCarFilterModel;
 import com.carhut.requests.RemoveCarRequestModel;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.web.bind.annotation.RequestMethod;
 import java.net.URI;
@@ -15,6 +17,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class CarHutApiSRCaller {
 
@@ -156,6 +159,20 @@ public class CarHutApiSRCaller {
         HttpRequest request = buildRequest(new URI(basePath + "/add-car"),
                 new Pair<>("Content-Type", "application/json"), Duration.ofSeconds(10), RequestMethod.POST,
                 car.toJson());
+        HttpClient client = HttpClient.newHttpClient();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public CompletableFuture<HttpResponse<String>> getCarsByIds(List<String> ids)
+            throws URISyntaxException, JsonProcessingException {
+        return sendRequestToGetCarsByIds(ids);
+    }
+
+    private CompletableFuture<HttpResponse<String>> sendRequestToGetCarsByIds(List<String> ids)
+            throws URISyntaxException, JsonProcessingException {
+        HttpRequest request = buildRequest(new URI(basePath + "/get-cars-by-ids"),
+                new Pair<>("Content-Type", "application/json"), Duration.ofSeconds(10), RequestMethod.POST,
+                new JsonMapper().writeValueAsString(ids));
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }

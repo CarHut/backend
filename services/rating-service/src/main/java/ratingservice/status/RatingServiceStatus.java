@@ -4,6 +4,6 @@ public enum RatingServiceStatus {
     ERROR,
     SUCCESS,
     OBJECT_IS_NULL,
-    RATING_ALREADY_EXISTS,
+    RATING_ALREADY_EXISTS, USER_NOT_AUTHORIZED,
 
 }

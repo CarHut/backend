@@ -399,6 +399,44 @@ public class CarHutAPIService {
         return resultCf;
     }
 
+    public CompletableFuture<List<CarHutCar>> getCarsByCarIds(List<String> ids, String bearerToken, String userId) {
+        CompletableFuture<List<CarHutCar>> cf = new CompletableFuture<>();
+        if (ids == null || ids.isEmpty()) {
+            cf.complete(null);
+            return cf;
+        }
+
+        CompletableFuture<HttpResponse<String>> authRequest = isRequestAuthenticatedAsync(userId, bearerToken, cf);
+        CompletableFuture<HttpResponse<String>> serviceRequest = authRequest.thenCompose(authResponse -> {
+            CompletableFuture<HttpResponse<String>> failedFuture = new CompletableFuture<>();
+            try {
+                return carHutApiSRCaller.getCarsByIds(ids);
+            } catch (Exception e) {
+                cf.complete(null);
+                failedFuture.completeExceptionally(new RuntimeException("CarHutApi cannot get car offers by ids."));
+                return failedFuture;
+            }
+        });
+
+        serviceRequest.whenComplete((result, ex) -> {
+            if (ex != null) {
+                cf.complete(null);
+            } else if (result.statusCode() < 200 || result.statusCode() > 299) {
+                cf.complete(null);
+            } else {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    List<CarHutCar> cars = mapper.readValue(result.body(), new TypeReference<>() {});
+                    cf.complete(cars);
+                } catch (Exception e) {
+                    cf.complete(null);
+                }
+            }
+        });
+
+        return cf;
+    }
+
     private <T> CompletableFuture<HttpResponse<String>> isRequestAuthenticatedAsync(String userId, String bearerToken,
                                                                                 CompletableFuture<T> finalizable) {
         CompletableFuture<HttpResponse<String>> response = requestAuthenticationCaller
@@ -414,5 +452,4 @@ public class CarHutAPIService {
 
         return response;
     }
-
 }
