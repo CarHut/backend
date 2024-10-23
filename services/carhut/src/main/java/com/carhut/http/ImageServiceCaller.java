@@ -3,6 +3,7 @@ package com.carhut.http;
 import com.carhut.commons.model.CarHutCar;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,34 +27,38 @@ public class ImageServiceCaller {
     private CompletableFuture<HttpResponse<String>> sendRequestToSaveImages(CarHutCar car, List<MultipartFile> images)
             throws IOException, URISyntaxException {
         String boundary = "Boundary-" + System.currentTimeMillis();
-        String multipartBody = prepareMultipartBody(images, boundary);
+
+        // Use the refactored prepareMultipartBody method, which now returns a byte array
+        byte[] multipartBody = prepareMultipartBody(images, boundary);
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(basePath + "/add-images-to-database?seller-id=" + car.getSellerId()
                         + "&car-id=" + car.getId()))
                 .header("Content-Type", "multipart/form-data; boundary=" + boundary)
                 .timeout(Duration.ofSeconds(15))
-                .POST(HttpRequest.BodyPublishers.ofString(multipartBody))
+                // Use ofByteArray to send the binary data in the request body
+                .POST(HttpRequest.BodyPublishers.ofByteArray(multipartBody))
                 .build();
 
         HttpClient client = HttpClient.newHttpClient();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private String prepareMultipartBody(List<MultipartFile> images, String boundary) throws IOException {
-        StringBuilder multipartBody = new StringBuilder();
+    private byte[] prepareMultipartBody(List<MultipartFile> images, String boundary) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         for (MultipartFile image : images) {
             String fileName = image.getOriginalFilename();
-            multipartBody.append("--").append(boundary).append("\r\n");
-            multipartBody.append("Content-Disposition: form-data; name=\"images\"; filename=\"").append(fileName)
-                    .append("\"\r\n");
-            multipartBody.append("Content-Type: ").append(image.getContentType()).append("\r\n\r\n");
+            outputStream.write(("--" + boundary + "\r\n").getBytes(StandardCharsets.ISO_8859_1));
+            outputStream.write(("Content-Disposition: form-data; name=\"images\"; filename=\"" + fileName + "\"\r\n").getBytes(StandardCharsets.ISO_8859_1));
+            outputStream.write(("Content-Type: " + image.getContentType() + "\r\n\r\n").getBytes(StandardCharsets.ISO_8859_1));
 
-            // Append image data as raw bytes
-            multipartBody.append(new String(image.getBytes(), StandardCharsets.ISO_8859_1)).append("\r\n");
+            outputStream.write(image.getBytes());
+            outputStream.write("\r\n".getBytes(StandardCharsets.ISO_8859_1));
         }
-        multipartBody.append("--").append(boundary).append("--\r\n");
-        return multipartBody.toString();
+        outputStream.write(("--" + boundary + "--\r\n").getBytes(StandardCharsets.ISO_8859_1));
+
+        return outputStream.toByteArray();
     }
 
 }

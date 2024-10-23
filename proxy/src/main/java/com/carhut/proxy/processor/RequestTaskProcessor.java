@@ -8,6 +8,8 @@ import com.carhut.proxy.model.UnifiedRESTResponseModel;
 import com.carhut.proxy.util.logger.ProxyLogger;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -37,7 +39,7 @@ public class RequestTaskProcessor implements TaskProcessor<RequestModel, Complet
             HttpRequest httpRequest = buildRequest(input);
 
             HttpClient httpClient = HttpClient.newBuilder()
-                    .connectTimeout(Duration.ofSeconds(20))
+                    .connectTimeout(Duration.ofSeconds(5000)) // Request delay
                     .build();
 
             return httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
@@ -65,6 +67,7 @@ public class RequestTaskProcessor implements TaskProcessor<RequestModel, Complet
 
             HttpRequest.Builder httpRequest = HttpRequest.newBuilder();
             httpRequest.uri(uri);
+
             if (request.getBearerToken() != null) {
                 httpRequest.header("Authorization", request.getBearerToken());
             }
@@ -102,25 +105,28 @@ public class RequestTaskProcessor implements TaskProcessor<RequestModel, Complet
 
     private HttpRequest.BodyPublisher buildMultipartBody(RequestModel request, String boundary) {
         try {
-            StringBuilder multipartBody = new StringBuilder();
-            multipartBody.append("--").append(boundary).append("\r\n");
-            multipartBody.append("Content-Disposition: form-data; name=\"json\"\r\n");
-            multipartBody.append("Content-Type: application/json\r\n\r\n");
-            multipartBody.append(request.getMultipartJson()).append("\r\n");
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+            outputStream.write(("--" + boundary + "\r\n").getBytes(StandardCharsets.ISO_8859_1));
+            outputStream.write(("Content-Disposition: form-data; name=\"json\"\r\n").getBytes(StandardCharsets.ISO_8859_1));
+            outputStream.write(("Content-Type: application/json\r\n\r\n").getBytes(StandardCharsets.ISO_8859_1));
+            outputStream.write(request.getMultipartJson().getBytes(StandardCharsets.ISO_8859_1));
+            outputStream.write("\r\n".getBytes(StandardCharsets.ISO_8859_1));
+
             List<MultipartFile> files = request.getMultipartFiles();
             if (files != null) {
                 for (MultipartFile file : files) {
-                    multipartBody.append("--").append(boundary).append("\r\n");
-                    multipartBody.append("Content-Disposition: form-data; name=\"files\"; filename=\"")
-                            .append(file.getOriginalFilename()).append("\"\r\n");
-                    multipartBody.append("Content-Type: ").append(file.getContentType()).append("\r\n\r\n");
-                    multipartBody.append(new String(file.getBytes(), StandardCharsets.UTF_8)).append("\r\n");
+                    String fileName = file.getOriginalFilename();
+                    outputStream.write(("--" + boundary + "\r\n").getBytes(StandardCharsets.ISO_8859_1));
+                    outputStream.write(("Content-Disposition: form-data; name=\"files\"; filename=\"" + fileName + "\"\r\n").getBytes(StandardCharsets.ISO_8859_1));
+                    outputStream.write(("Content-Type: " + file.getContentType() + "\r\n\r\n").getBytes(StandardCharsets.ISO_8859_1));
+                    outputStream.write(file.getBytes());
+                    outputStream.write("\r\n".getBytes(StandardCharsets.ISO_8859_1));
                 }
             }
 
-            multipartBody.append("--").append(boundary).append("--").append("\r\n");
-            return HttpRequest.BodyPublishers.ofString(multipartBody.toString());
-
+            outputStream.write(("--" + boundary + "--\r\n").getBytes(StandardCharsets.ISO_8859_1));
+            return HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray());
         } catch (IOException e) {
             logger.logWarn("Exception occurred while trying to build request. Exception: " + e.getMessage());
             throw new RuntimeException(e);
