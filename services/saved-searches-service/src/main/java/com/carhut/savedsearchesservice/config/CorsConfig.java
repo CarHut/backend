@@ -7,8 +7,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
+    private final String proxyOrigin = "http://localhost:8080";
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // add cors mappings
+        registry.addMapping("/*")
+                .allowedOrigins(proxyOrigin);
     }
 }
