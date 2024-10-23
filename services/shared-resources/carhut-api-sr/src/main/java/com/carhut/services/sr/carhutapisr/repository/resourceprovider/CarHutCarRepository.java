@@ -2,11 +2,13 @@ package com.carhut.services.sr.carhutapisr.repository.resourceprovider;
 
 import com.carhut.commons.model.CarHutCar;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 @Repository
@@ -16,12 +18,6 @@ public interface CarHutCarRepository extends JpaRepository<CarHutCar, String> {
     @Modifying
     @Query(value = "UPDATE carhut_cars SET is_active = false WHERE id = :carId", nativeQuery = true)
     void removeOffer(@Param("carId") String carId);
-
-    @Query(value = "SELECT * FROM carhut_cars WHERE seller_id = :userId", nativeQuery = true)
-    List<CarHutCar> getListingsForUserId(@Param("userId") String userId);
-
-    @Query(value = "SELECT * FROM carhut_cars WHERE id = :carId", nativeQuery = true)
-    CarHutCar getCarWithId(@Param("carId") String carId);
 
     @Query(value = """
                    SELECT c.* FROM carhut_cars c
@@ -43,6 +39,9 @@ public interface CarHutCarRepository extends JpaRepository<CarHutCar, String> {
                    AND (:displacementTo IS NULL OR c.engine_displacement::INT <= :displacementTo)
                    AND (:gearbox IS NULL OR c.gearbox = :gearbox)
                    AND (:powertrain IS NULL OR c.powertrain = :powertrain)
+                   AND (cardinality(:carTypes) = 0 OR c.body_type IN :carTypes)
+                   AND (cardinality(:brandIds) = 0 OR c.brand_id IN :brandIds)
+                   AND (cardinality(:modelIds) = 0 OR c.model_id IN :modelIds)
                    """, nativeQuery = true)
     List<CarHutCar> getCarsWithFilter(@Param("brandId") Integer brandId, @Param("modelId") Integer modelId,
                                       @Param("priceFrom") Integer priceFrom, @Param("priceTo") Integer priceTo,
@@ -54,7 +53,15 @@ public interface CarHutCarRepository extends JpaRepository<CarHutCar, String> {
                                       @Param("powerFrom") Integer powerFrom, @Param("powerTo") Integer powerTo,
                                       @Param("displacementFrom") Integer displacementFrom,
                                       @Param("displacementTo") Integer displacementTo, @Param("gearbox") String gearbox,
-                                      @Param("powertrain") String powertrain/**, @Param("carTypes") List<String> carTypes**/);
+                                      @Param("powertrain") String powertrain, @Param("carTypes") String[] carTypes,
+                                      @Param("brandIds") Integer[] brandIds,
+                                      @Param("modelIds") Integer[] modelIds, Pageable pageable);
+
+    @Query(value = "SELECT * FROM carhut_cars WHERE seller_id = :userId", nativeQuery = true)
+    List<CarHutCar> getListingsForUserId(@Param("userId") String userId);
+
+    @Query(value = "SELECT * FROM carhut_cars WHERE id = :carId", nativeQuery = true)
+    CarHutCar getCarWithId(@Param("carId") String carId);
 
     @Query(value = """
                    SELECT COUNT(c.*) FROM carhut_cars c
@@ -76,6 +83,9 @@ public interface CarHutCarRepository extends JpaRepository<CarHutCar, String> {
                    AND (:displacementTo IS NULL OR c.engine_displacement::INT <= :displacementTo)
                    AND (:gearbox IS NULL OR c.gearbox = :gearbox)
                    AND (:powertrain IS NULL OR c.powertrain = :powertrain)
+                   AND (cardinality(:carTypes) = 0 OR c.body_type IN :carTypes)
+                   AND (cardinality(:brandIds) = 0 OR c.brand_id IN :brandIds)
+                   AND (cardinality(:modelIds) = 0 OR c.model_id IN :modelIds)
                    """, nativeQuery = true)
     Integer getNumberOfFilteredCars(@Param("brandId") Integer brandId, @Param("modelId") Integer modelId,
                                     @Param("priceFrom") Integer priceFrom, @Param("priceTo") Integer priceTo,
@@ -87,7 +97,9 @@ public interface CarHutCarRepository extends JpaRepository<CarHutCar, String> {
                                     @Param("powerFrom") Integer powerFrom, @Param("powerTo") Integer powerTo,
                                     @Param("displacementFrom") Integer displacementFrom,
                                     @Param("displacementTo") Integer displacementTo, @Param("gearbox") String gearbox,
-                                    @Param("powertrain") String powertrain/**, @Param("carTypes") List<String> carTypes**/);
+                                    @Param("powertrain") String powertrain,  @Param("carTypes") String[] carTypes,
+                                    @Param("brandIds") Integer[] brandIds,
+                                    @Param("modelIds") Integer[] modelIds);
 
     @Query(value = """
     SELECT c.* FROM carhut_cars c

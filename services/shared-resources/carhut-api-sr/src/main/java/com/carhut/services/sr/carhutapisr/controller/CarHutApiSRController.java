@@ -84,8 +84,8 @@ public class CarHutApiSRController {
             @RequestBody CarHutCarFilterModel carHutCarFilterModel,
             @RequestParam(name = "sort-by", required = false) String sortBy,
             @RequestParam(name = "sort-order", required = false) String sortOrder,
-            @RequestParam(name = "offers-per-page", required = false) String offersPerPage,
-            @RequestParam(name = "current-page", required = false) String currentPage
+            @RequestParam(name = "offers-per-page", required = false) Integer offersPerPage,
+            @RequestParam(name = "current-page", required = false) Integer currentPage
     ) throws ExecutionException, InterruptedException {
         List<CarHutCar> cars = carHutApiSRService.getCarsWithFilter(carHutCarFilterModel, sortBy, sortOrder,
                 offersPerPage, currentPage).get();
