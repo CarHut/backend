@@ -12,4 +12,5 @@ public interface RequestModel {
     String getContentType();
     List<MultipartFile> getMultipartFiles();
     String getMultipartJson();
+    String toCacheJson();
 }

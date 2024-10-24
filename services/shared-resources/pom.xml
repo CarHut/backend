@@ -10,6 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <groupId>com.carhut.services</groupId>
     <artifactId>shared-resources</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>shared-resources</name>
@@ -19,6 +20,14 @@
     <modules>
         <module>carhut-api-sr</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.carhut</groupId>
+            <artifactId>commons</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

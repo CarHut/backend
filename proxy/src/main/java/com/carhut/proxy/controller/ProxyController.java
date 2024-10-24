@@ -29,7 +29,8 @@ public class ProxyController {
             @RequestHeader(value = "Authorization", required = false) String bearerToken,
             @RequestHeader(value = "Content-Type", required = false) String contentType
     ) throws ExecutionException, InterruptedException {
-        return processor.processRequest(new UnifiedRESTRequestModel(
+        ResponseModel responseModel = processor.processRequest(new UnifiedRESTRequestModel(
                 request, body, bearerToken, contentType, files, json)).get();
+        return responseModel;
     }
 }

@@ -83,8 +83,8 @@ public class CarHutApiSRService {
     }
 
     public CompletableFuture<List<CarHutCar>> getCarsWithFilter(CarHutCarFilterModel carHutCarFilterModel,
-                                                                String sortBy, String sortOrder, Integer offersPerPage,
-                                                                Integer currentPage) {
+                                                                String sortBy, String sortOrder, String offersPerPage,
+                                                                String currentPage) {
         Function<Void, List<CarHutCar>> function = (unused) -> {
             try {
                 TypeCorrectCarHutCarFilterDto dto = carHutCarFilterModelConverter
@@ -115,7 +115,10 @@ public class CarHutApiSRService {
 
                 Sort sorter = createSorter(sortBy, sortOrder);
 
-                Pageable pageable = PageRequest.of(currentPage, offersPerPage, sorter);
+                Integer page = currentPage.equals("null") ? 1 : Integer.parseInt(currentPage);
+                Integer numberOfEntities = offersPerPage.equals("null") ? Integer.MAX_VALUE : Integer.parseInt(offersPerPage);
+
+                Pageable pageable = PageRequest.of(page, numberOfEntities, sorter);
                 return carHutCarRepository.getCarsWithFilter(dto.getBrandId(), dto.getModelId(),
                         dto.getPriceFrom(), dto.getPriceTo(), dto.getMileageFrom(), dto.getMileageTo(),
                         dto.getRegistrationFrom(), dto.getRegistrationTo(), dto.getSeatingConfig(), dto.getDoors(),
@@ -131,14 +134,14 @@ public class CarHutApiSRService {
 
     private Sort createSorter(String sortBy, String sortOrder) {
         if (sortOrder == null || sortBy == null) {
-            return null;
+            return Sort.unsorted();
         }
         if (!sortOrder.equals("ASC") && !sortOrder.equals("DESC")) {
-            return null;
+            return Sort.unsorted();
         }
         if (!sortBy.equals("price") && !sortBy.equals("mileage") && !sortBy.equals("engine_power")
                 && !sortBy.equals("header")) {
-            return null;
+            return Sort.unsorted();
         }
 
         return sortOrder.equals("ASC")
