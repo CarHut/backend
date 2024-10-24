@@ -23,13 +23,16 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="caching" target="21" />
       <module name="CarHutChat" target="21" />
       <module name="models" target="21" />
+      <module name="redis-regulator" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="CarHutChat" options="" />
+      <module name="caching" options="" />
       <module name="carhut" options="" />
       <module name="commons" options="" />
       <module name="eureka" options="" />
@@ -38,6 +41,7 @@
       <module name="models" options="" />
       <module name="proxy" options="-parameters" />
       <module name="ratingservice" options="" />
+      <module name="redis-regulator" options="" />
       <module name="saved-cars-service" options="" />
       <module name="saved-searches-service" options="" />
       <module name="security-service" options="" />

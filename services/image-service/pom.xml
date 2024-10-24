@@ -9,6 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <groupId>com.carhut.services</groupId>
     <artifactId>image-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>image-service</name>
@@ -56,7 +57,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.carhut</groupId>
+            <groupId>com.carhut.services</groupId>
             <artifactId>carhut</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
@@ -64,6 +65,12 @@
         <dependency>
             <groupId>com.carhut</groupId>
             <artifactId>models</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.carhut</groupId>
+            <artifactId>commons</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

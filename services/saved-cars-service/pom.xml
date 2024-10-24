@@ -9,6 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <groupId>com.carhut.services</groupId>
     <artifactId>saved-cars-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>saved-cars-service</name>
@@ -55,6 +56,11 @@
             <version>2.2.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.carhut</groupId>
+            <artifactId>commons</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

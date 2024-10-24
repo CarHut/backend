@@ -4,4 +4,5 @@ public interface ResponseModel {
     String getResponseBody();
     Integer getStatusCode();
     String getMessage();
+    String toJson();
 }

@@ -1,6 +1,8 @@
 package com.carhut.proxy.processor;
 
 import com.carhut.proxy.builder.URLBuilder;
+import com.carhut.proxy.cache.CacheState;
+import com.carhut.proxy.cache.RedisCacheHandler;
 import com.carhut.proxy.dispatcher.WorkerThreadDispatcher;
 import com.carhut.proxy.model.RequestModel;
 import com.carhut.proxy.model.ResponseModel;
@@ -23,14 +25,57 @@ import java.util.function.Function;
 
 public class RequestTaskProcessor implements TaskProcessor<RequestModel, CompletableFuture<ResponseModel>> {
 
-    public static final ProxyLogger logger = ProxyLogger.getInstance();
+    private static final ProxyLogger logger = ProxyLogger.getInstance();
+    private final RedisCacheHandler redisCacheHandler = new RedisCacheHandler();
 
     public RequestTaskProcessor() {}
 
     @Override
     public CompletableFuture<ResponseModel> processRequest(RequestModel request) {
+        CacheState cacheState = redisCacheHandler.cacheAvailability(request);
+
+        if (cacheState == CacheState.CACHE_AVAILABLE) {
+            CompletableFuture<ResponseModel> cf = new CompletableFuture<>();
+            cf.complete(redisCacheHandler.getCache(request));
+            return cf;
+        }
+
+        if (cacheState == CacheState.REQUEST_ADDED_TO_CACHE_PROVIDE_RESPONSE) {
+            Function<Void, CompletableFuture<ResponseModel>> function = buildFunctionToExecuteAndAddCache(request);
+            return WorkerThreadDispatcher.getInstance().dispatchThread(function);
+        }
+
         Function<Void, CompletableFuture<ResponseModel>> function = buildFunctionToExecute(request);
         return WorkerThreadDispatcher.getInstance().dispatchThread(function);
+    }
+
+    public Function<Void, CompletableFuture<ResponseModel>> buildFunctionToExecuteAndAddCache(RequestModel input) {
+        return (unused) -> {
+            HttpRequest httpRequest = buildRequest(input);
+
+            HttpClient httpClient = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(20)) // Request delay
+                    .build();
+
+            return httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(httpResponse -> {
+                        // Build a ResponseModel from the HttpResponse
+                        int statusCode = httpResponse.statusCode();
+                        String responseBody = httpResponse.body();
+                        if (statusCode >= 200 && statusCode < 300) {
+                            ResponseModel model = new UnifiedRESTResponseModel(responseBody, statusCode, "Success");
+                            redisCacheHandler.addCache(input, model);
+                            return model;
+                        } else {
+                            redisCacheHandler.addCache(input, null);
+                            return new UnifiedRESTResponseModel(responseBody, statusCode, "Error");
+                        }
+                    })
+                    .exceptionally(ex -> {
+                        ex.printStackTrace();
+                        return new UnifiedRESTResponseModel("Failed to complete request", 500, "Failure");
+                    });
+        };
     }
 
     @Override
@@ -39,7 +84,7 @@ public class RequestTaskProcessor implements TaskProcessor<RequestModel, Complet
             HttpRequest httpRequest = buildRequest(input);
 
             HttpClient httpClient = HttpClient.newBuilder()
-                    .connectTimeout(Duration.ofSeconds(5000)) // Request delay
+                    .connectTimeout(Duration.ofSeconds(20)) // Request delay
                     .build();
 
             return httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
@@ -132,6 +177,4 @@ public class RequestTaskProcessor implements TaskProcessor<RequestModel, Complet
             throw new RuntimeException(e);
         }
     }
-
-
 }

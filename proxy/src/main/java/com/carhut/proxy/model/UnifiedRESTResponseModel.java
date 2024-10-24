@@ -1,10 +1,14 @@
 package com.carhut.proxy.model;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
+
 public final class UnifiedRESTResponseModel implements ResponseModel {
 
-    private final String responseBody;
-    private final Integer statusCode;
-    private final String message;
+    private String responseBody;
+    private Integer statusCode;
+    private String message;
+
+    public UnifiedRESTResponseModel() {}
 
     public UnifiedRESTResponseModel(String responseBody, Integer statusCode, String message) {
         this.responseBody = responseBody;
@@ -22,5 +26,16 @@ public final class UnifiedRESTResponseModel implements ResponseModel {
 
     public String getMessage() {
         return message;
+    }
+
+    public String toJson() {
+        try {
+            JsonMapper jsonMapper = new JsonMapper();
+            return jsonMapper.writeValueAsString(this);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }

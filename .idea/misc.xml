@@ -18,11 +18,14 @@
         <option value="$PROJECT_DIR$/services/security-service/pom.xml" />
         <option value="$PROJECT_DIR$/commons/pom.xml" />
         <option value="$PROJECT_DIR$/services/shared-resources/pom.xml" />
+        <option value="$PROJECT_DIR$/services/caching/pom.xml" />
+        <option value="$PROJECT_DIR$/services/caching/redis-regulator/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/models/pom.xml" />
+        <option value="$PROJECT_DIR$/services/caching/pom.xml" />
       </set>
     </option>
   </component>
